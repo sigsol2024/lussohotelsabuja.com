@@ -103,17 +103,17 @@ function amenities_body_class($layout) {
           <?= e($body) ?>
         </p>
         <?php if ($layout === 'center'): ?>
-        <button class="flex items-center gap-3 px-8 py-4 bg-primary text-background-dark rounded font-bold hover:bg-white hover:text-black transition-all duration-300" type="button" onclick="location.href='<?= e($btnHref) ?>'">
+        <button class="flex items-center gap-3 px-8 py-4 bg-primary text-background-dark rounded font-bold hover:bg-white hover:text-black transition-all duration-300" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
           <span class="text-sm tracking-[0.1em] uppercase"><?= e($btn) ?></span>
           <span class="material-symbols-outlined text-lg">arrow_outward</span>
         </button>
         <?php elseif ($layout === 'top'): ?>
-        <button class="mt-6 flex items-center gap-3 px-8 py-4 border border-white text-white rounded hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e($btnHref) ?>'">
+        <button class="mt-6 flex items-center gap-3 px-8 py-4 border border-white text-white rounded hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
           <span class="text-sm font-bold tracking-[0.1em] uppercase"><?= e($btn) ?></span>
           <span class="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">water_drop</span>
         </button>
         <?php else: ?>
-        <button class="mt-6 flex items-center gap-3 px-8 py-4 border border-white text-white rounded hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e($btnHref) ?>'">
+        <button class="mt-6 flex items-center gap-3 px-8 py-4 border border-white text-white rounded hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
           <span class="text-sm font-bold tracking-[0.1em] uppercase"><?= e($btn) ?></span>
           <span class="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
         </button>

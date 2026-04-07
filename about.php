@@ -22,7 +22,7 @@ $values_card_icon = getPageSection('about', 'values_card_icon', 'spa');
 $values_card_title = getPageSection('about', 'values_card_title', 'Sanctuary for the Senses');
 $values_card_body = getPageSection('about', 'values_card_body', 'From the gentle aroma of our signature scent in the lobby to the curated art pieces adorning the walls, every element at Lusso Hotels is designed to evoke a sense of calm and wonder.');
 $values_card_link = getPageSection('about', 'values_card_link', 'Read about our wellness');
-$values_card_link_href = getPageSection('about', 'values_card_link_href', 'amenities.php');
+$values_card_link_href = getPageSection('about', 'values_card_link_href', '/amenities');
 
 $timeline = json_decode(getPageSection('about', 'timeline_json', ''), true);
 if (!is_array($timeline) || count($timeline) === 0) {
@@ -46,9 +46,9 @@ $parallax_quote = getPageSection('about', 'parallax_quote', '"Where elegance mee
 $cta_title = getPageSection('about', 'cta_title', 'Ready to Experience the Legend?');
 $cta_body = getPageSection('about', 'cta_body', 'Your journey into the extraordinary begins here. Reserve your sanctuary in Abuja today.');
 $cta_btn1 = getPageSection('about', 'cta_btn1', 'Check Availability');
-$cta_btn1_href = getPageSection('about', 'cta_btn1_href', 'rooms.php');
+$cta_btn1_href = getPageSection('about', 'cta_btn1_href', '/rooms');
 $cta_btn2 = getPageSection('about', 'cta_btn2', 'Contact Concierge');
-$cta_btn2_href = getPageSection('about', 'cta_btn2_href', 'contact.php');
+$cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
 ?>
 <!DOCTYPE html>
 <html class="light" lang="en">
@@ -119,7 +119,7 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', 'contact.php');
           <span class="material-symbols-outlined text-primary text-4xl mb-6"><?= e($values_card_icon) ?></span>
           <h4 class="text-2xl font-bold mb-4 text-text-main dark:text-white"><?= e($values_card_title) ?></h4>
           <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 font-light"><?= e($values_card_body) ?></p>
-          <a class="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:underline" href="<?= e($values_card_link_href) ?>">
+          <a class="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:underline" href="<?= e(lusso_href((string)$values_card_link_href)) ?>">
             <?= e($values_card_link) ?>
             <span class="material-symbols-outlined text-sm">arrow_forward</span>
           </a>
@@ -222,8 +222,8 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', 'contact.php');
       <h2 class="text-4xl md:text-5xl font-light leading-tight"><?= e($cta_title) ?></h2>
       <p class="text-gray-400 text-lg leading-relaxed"><?= e($cta_body) ?></p>
       <div class="flex flex-col sm:flex-row gap-4 w-full justify-center pt-4">
-        <a href="<?= e($cta_btn1_href) ?>" class="h-14 px-10 bg-primary text-white font-bold text-base rounded-lg hover:bg-primary-light transition-all duration-300 min-w-[200px] inline-flex items-center justify-center shadow-lg shadow-primary/30"><?= e($cta_btn1) ?></a>
-        <a href="<?= e($cta_btn2_href) ?>" class="h-14 px-10 bg-transparent border border-white/20 text-white font-bold text-base rounded-lg hover:bg-white/10 transition-all duration-300 min-w-[200px] inline-flex items-center justify-center"><?= e($cta_btn2) ?></a>
+        <a href="<?= e(lusso_href((string)$cta_btn1_href)) ?>" class="h-14 px-10 bg-primary text-white font-bold text-base rounded-lg hover:bg-primary-light transition-all duration-300 min-w-[200px] inline-flex items-center justify-center shadow-lg shadow-primary/30"><?= e($cta_btn1) ?></a>
+        <a href="<?= e(lusso_href((string)$cta_btn2_href)) ?>" class="h-14 px-10 bg-transparent border border-white/20 text-white font-bold text-base rounded-lg hover:bg-white/10 transition-all duration-300 min-w-[200px] inline-flex items-center justify-center"><?= e($cta_btn2) ?></a>
       </div>
     </div>
   </div>

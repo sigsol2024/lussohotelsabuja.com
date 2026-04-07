@@ -3,13 +3,13 @@ require_once __DIR__ . '/includes/content-loader.php';
 
 $slug = $_GET['slug'] ?? '';
 if (empty($slug)) {
-    header('Location: rooms.php');
+    header('Location: ' . lusso_url('rooms'));
     exit;
 }
 
 $room = getRoomBySlug($slug);
 if (!$room) {
-    header('Location: rooms.php');
+    header('Location: ' . lusso_url('rooms'));
     exit;
 }
 

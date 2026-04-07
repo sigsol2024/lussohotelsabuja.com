@@ -18,7 +18,7 @@ $chef_main_img = getPageSection('dining', 'chef_main_img', 'https://lh3.googleus
 $chef_circle_img = getPageSection('dining', 'chef_circle_img', 'https://lh3.googleusercontent.com/aida-public/AB6AXuA3t3cT8mXAIbE15aEv4Ieh__7hgIGP0dEZAFWL13N31vsGR68Ck6shIv0oQQJcl-hMJo4EbTcsVZsRDphJoRXn1KWQWPDwSihnU_CV1IOlbQ-dBZdZijVnG4DreU3M1rq_-y8TrtOCAwqjY1Sid7n1XXs_13YIpZF-bxV2PX-VKMkHW2NR0T_40YYlegeQ_VtkR51jMf4QvtmHtCrB2zYHQPzrHtsI6aJ2YLMMH7NhXiX2xWbrk9FsbZ0v2zHuvWQ2YcxQhrciOgg');
 
 $visual_title = getPageSection('dining', 'visual_title', 'Visual Narrative');
-$visual_link_href = getPageSection('dining', 'visual_link_href', 'gallery.php');
+$visual_link_href = getPageSection('dining', 'visual_link_href', '/gallery');
 
 $masonry = json_decode(getPageSection('dining', 'masonry_json', ''), true);
 if (!is_array($masonry) || count($masonry) < 5) {
@@ -147,7 +147,7 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
 <section class="py-20 px-6 md:px-10 max-w-[1600px] mx-auto">
   <div class="flex flex-col md:flex-row items-end justify-between mb-12 px-6">
     <h3 class="font-serif text-3xl md:text-4xl text-text-main dark:text-white"><?= e($visual_title) ?></h3>
-    <a class="group flex items-center gap-2 text-sm font-bold tracking-wider uppercase mt-4 md:mt-0 text-text-main" href="<?= e($visual_link_href) ?>">
+    <a class="group flex items-center gap-2 text-sm font-bold tracking-wider uppercase mt-4 md:mt-0 text-text-main" href="<?= e(lusso_href((string)$visual_link_href)) ?>">
       See Full Gallery
       <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
     </a>

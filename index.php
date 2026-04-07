@@ -7,7 +7,7 @@ $hero_kicker = getPageSection('index', 'hero_kicker', 'Welcome to Abuja');
 $hero_title = getPageSection('index', 'hero_title', "Refined Luxury in <br/><span class=\"italic text-primary\">Absolute Silence</span>");
 $hero_subtitle = getPageSection('index', 'hero_subtitle', 'Experience the sanctuary of Lusso. Where every detail creates a symphony of comfort.');
 $hero_cta_text = getPageSection('index', 'hero_cta_text', 'Discover Suites');
-$hero_cta_href = getPageSection('index', 'hero_cta_href', 'rooms.php');
+$hero_cta_href = getPageSection('index', 'hero_cta_href', '/rooms');
 $hero_bg = getPageSection('index', 'hero_bg', "https://lh3.googleusercontent.com/aida-public/AB6AXuA09AOzJGi3HFlO4iws6G405bZGiytnUaZEFTya_spJrXDa5fTKSrBScsDkxZAQCuS6ae2mJpC0laUldei8amf2jOsK9UIg9NX305aHkrG5uIMWhPQ-1e4r8CAydwyR5KzlbYjN4mWRnao2gNBHBrofxEv7u5nEs6wpDuCE4GwvUSepjITkua6sUOfXNKlnd3aW_eBFeHSCedk94uypJTs6palB8AtN0hFG3qGsOckYndru2W3fVdobc9Goi1Jn_x4wNASClu7QbTw");
 
 // Booking / calendar embed (paste HTML from admin homepage editor — bridges hero → next section)
@@ -18,7 +18,7 @@ $hp_kicker = getPageSection('index', 'home_philosophy_kicker', 'Our Philosophy')
 $hp_title_html = getPageSection('index', 'home_philosophy_title_html', "The Lusso <br/> Standard");
 $hp_body = getPageSection('index', 'home_philosophy_body', 'A sanctuary where modern elegance meets timeless hospitality. Every detail is curated for the discerning traveler, offering an escape into a world of refined comfort and understated opulence.');
 $hp_link_text = getPageSection('index', 'home_philosophy_link_text', 'Read Our Story');
-$hp_link_href = getPageSection('index', 'home_philosophy_link_href', 'about.php');
+$hp_link_href = getPageSection('index', 'home_philosophy_link_href', '/about');
 $hp_main_img = getPageSection('index', 'home_philosophy_main_img', 'https://lh3.googleusercontent.com/aida-public/AB6AXuBFg7gJlVa6HBS6q1iLjtlnwOEcX73nQSMu6S215ldLAwhsmFWj_gEsJmkFEUQbWJX6ra4pBbFSdzncdNx6Kq2Nsk92-B0IGEEhvbTVS7o3_R5CitRPP620Oup6zyH3aHM4MJWZ2gjCfGZsiQwqgdvffFn6dIea_rdhlf65xdl7YOvhPXIH6oswTgJFJ5dVVuhhT4tTybzqtymSgn4zKcmCCE6ou2dvro0c12b-62hwQ0ICLkRobWTb4P5RG2A-QYLr_R4vJ1CEfpA');
 $hp_secondary_img = getPageSection('index', 'home_philosophy_secondary_img', 'https://lh3.googleusercontent.com/aida-public/AB6AXuD6pAMGgzxkcnf_QvXCk0vaVBMa1ZfDYY5pu5Z19ue-xQElZrSmfMgt7MMpgdd0x-MaWdaGFfkt0iDkFIojqbJbHleL994JEjdTMV1OlHEmgB1IVLChUht47aNEtqph_k-GYbEpP8MsYb4RMGeEIl7Fz6Tulv-yKdtcm_Vqq5OKetKpLpmgndACjPi-EF3lHZwtiVHX95Hai-ZglRi_TJo-lwjryAZx5S7fIxxrvpg6Y5kcYQ3roV9xVFkIN5VH2NA8u3zsKiRnzTY');
 
@@ -32,16 +32,16 @@ $arch_li2 = getPageSection('index', 'home_arch_list_2', 'Panoramic City Views');
 
 $rooms_kicker = getPageSection('index', 'home_rooms_kicker', 'Accommodations');
 $rooms_title = getPageSection('index', 'home_rooms_title', 'Stay in Style');
-$rooms_view_all = getPageSection('index', 'home_rooms_view_all_href', 'rooms.php');
+$rooms_view_all = getPageSection('index', 'home_rooms_view_all_href', '/rooms');
 
 $dining_img = getPageSection('index', 'home_dining_image', 'https://lh3.googleusercontent.com/aida-public/AB6AXuC8oI0b9xyk-0D9dg2dS7xsD8ImpFKMSmhDX5t2LSDPnlxBYqkD4ieHnvVpSZPhTL538QOvuQzAzRmVLu8SPHkpbqeeXqC8oY6rDvpvhzrGCRL3Z6mtgX5IFnjIel6nvJQDwB46i6mQVOFcE3iLSQZgxjZeUYZ_30zsT68gKbNNbKQLnZxn1IruJ1A9RqUnu7b3UfUoFJ1I4_4ot8harp8ziirHYve6PlytFVANpiUsB6uixZ9LHHZT_RnMDp7YLaH0N1rItTPP9Dg');
 $dining_kicker = getPageSection('index', 'home_dining_kicker', 'Dining');
 $dining_title = getPageSection('index', 'home_dining_title', 'Culinary Excellence');
 $dining_body_html = getPageSection('index', 'home_dining_body_html', 'Savor world-class cuisine at <span class="text-text-main font-semibold">The Azure</span>, our rooftop dining experience offering panoramic views of Abuja. From local delicacies to international gastronomy, every dish is a journey.');
 $dining_cta1 = getPageSection('index', 'home_dining_cta1', 'Reserve a Table');
-$dining_cta1_href = getPageSection('index', 'home_dining_cta1_href', 'dining.php');
+$dining_cta1_href = getPageSection('index', 'home_dining_cta1_href', '/dining');
 $dining_cta2 = getPageSection('index', 'home_dining_cta2', 'View Menu');
-$dining_cta2_href = getPageSection('index', 'home_dining_cta2_href', 'dining.php');
+$dining_cta2_href = getPageSection('index', 'home_dining_cta2_href', '/dining');
 
 $currency = getSiteSetting('currency_symbol', '$');
 $featuredRooms = getFeaturedRoomsForHome(12);
@@ -78,15 +78,10 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       </p>
       <div class="animate-[fadeIn_1s_ease-out_0.6s]">
         <a class="bg-primary text-white hover:bg-primary-light transition-all duration-300 px-8 py-4 rounded-sm text-sm font-bold uppercase tracking-widest min-w-[200px] inline-block shadow-lg shadow-primary/25"
-           href="<?= e($hero_cta_href) ?>">
+           href="<?= e(lusso_href((string)$hero_cta_href)) ?>">
           <?= e($hero_cta_text) ?>
         </a>
       </div>
-    </div>
-
-    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-70 pointer-events-none">
-      <span class="text-white text-xs tracking-widest uppercase">Scroll</span>
-      <span class="material-symbols-outlined text-white">keyboard_arrow_down</span>
     </div>
   </header>
 
@@ -116,7 +111,7 @@ $featuredRooms = getFeaturedRoomsForHome(12);
         <p class="text-text-muted text-lg leading-relaxed mb-8 max-w-md">
           <?= e($hp_body) ?>
         </p>
-        <a class="inline-flex items-center gap-2 text-text-main font-semibold border-b border-primary pb-1 hover:text-primary transition-colors" href="<?= e($hp_link_href) ?>">
+        <a class="inline-flex items-center gap-2 text-text-main font-semibold border-b border-primary pb-1 hover:text-primary transition-colors" href="<?= e(lusso_href((string)$hp_link_href)) ?>">
           <?= e($hp_link_text) ?> <span class="material-symbols-outlined text-sm">arrow_forward</span>
         </a>
       </div>
@@ -214,7 +209,7 @@ $featuredRooms = getFeaturedRoomsForHome(12);
             </div>
             <p class="text-white/80 text-sm mb-6 line-clamp-2"><?= e($rdesc) ?></p>
             <a class="w-full py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded text-white text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-text-main transition-colors block text-center"
-               href="room-details.php?slug=<?= e($rslug) ?>">
+               href="<?= e(lusso_url('room-details', ['slug' => $rslug])) ?>">
               View Details
             </a>
           </div>
@@ -224,7 +219,7 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       <?php endif; ?>
 
       <div class="min-w-[100px] flex items-center justify-center">
-        <a class="flex flex-col items-center gap-2 group text-text-muted hover:text-primary transition-colors" href="<?= e($rooms_view_all) ?>">
+        <a class="flex flex-col items-center gap-2 group text-text-muted hover:text-primary transition-colors" href="<?= e(lusso_href((string)$rooms_view_all)) ?>">
           <span class="w-12 h-12 rounded-full border border-current flex items-center justify-center">
             <span class="material-symbols-outlined">arrow_forward</span>
           </span>
@@ -264,8 +259,8 @@ $featuredRooms = getFeaturedRoomsForHome(12);
           <?= $dining_body_html ?>
         </p>
         <div class="flex gap-4">
-          <a class="bg-primary text-white hover:bg-primary-light px-8 py-3 rounded-md text-sm font-bold tracking-wide transition-colors shadow-md shadow-primary/20" href="<?= e($dining_cta1_href) ?>"><?= e($dining_cta1) ?></a>
-          <a class="bg-transparent border border-text-muted/30 text-text-main hover:border-text-main px-8 py-3 rounded-md text-sm font-bold tracking-wide transition-colors" href="<?= e($dining_cta2_href) ?>"><?= e($dining_cta2) ?></a>
+          <a class="bg-primary text-white hover:bg-primary-light px-8 py-3 rounded-md text-sm font-bold tracking-wide transition-colors shadow-md shadow-primary/20" href="<?= e(lusso_href((string)$dining_cta1_href)) ?>"><?= e($dining_cta1) ?></a>
+          <a class="bg-transparent border border-text-muted/30 text-text-main hover:border-text-main px-8 py-3 rounded-md text-sm font-bold tracking-wide transition-colors" href="<?= e(lusso_href((string)$dining_cta2_href)) ?>"><?= e($dining_cta2) ?></a>
         </div>
       </div>
     </div>

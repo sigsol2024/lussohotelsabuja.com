@@ -61,10 +61,10 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
       <div>
         <h4 class="font-serif text-lg mb-6 text-champagne">Explore</h4>
         <ul class="space-y-3 text-sm text-background-light/80">
-          <li><a class="hover:text-champagne transition-colors" href="about.php">Our Story</a></li>
-          <li><a class="hover:text-champagne transition-colors" href="rooms.php">Suites &amp; Rooms</a></li>
-          <li><a class="hover:text-champagne transition-colors" href="dining.php">Dining</a></li>
-          <li><a class="hover:text-champagne transition-colors" href="amenities.php">Wellness</a></li>
+          <li><a class="hover:text-champagne transition-colors" href="<?= e(lusso_url('about')) ?>">Our Story</a></li>
+          <li><a class="hover:text-champagne transition-colors" href="<?= e(lusso_url('rooms')) ?>">Suites &amp; Rooms</a></li>
+          <li><a class="hover:text-champagne transition-colors" href="<?= e(lusso_url('dining')) ?>">Dining</a></li>
+          <li><a class="hover:text-champagne transition-colors" href="<?= e(lusso_url('amenities')) ?>">Wellness</a></li>
         </ul>
       </div>
 
@@ -102,8 +102,8 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
     <div class="border-t border-background-light/15 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-background-light/50">
       <p><?= e($footerCopyright) ?></p>
       <div class="flex gap-6">
-        <a class="hover:text-champagne transition-colors" href="<?= e($privacyHref) ?>">Privacy Policy</a>
-        <a class="hover:text-champagne transition-colors" href="<?= e($termsHref) ?>">Terms of Service</a>
+        <a class="hover:text-champagne transition-colors" href="<?= e(lusso_href($privacyHref)) ?>">Privacy Policy</a>
+        <a class="hover:text-champagne transition-colors" href="<?= e(lusso_href($termsHref)) ?>">Terms of Service</a>
       </div>
     </div>
   </div>

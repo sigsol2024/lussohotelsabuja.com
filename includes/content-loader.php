@@ -8,6 +8,8 @@ if (!defined('BASE_PATH')) {
     define('BASE_PATH', dirname(__DIR__));
 }
 
+require_once BASE_PATH . '/includes/url.php';
+
 // Include database config if not already included
 if (!isset($pdo)) {
     try {

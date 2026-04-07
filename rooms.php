@@ -129,7 +129,7 @@ $rooms = getRooms(['is_active' => 1]);
           </div>
 
           <a class="inline-flex items-center justify-center px-8 py-3 border border-primary/50 text-primary font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-primary hover:text-white transition-all duration-300 w-fit"
-             href="room-details.php?slug=<?= e($slug) ?>">
+             href="<?= e(lusso_url('room-details', ['slug' => $slug])) ?>">
             View Room Details
           </a>
         </div>

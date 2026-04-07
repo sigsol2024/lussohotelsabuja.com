@@ -68,7 +68,7 @@ $map_pin_label = getPageSection('contact', 'map_pin_label', 'Lusso Abuja');
         </a>
 
         <a class="flex items-center justify-between gap-4 bg-primary text-white rounded-lg px-6 py-5 shadow-lg shadow-primary/25 hover:bg-primary-light transition-all"
-           href="<?= e($directions_href) ?>">
+           href="<?= e(lusso_href((string)$directions_href)) ?>">
           <div class="flex items-center gap-4 min-w-0">
             <span class="material-symbols-outlined">location_on</span>
             <div class="min-w-0">
@@ -103,7 +103,7 @@ $map_pin_label = getPageSection('contact', 'map_pin_label', 'Lusso Abuja');
               </div>
               <div class="pt-2">
                 <a class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary hover:text-primary-light transition-colors"
-                   href="<?= e($directions_href) ?>">
+                   href="<?= e(lusso_href((string)$directions_href)) ?>">
                   <span>Get Directions</span>
                   <span class="material-symbols-outlined text-lg">arrow_forward</span>
                 </a>

@@ -26,19 +26,19 @@ $navDiningLabel = getSiteSetting('nav_dining_label', 'Dining');
 $navExperienceLabel = getSiteSetting('nav_experience_label', 'Experience');
 $navEventsLabel = getSiteSetting('nav_events_label', 'Events');
 
-$navSuitesHref = getSiteSetting('nav_suites_href', 'rooms.php');
-$navDiningHref = getSiteSetting('nav_dining_href', 'dining.php');
-$navExperienceHref = getSiteSetting('nav_experience_href', '#');
-$navEventsHref = getSiteSetting('nav_events_href', '#');
+$navSuitesHref = lusso_href(getSiteSetting('nav_suites_href', '/rooms'));
+$navDiningHref = lusso_href(getSiteSetting('nav_dining_href', '/dining'));
+$navExperienceHref = lusso_href(getSiteSetting('nav_experience_href', '/amenities'));
+$navEventsHref = lusso_href(getSiteSetting('nav_events_href', '/gallery'));
 
 $ctaLabel = getSiteSetting('nav_cta_label', 'Book Your Stay');
-$ctaHref = getSiteSetting('nav_cta_href', 'contact.php');
+$ctaHref = lusso_href(getSiteSetting('nav_cta_href', '/contact'));
 ?>
 
 <!-- Sticky Navigation -->
 <nav class="sticky top-0 z-50 w-full transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-black/[0.06]">
   <div class="max-w-[1440px] mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
-    <a class="flex items-center gap-2" href="index.php" aria-label="<?= e($siteName) ?>">
+    <a class="flex items-center gap-2" href="<?= e(lusso_url('index')) ?>" aria-label="<?= e($siteName) ?>">
       <span class="material-symbols-outlined text-primary text-3xl">diamond</span>
       <span class="font-serif text-2xl font-bold tracking-tight text-text-main"><?= e($siteName) ?></span>
     </a>

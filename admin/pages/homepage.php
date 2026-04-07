@@ -56,7 +56,7 @@ function hsec($sectionsArray, $key, $default = '') {
         </div>
         <div class="form-group">
           <label for="hero_cta_href">CTA Link</label>
-          <input id="hero_cta_href" name="hero_cta_href" type="text" value="<?= hsec($sectionsArray, 'hero_cta_href', 'rooms.php') ?>">
+          <input id="hero_cta_href" name="hero_cta_href" type="text" value="<?= hsec($sectionsArray, 'hero_cta_href', '/rooms') ?>">
         </div>
       </div>
     </div>
@@ -96,7 +96,7 @@ function hsec($sectionsArray, $key, $default = '') {
         </div>
         <div class="form-group">
           <label for="home_philosophy_link_href">Link URL</label>
-          <input id="home_philosophy_link_href" name="home_philosophy_link_href" type="text" value="<?= hsec($sectionsArray, 'home_philosophy_link_href', 'about.php') ?>">
+          <input id="home_philosophy_link_href" name="home_philosophy_link_href" type="text" value="<?= hsec($sectionsArray, 'home_philosophy_link_href', '/about') ?>">
         </div>
       </div>
       <div class="form-row">
@@ -182,7 +182,7 @@ function hsec($sectionsArray, $key, $default = '') {
       </div>
       <div class="form-group">
         <label for="home_rooms_view_all_href">View all link</label>
-        <input id="home_rooms_view_all_href" name="home_rooms_view_all_href" type="text" value="<?= hsec($sectionsArray, 'home_rooms_view_all_href', 'rooms.php') ?>">
+        <input id="home_rooms_view_all_href" name="home_rooms_view_all_href" type="text" value="<?= hsec($sectionsArray, 'home_rooms_view_all_href', '/rooms') ?>">
       </div>
     </div>
   </div>
@@ -221,7 +221,7 @@ function hsec($sectionsArray, $key, $default = '') {
         </div>
         <div class="form-group">
           <label for="home_dining_cta1_href">Button 1 URL</label>
-          <input id="home_dining_cta1_href" name="home_dining_cta1_href" type="text" value="<?= hsec($sectionsArray, 'home_dining_cta1_href', 'dining.php') ?>">
+          <input id="home_dining_cta1_href" name="home_dining_cta1_href" type="text" value="<?= hsec($sectionsArray, 'home_dining_cta1_href', '/dining') ?>">
         </div>
       </div>
       <div class="form-row">
@@ -231,7 +231,7 @@ function hsec($sectionsArray, $key, $default = '') {
         </div>
         <div class="form-group">
           <label for="home_dining_cta2_href">Button 2 URL</label>
-          <input id="home_dining_cta2_href" name="home_dining_cta2_href" type="text" value="<?= hsec($sectionsArray, 'home_dining_cta2_href', 'dining.php') ?>">
+          <input id="home_dining_cta2_href" name="home_dining_cta2_href" type="text" value="<?= hsec($sectionsArray, 'home_dining_cta2_href', '/dining') ?>">
         </div>
       </div>
     </div>

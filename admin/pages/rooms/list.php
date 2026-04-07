@@ -1,6 +1,7 @@
 <?php
 $pageTitle = 'Rooms';
 require_once __DIR__ . '/../../includes/config.php';
+require_once BASE_PATH . '/includes/url.php';
 require_once __DIR__ . '/../../includes/auth.php';
 requireLogin();
 require_once __DIR__ . '/../../includes/header.php';
@@ -43,7 +44,7 @@ try {
             <td><?= (int)$r['is_featured'] ? 'Yes' : 'No' ?></td>
             <td>
               <a class="btn btn-sm btn-outline" href="<?= ADMIN_URL ?>pages/rooms/edit.php?id=<?= (int)$r['id'] ?>">Edit</a>
-              <a class="btn btn-sm btn-outline" target="_blank" href="<?= SITE_URL ?>room-details.php?slug=<?= sanitize($r['slug']) ?>">View</a>
+              <a class="btn btn-sm btn-outline" target="_blank" href="<?= htmlspecialchars(lusso_site_href(lusso_url('room-details', ['slug' => (string)$r['slug']])), ENT_QUOTES, 'UTF-8') ?>">View</a>
               <button type="button" class="btn btn-sm btn-outline danger-delete-room" data-id="<?= (int)$r['id'] ?>" data-title="<?= htmlspecialchars($r['title'], ENT_QUOTES, 'UTF-8') ?>">Delete</button>
             </td>
           </tr>

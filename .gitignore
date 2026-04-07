@@ -5,9 +5,6 @@
 # Logs
 /admin/logs/
 
-# User uploads (optional: if you prefer committing placeholder only)
-/assets/uploads/
-
 # OS / editor
 .DS_Store
 Thumbs.db

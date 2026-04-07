@@ -21,8 +21,8 @@ $siteSettings = [
     'whatsapp_link' => '',
     'nav_suites_label' => 'Suites',
     'nav_dining_label' => 'Dining',
-    'nav_experience_label' => 'Experience',
-    'nav_events_label' => 'Events',
+    'nav_experience_label' => 'Amenities',
+    'nav_events_label' => 'Gallery',
     'nav_suites_href' => '/rooms',
     'nav_dining_href' => '/dining',
     'nav_experience_href' => '/amenities',
@@ -44,6 +44,7 @@ $siteSettings = [
     'body_scripts' => '',
     'footer_scripts' => '',
     'site_logo' => '',
+    'site_logo_light' => '',
     'site_favicon' => '',
 ];
 

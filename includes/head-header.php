@@ -15,6 +15,23 @@ $lussoHeadLoaded = true;
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<?php
+if (function_exists('getSiteSetting') && function_exists('lusso_media_src') && function_exists('lusso_site_root')) {
+    $fav = trim((string)getSiteSetting('site_favicon', ''));
+    if ($fav === '') {
+        $favPath = lusso_site_root() . '/assets/images/logo/favicon.png';
+        if (is_file($favPath)) {
+            $fav = 'assets/images/logo/favicon.png';
+        }
+    }
+    if ($fav !== '') {
+        $favUrl = lusso_media_src($fav);
+        echo '<link rel="icon" href="' . htmlspecialchars($favUrl, ENT_QUOTES, 'UTF-8') . '" sizes="32x32">' . "\n";
+        echo '<link rel="icon" href="' . htmlspecialchars($favUrl, ENT_QUOTES, 'UTF-8') . '" sizes="64x64" type="image/png">' . "\n";
+        echo '<link rel="apple-touch-icon" href="' . htmlspecialchars($favUrl, ENT_QUOTES, 'UTF-8') . '">' . "\n";
+    }
+}
+?>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
   tailwind.config = {
@@ -61,6 +78,11 @@ $lussoHeadLoaded = true;
 </script>
 <style>
   html { scroll-behavior: smooth; }
+  /* Brand: do not distort logos or add effects (guidelines) */
+  .lusso-brand-logo img {
+    box-shadow: none !important;
+    filter: none !important;
+  }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .text-cinematic { text-shadow: 0 2px 10px rgba(0,0,0,0.3); }

@@ -56,25 +56,44 @@ $csrfToken = generateCSRFToken();
             </div>
             
             <div class="form-group">
-                <label>Site Logo</label>
+                <label>Logo — dark variant (header, light backgrounds)</label>
+                <p class="form-help">Coffee brown / dark artwork for use on off-white (#efe8d6) header. Recommended file: <code>assets/images/logo/logo-dark.png</code> (optional fallback if file exists and this field is empty).</p>
                 <div style="margin-bottom: 10px;">
                     <button type="button" class="btn btn-outline" onclick="openMediaModal('site_logo', 'logo_preview')">
-                        <i class="fas fa-image"></i> Select Logo
+                        <i class="fas fa-image"></i> Select dark logo
                     </button>
                 </div>
                 <input type="hidden" id="site_logo" name="site_logo" value="<?= sanitize($settings['site_logo'] ?? '') ?>">
                 <div id="logo_preview" class="image-preview" style="margin-top: 10px; <?= !empty($settings['site_logo']) ? 'display: block;' : 'display: none;' ?>">
                     <?php if (!empty($settings['site_logo'])): ?>
-                        <img id="logo_img" src="<?= SITE_URL . ltrim($settings['site_logo'], '/') ?>" style="max-width: 200px; max-height: 200px;">
+                        <img id="logo_img" src="<?= SITE_URL . ltrim($settings['site_logo'], '/') ?>" alt="" style="max-width: 200px; max-height: 200px; object-fit: contain;">
                     <?php else: ?>
-                        <img id="logo_img" src="" style="max-width: 200px; max-height: 200px;">
+                        <img id="logo_img" src="" alt="" style="max-width: 200px; max-height: 200px; object-fit: contain;">
                     <?php endif; ?>
                 </div>
-                <p class="form-help">Select an image from the media library or upload a new one</p>
+            </div>
+
+            <div class="form-group">
+                <label>Logo — light variant (footer, dark / primary background)</label>
+                <p class="form-help">White or off-white (#efe8d6) artwork for brown (#411d13) footer. Do not use the dark header logo here. Optional file fallback: <code>assets/images/logo/logo-light.png</code>.</p>
+                <div style="margin-bottom: 10px;">
+                    <button type="button" class="btn btn-outline" onclick="openMediaModal('site_logo_light', 'logo_light_preview')">
+                        <i class="fas fa-image"></i> Select light logo
+                    </button>
+                </div>
+                <input type="hidden" id="site_logo_light" name="site_logo_light" value="<?= sanitize($settings['site_logo_light'] ?? '') ?>">
+                <div id="logo_light_preview" class="image-preview" style="margin-top: 10px; <?= !empty($settings['site_logo_light']) ? 'display: block;' : 'display: none;' ?>">
+                    <?php if (!empty($settings['site_logo_light'])): ?>
+                        <img id="logo_light_img" src="<?= SITE_URL . ltrim($settings['site_logo_light'], '/') ?>" alt="" style="max-width: 200px; max-height: 200px; object-fit: contain; background: #411d13; padding: 8px;">
+                    <?php else: ?>
+                        <img id="logo_light_img" src="" alt="" style="max-width: 200px; max-height: 200px; object-fit: contain; background: #411d13; padding: 8px;">
+                    <?php endif; ?>
+                </div>
             </div>
             
             <div class="form-group">
                 <label>Favicon</label>
+                <p class="form-help">Simplified mark, ideally 32×32 or 64×64 PNG. If empty, <code>assets/images/logo/favicon.png</code> is used when present.</p>
                 <div style="margin-bottom: 10px;">
                     <button type="button" class="btn btn-outline" onclick="openMediaModal('site_favicon', 'favicon_preview')">
                         <i class="fas fa-image"></i> Select Favicon

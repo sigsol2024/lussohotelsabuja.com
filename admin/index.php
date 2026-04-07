@@ -47,6 +47,7 @@ $csrfToken = generateCSRFToken();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login - Lusso CMS</title>
   <link rel="stylesheet" href="<?= ADMIN_URL ?>assets/css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body class="login-page">
   <div class="login-container">
@@ -77,6 +78,9 @@ $csrfToken = generateCSRFToken();
           <label for="password">Password</label>
           <div class="input-wrapper">
             <input type="password" id="password" name="password" required autocomplete="current-password">
+            <button type="button" class="password-toggle" data-password-toggle="password" aria-label="Show password" aria-pressed="false">
+              <i class="fas fa-eye" aria-hidden="true"></i>
+            </button>
           </div>
         </div>
 
@@ -84,6 +88,25 @@ $csrfToken = generateCSRFToken();
       </form>
     </div>
   </div>
+  <script>
+  (function () {
+    document.querySelectorAll('[data-password-toggle]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-password-toggle');
+        var input = id ? document.getElementById(id) : null;
+        if (!input) return;
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+        var icon = btn.querySelector('i');
+        if (icon) {
+          icon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+        }
+      });
+    });
+  })();
+  </script>
 </body>
 </html>
 

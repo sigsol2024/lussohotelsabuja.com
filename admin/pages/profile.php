@@ -101,14 +101,8 @@ $csrfToken = generateCSRFToken();
                             required
                             placeholder="Enter your current password"
                             autocomplete="current-password">
-                        <button type="button" class="password-toggle" onclick="togglePassword('current_password')" aria-label="Toggle password visibility">
-                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M10 4C6 4 2.73 6.11 1 9.5C2.73 12.89 6 15 10 15C14 15 17.27 12.89 19 9.5C17.27 6.11 14 4 10 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <circle cx="10" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <svg class="eye-off-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                                <path d="M2 2L18 18M8.88 8.88C8.3 9.46 8 10.22 8 11C8 12.66 9.34 14 11 14C11.78 14 12.54 13.7 13.12 13.12M14.71 11.29C15.1 10.9 15.33 10.4 15.33 9.83C15.33 8.17 13.99 6.83 12.33 6.83C11.76 6.83 11.26 7.06 10.87 7.45M6.61 6.61C4.06 7.82 2 9.5 1 11.5C2.73 14.89 6 17 10 17C11.5 17 12.9 16.7 14.17 16.17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                        <button type="button" class="password-toggle" data-password-toggle="current_password" aria-label="Show password" aria-pressed="false">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
@@ -124,14 +118,8 @@ $csrfToken = generateCSRFToken();
                             minlength="8"
                             placeholder="Enter your new password"
                             autocomplete="new-password">
-                        <button type="button" class="password-toggle" onclick="togglePassword('new_password')" aria-label="Toggle password visibility">
-                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M10 4C6 4 2.73 6.11 1 9.5C2.73 12.89 6 15 10 15C14 15 17.27 12.89 19 9.5C17.27 6.11 14 4 10 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <circle cx="10" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <svg class="eye-off-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                                <path d="M2 2L18 18M8.88 8.88C8.3 9.46 8 10.22 8 11C8 12.66 9.34 14 11 14C11.78 14 12.54 13.7 13.12 13.12M14.71 11.29C15.1 10.9 15.33 10.4 15.33 9.83C15.33 8.17 13.99 6.83 12.33 6.83C11.76 6.83 11.26 7.06 10.87 7.45M6.61 6.61C4.06 7.82 2 9.5 1 11.5C2.73 14.89 6 17 10 17C11.5 17 12.9 16.7 14.17 16.17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                        <button type="button" class="password-toggle" data-password-toggle="new_password" aria-label="Show password" aria-pressed="false">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
                         </button>
                     </div>
                     <p class="form-help">Password must be at least 8 characters long</p>
@@ -148,14 +136,8 @@ $csrfToken = generateCSRFToken();
                             minlength="8"
                             placeholder="Confirm your new password"
                             autocomplete="new-password">
-                        <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')" aria-label="Toggle password visibility">
-                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M10 4C6 4 2.73 6.11 1 9.5C2.73 12.89 6 15 10 15C14 15 17.27 12.89 19 9.5C17.27 6.11 14 4 10 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <circle cx="10" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <svg class="eye-off-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                                <path d="M2 2L18 18M8.88 8.88C8.3 9.46 8 10.22 8 11C8 12.66 9.34 14 11 14C11.78 14 12.54 13.7 13.12 13.12M14.71 11.29C15.1 10.9 15.33 10.4 15.33 9.83C15.33 8.17 13.99 6.83 12.33 6.83C11.76 6.83 11.26 7.06 10.87 7.45M6.61 6.61C4.06 7.82 2 9.5 1 11.5C2.73 14.89 6 17 10 17C11.5 17 12.9 16.7 14.17 16.17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                        <button type="button" class="password-toggle" data-password-toggle="confirm_password" aria-label="Show password" aria-pressed="false">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
@@ -169,6 +151,25 @@ $csrfToken = generateCSRFToken();
 </div>
 
 <script>
+function initPasswordToggles(context) {
+  (context || document).querySelectorAll('[data-password-toggle]').forEach(function (btn) {
+    if (btn.dataset.lussoPwBound) return;
+    btn.dataset.lussoPwBound = '1';
+    btn.addEventListener('click', function () {
+      var id = btn.getAttribute('data-password-toggle');
+      var input = id ? document.getElementById(id) : null;
+      if (!input) return;
+      var show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+      var icon = btn.querySelector('i');
+      if (icon) icon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+    });
+  });
+}
+initPasswordToggles(document);
+
 // Handle email update form
 document.getElementById('emailForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -281,10 +282,19 @@ document.getElementById('passwordForm').addEventListener('submit', function(e) {
     .then(data => {
         if (data.success) {
             showToast(data.message || 'Password changed successfully', 'success');
-            // Clear password fields
-            document.getElementById('current_password').value = '';
-            document.getElementById('new_password').value = '';
-            document.getElementById('confirm_password').value = '';
+            ['current_password', 'new_password', 'confirm_password'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = '';
+                    el.type = 'password';
+                }
+            });
+            document.querySelectorAll('#passwordForm [data-password-toggle]').forEach(function (btn) {
+                var icon = btn.querySelector('i');
+                if (icon) icon.className = 'fas fa-eye';
+                btn.setAttribute('aria-pressed', 'false');
+                btn.setAttribute('aria-label', 'Show password');
+            });
         } else {
             showToast(data.message || 'Failed to change password', 'error');
         }
@@ -298,24 +308,6 @@ document.getElementById('passwordForm').addEventListener('submit', function(e) {
         submitBtn.innerHTML = originalText;
     });
 });
-
-// Password visibility toggle function
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const toggleBtn = input.nextElementSibling;
-    const eyeIcon = toggleBtn.querySelector('.eye-icon');
-    const eyeOffIcon = toggleBtn.querySelector('.eye-off-icon');
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        eyeIcon.style.display = 'none';
-        eyeOffIcon.style.display = 'block';
-    } else {
-        input.type = 'password';
-        eyeIcon.style.display = 'block';
-        eyeOffIcon.style.display = 'none';
-    }
-}
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

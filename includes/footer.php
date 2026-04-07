@@ -12,6 +12,10 @@ if (!function_exists('e')) {
 }
 
 $siteName = getSiteSetting('site_name', 'LUSSO');
+/** Light / reversed logo for dark primary footer: CMS or assets/images/logo/logo-light.png — do not reuse dark header logo here */
+$siteLogoLightPath = lusso_brand_logo_path((string)getSiteSetting('site_logo_light', ''), 'assets/images/logo/logo-light.png');
+$siteLogoLightUrl = $siteLogoLightPath !== '' ? lusso_media_src($siteLogoLightPath) : '';
+$useFooterLogo = $siteLogoLightUrl !== '';
 $footerTagline = getSiteSetting('footer_tagline', 'Refining the art of hospitality in the heart of Abuja.');
 $footerAddress = getSiteSetting('footer_address', "15 Luxury Avenue,\nMaitama, Abuja");
 $footerPhone = getSiteSetting('footer_phone', '+234 800 LUSSO 00');
@@ -34,9 +38,13 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
     <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
       <!-- Brand -->
       <div class="col-span-1 md:col-span-1">
-        <div class="flex items-center gap-2 mb-6">
+        <div class="lusso-brand-logo lusso-brand-logo--footer flex items-center mb-8 md:mb-10 min-h-[2.5rem] py-2 pe-4 md:py-3 md:pe-6">
+          <?php if ($useFooterLogo): ?>
+          <img src="<?= e($siteLogoLightUrl) ?>" alt="<?= e($siteName) ?>" class="h-[40px] w-auto md:h-[48px] lg:h-[60px] max-w-[min(100%,14rem)] object-contain object-left" decoding="async"/>
+          <?php else: ?>
           <span class="material-symbols-outlined text-champagne text-2xl">diamond</span>
           <span class="font-serif text-xl font-bold tracking-tight text-background-light"><?= e($siteName) ?></span>
+          <?php endif; ?>
         </div>
         <p class="text-background-light/70 text-sm leading-relaxed mb-6">
           <?= e($footerTagline) ?>
@@ -57,14 +65,27 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
         <?php endif; ?>
       </div>
 
-      <!-- Links -->
+      <!-- Links: only routes that have a real page at site root -->
       <div>
         <h4 class="font-serif text-lg mb-6 text-champagne">Explore</h4>
         <ul class="space-y-3 text-sm text-background-light/80">
-          <li><a class="hover:text-champagne transition-colors" href="<?= e(lusso_url('about')) ?>">Our Story</a></li>
-          <li><a class="hover:text-champagne transition-colors" href="<?= e(lusso_url('rooms')) ?>">Suites &amp; Rooms</a></li>
-          <li><a class="hover:text-champagne transition-colors" href="<?= e(lusso_url('dining')) ?>">Dining</a></li>
-          <li><a class="hover:text-champagne transition-colors" href="<?= e(lusso_url('amenities')) ?>">Wellness</a></li>
+          <?php
+          $footerExplore = [
+              ['about', 'Our Story'],
+              ['rooms', 'Suites & Rooms'],
+              ['dining', 'Dining'],
+              ['amenities', 'Amenities'],
+              ['gallery', 'Gallery'],
+              ['contact', 'Contact'],
+          ];
+          foreach ($footerExplore as $fe):
+              [$slug, $lbl] = $fe;
+              if (!lusso_public_page_exists($slug)) {
+                  continue;
+              }
+              ?>
+          <li><a class="hover:text-champagne transition-colors" href="<?= e(lusso_url($slug)) ?>"><?= e($lbl) ?></a></li>
+          <?php endforeach; ?>
         </ul>
       </div>
 
@@ -102,8 +123,12 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
     <div class="border-t border-background-light/15 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-background-light/50">
       <p><?= e($footerCopyright) ?></p>
       <div class="flex gap-6">
+        <?php if (lusso_is_valid_site_nav_href((string)$privacyHref)): ?>
         <a class="hover:text-champagne transition-colors" href="<?= e(lusso_href($privacyHref)) ?>">Privacy Policy</a>
+        <?php endif; ?>
+        <?php if (lusso_is_valid_site_nav_href((string)$termsHref)): ?>
         <a class="hover:text-champagne transition-colors" href="<?= e(lusso_href($termsHref)) ?>">Terms of Service</a>
+        <?php endif; ?>
       </div>
     </div>
   </div>

@@ -152,7 +152,7 @@ function renderMediaGrid(mediaItems) {
     html += `
       <div class="media-grid-item" data-media-id="${media.id}"
            style="border:${borderWidth} solid ${borderColor}; border-radius:4px; overflow:hidden; cursor:pointer; background:white; position:relative;"
-           onclick="selectMediaItem(${media.id}, '${escapeHtml(media.file_path).replace(/'/g, \"\\\\'\")}', '${escapeHtml(media.url).replace(/'/g, \"\\\\'\")}')">
+           onclick='selectMediaItem(${media.id}, ${JSON.stringify(media.file_path || '')}, ${JSON.stringify(media.url || '')})'>
         <div style="position: relative; padding-top: 100%; background: #f0f0f0;">
           <img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.original_name || '')}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;">
           ${isSelected ? '<div class="media-selection-checkmark" style="position:absolute;top:5px;right:5px;background:#0073aa;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;">✓</div>' : ''}

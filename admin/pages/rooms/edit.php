@@ -3,7 +3,15 @@ require_once __DIR__ . '/../../includes/config.php';
 require_once __DIR__ . '/../../includes/auth.php';
 requireLogin();
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if (defined('LUSSO_ROOM_FORM_ADD') && LUSSO_ROOM_FORM_ADD) {
+  $id = 0;
+} else {
+  $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+  if ($id < 1) {
+    header('Location: ' . ADMIN_URL . 'pages/rooms/add.php');
+    exit;
+  }
+}
 $pageTitle = $id ? 'Edit room' : 'Add room';
 require_once __DIR__ . '/../../includes/header.php';
 $room = [

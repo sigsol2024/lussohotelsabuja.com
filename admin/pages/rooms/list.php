@@ -16,7 +16,7 @@ try {
 <div class="card">
   <div class="card-header card-header--split">
     <h2>Rooms</h2>
-    <a class="btn btn-primary" href="<?= ADMIN_URL ?>pages/rooms/edit.php"><i class="fas fa-plus"></i> Add room</a>
+    <a class="btn btn-primary" href="<?= ADMIN_URL ?>pages/rooms/add.php"><i class="fas fa-plus"></i> Add room</a>
   </div>
 
   <div class="table-wrapper">

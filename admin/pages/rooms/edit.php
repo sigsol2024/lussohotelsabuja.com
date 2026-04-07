@@ -1,11 +1,11 @@
 <?php
-$pageTitle = 'Edit Room';
 require_once __DIR__ . '/../../includes/config.php';
 require_once __DIR__ . '/../../includes/auth.php';
 requireLogin();
-require_once __DIR__ . '/../../includes/header.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$pageTitle = $id ? 'Edit room' : 'Add room';
+require_once __DIR__ . '/../../includes/header.php';
 $room = [
   'title' => '',
   'slug' => '',
@@ -56,8 +56,14 @@ $gtkTourUrl = (string)($gtk['tour_url'] ?? '');
 
 <form id="roomForm">
   <div class="card">
-    <div class="card-header"><h2>Room Details</h2></div>
-    <div style="padding:20px;">
+    <div class="card-header card-header--split">
+      <div>
+        <h2><?= $id ? 'Room details' : 'New room' ?></h2>
+        <p class="text-muted" style="margin: 6px 0 0; font-size: 14px; font-weight: 400;"><?= $id ? 'Update content, media, and guest information below.' : 'Fill in the basics, then save to create the listing.' ?></p>
+      </div>
+      <a href="<?= ADMIN_URL ?>pages/rooms/list.php" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to rooms</a>
+    </div>
+    <div class="card-body card-body--stack">
       <div class="form-row">
         <div class="form-group">
           <label for="title">Title</label>
@@ -127,9 +133,9 @@ $gtkTourUrl = (string)($gtk['tour_url'] ?? '');
         <textarea id="included_items" name="included_items" rows="5"><?php foreach (($room['included_items'] ?? []) as $line) { echo sanitize(is_string($line) ? $line : '') . "\n"; } ?></textarea>
       </div>
 
-      <div class="card" style="margin-bottom:16px;">
-        <div class="card-header"><h3 style="margin:0;font-size:16px;">Guest info &amp; links</h3></div>
-        <div style="padding:16px;">
+      <div class="card card--nested">
+        <div class="card-header"><h3>Guest info &amp; links</h3></div>
+        <div class="card-body card-body--stack">
           <div class="form-row">
             <div class="form-group">
               <label for="gtk_check_in">Check-in hint (booking bar)</label>
@@ -206,8 +212,10 @@ $gtkTourUrl = (string)($gtk['tour_url'] ?? '');
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary">Save Room</button>
-      <a href="<?= ADMIN_URL ?>pages/rooms/list.php" class="btn btn-outline">Back</a>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> <?= $id ? 'Save changes' : 'Create room' ?></button>
+        <a href="<?= ADMIN_URL ?>pages/rooms/list.php" class="btn btn-outline">Cancel</a>
+      </div>
     </div>
   </div>
 </form>

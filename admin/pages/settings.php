@@ -24,7 +24,12 @@ try {
 $csrfToken = generateCSRFToken();
 ?>
 
-<form id="settingsForm" style="max-width: 800px;">
+<div class="page-intro">
+    <h1>Site settings</h1>
+    <p class="text-muted">Branding, footer, navigation, email, and integrations. Save to apply changes across the public site.</p>
+</div>
+
+<form id="settingsForm" class="settings-form">
     <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
     
     <!-- General Settings -->
@@ -32,7 +37,7 @@ $csrfToken = generateCSRFToken();
         <div class="card-header">
             <h2>General Settings</h2>
         </div>
-        <div style="padding: 20px;">
+        <div class="card-body card-body--stack">
             <div class="form-group">
                 <label for="site_name">Site Name</label>
                 <input type="text" id="site_name" name="site_name" value="<?= sanitize($settings['site_name'] ?? '') ?>">
@@ -117,7 +122,7 @@ $csrfToken = generateCSRFToken();
         <div class="card-header">
             <h2>Footer Settings</h2>
         </div>
-        <div style="padding: 20px;">
+        <div class="card-body card-body--stack">
             <div class="form-group">
                 <label for="footer_copyright">Copyright Text</label>
                 <input type="text" id="footer_copyright" name="footer_copyright" value="<?= sanitize($settings['footer_copyright'] ?? '') ?>">
@@ -161,10 +166,10 @@ $csrfToken = generateCSRFToken();
         <div class="card-header">
             <h2>SMTP Email Settings</h2>
         </div>
-        <div style="padding: 20px;">
-            <p class="form-help" style="margin-bottom: 15px; color: #d97706; font-weight: 500;">
-                <strong>Note:</strong> Configure SMTP settings to enable contact form email sending. Without SMTP configuration, contact form submissions will not be sent.
-            </p>
+        <div class="card-body card-body--stack">
+            <div class="alert-smtp-note">
+                <strong>Note:</strong> Configure SMTP to send contact form messages. Without SMTP, submissions are not emailed.
+            </div>
             
             <div class="form-group">
                 <label for="smtp_host">SMTP Host</label>
@@ -219,11 +224,11 @@ $csrfToken = generateCSRFToken();
         <div class="card-header">
             <h2>Social Media Links</h2>
         </div>
-        <div style="padding: 20px;">
+        <div class="card-body card-body--stack">
             <div id="socialMediaList">
                 <!-- Social media items will be rendered here -->
             </div>
-            <button type="button" class="btn btn-outline" onclick="addSocialMedia()" style="margin-top: 15px;">
+            <button type="button" class="btn btn-outline" onclick="addSocialMedia()" style="margin-top: 12px;">
                 <i class="fas fa-plus"></i> Add Social Media
             </button>
             <input type="hidden" id="social_media_json" name="social_media_json" value="<?= htmlspecialchars($settings['social_media_json'] ?? '[]', ENT_QUOTES, 'UTF-8') ?>">
@@ -235,7 +240,7 @@ $csrfToken = generateCSRFToken();
         <div class="card-header">
             <h2>Google Maps</h2>
         </div>
-        <div style="padding: 20px;">
+        <div class="card-body card-body--stack">
             <div class="form-group">
                 <label for="google_maps_api_key">Google Maps API Key</label>
                 <input type="text" id="google_maps_api_key" name="google_maps_api_key" value="<?= sanitize($settings['google_maps_api_key'] ?? '') ?>" placeholder="AIzaSy...">
@@ -249,29 +254,30 @@ $csrfToken = generateCSRFToken();
         <div class="card-header">
             <h2>Custom Scripts</h2>
         </div>
-        <div style="padding: 20px;">
+        <div class="card-body card-body--stack">
             <div class="form-group">
                 <label for="header_scripts">Header Scripts</label>
-                <textarea id="header_scripts" name="header_scripts" rows="6" style="font-family: monospace; font-size: 12px;"><?= htmlspecialchars($settings['header_scripts'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                <textarea id="header_scripts" name="header_scripts" rows="6" class="mono"><?= htmlspecialchars($settings['header_scripts'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
                 <p class="form-help">Scripts will be added in the &lt;head&gt; section (e.g., Google Analytics, Meta Pixel, etc.)</p>
             </div>
             
             <div class="form-group">
                 <label for="body_scripts">Body Scripts</label>
-                <textarea id="body_scripts" name="body_scripts" rows="6" style="font-family: monospace; font-size: 12px;"><?= htmlspecialchars($settings['body_scripts'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                <textarea id="body_scripts" name="body_scripts" rows="6" class="mono"><?= htmlspecialchars($settings['body_scripts'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
                 <p class="form-help">Scripts will be added right after the opening &lt;body&gt; tag (e.g., chat widgets, tracking scripts)</p>
             </div>
             
             <div class="form-group">
                 <label for="footer_scripts">Footer Scripts</label>
-                <textarea id="footer_scripts" name="footer_scripts" rows="6" style="font-family: monospace; font-size: 12px;"><?= htmlspecialchars($settings['footer_scripts'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                <textarea id="footer_scripts" name="footer_scripts" rows="6" class="mono"><?= htmlspecialchars($settings['footer_scripts'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
                 <p class="form-help">Scripts will be added right before the closing &lt;/body&gt; tag (e.g., analytics, custom JavaScript)</p>
             </div>
         </div>
     </div>
     
-    <div style="margin-top: 20px;">
-        <button type="submit" class="btn btn-primary">Save Settings</button>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save settings</button>
+        <span class="text-muted">All sections above are saved together.</span>
     </div>
 </form>
 
@@ -303,32 +309,27 @@ function renderSocialMedia() {
     } else {
         socialMediaList.forEach((item, index) => {
             const div = document.createElement('div');
-            div.className = 'form-group';
-            div.style.border = '1px solid #ddd';
-            div.style.padding = '15px';
-            div.style.marginBottom = '15px';
-            div.style.borderRadius = '4px';
-            div.style.backgroundColor = '#f9f9f9';
+            div.className = 'social-item';
             div.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <strong>Social Media #${index + 1}</strong>
-                    <button type="button" class="btn btn-outline" onclick="removeSocialMedia(${index})" style="padding: 5px 10px; font-size: 12px;">
+                <div class="social-item__head">
+                    <strong>Social link #${index + 1}</strong>
+                    <button type="button" class="btn btn-sm btn-outline" onclick="removeSocialMedia(${index})">
                         <i class="fas fa-trash"></i> Remove
                     </button>
                 </div>
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label>Icon Name (Material Symbols)</label>
-                    <input type="text" class="form-control" value="${(item.icon || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" 
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>Icon name (Material Symbols)</label>
+                    <input type="text" value="${(item.icon || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" 
                            onchange="updateSocialMedia(${index}, 'icon', this.value)" 
-                           placeholder="e.g., public, photo_camera, alternate_email">
-                    <p class="form-help">Enter Material Symbols icon name (e.g., public, photo_camera, alternate_email, facebook, instagram, twitter)</p>
+                           placeholder="e.g. public, photo_camera">
+                    <p class="form-help">Material Symbols icon name for the footer</p>
                 </div>
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label>Link URL</label>
-                    <input type="url" class="form-control" value="${(item.url || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" 
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>URL</label>
+                    <input type="url" value="${(item.url || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" 
                            onchange="updateSocialMedia(${index}, 'url', this.value)" 
                            placeholder="https://...">
-                    <p class="form-help">Full URL to the social media profile/page</p>
+                    <p class="form-help">Full profile or page URL</p>
                 </div>
             `;
             container.appendChild(div);

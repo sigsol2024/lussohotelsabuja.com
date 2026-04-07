@@ -328,6 +328,133 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxyge
   vertical-align: middle;
 }
 
+/* Media library modal — overlay must center + child needs explicit width (flex item otherwise shrinks to content) */
+#mediaLibraryModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.82);
+  align-items: center;
+  justify-content: center;
+}
+#mediaLibraryModal .media-modal-container {
+  width: min(1200px, 92vw);
+  max-width: 1200px;
+  max-height: min(90vh, 900px);
+  min-height: 280px;
+  margin: 0 auto;
+  flex: 0 0 auto;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.media-modal-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.media-modal-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+.media-modal-header #closeMediaModal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+.media-modal-header #closeMediaModal:hover {
+  background: var(--surface-elevated);
+  color: var(--text-color);
+}
+.media-modal-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+.media-modal-tabs .media-tab {
+  background: none;
+  border: none;
+  padding: 14px 18px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.media-modal-tabs .media-tab:hover {
+  color: var(--text-color);
+  background: var(--surface-elevated);
+}
+.media-modal-tabs .media-tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+.media-modal-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  min-height: 0;
+}
+#mediaGridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  min-height: 200px;
+}
+#mediaSearchInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+}
+#mediaUploadTab form {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.media-modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  background: #fff;
+}
+@media (max-width: 600px) {
+  #mediaLibraryModal {
+    padding: 12px;
+  }
+  #mediaLibraryModal .media-modal-container {
+    width: 100%;
+    max-height: calc(100vh - 24px);
+  }
+}
+
 .social-item {
   border: 1px solid var(--border-color);
   border-radius: 8px;

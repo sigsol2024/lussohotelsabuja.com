@@ -12,6 +12,11 @@ let mediaModalState = {
   currentSearch: ''
 };
 
+function normalizeAdminBase() {
+  const base = (typeof ADMIN_URL !== 'undefined' ? ADMIN_URL : (window.ADMIN_URL || '')) || '';
+  return base.replace(/\/?$/, '/');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   const closeBtn = document.getElementById('closeMediaModal');
   const cancelBtn = document.getElementById('cancelMediaSelection');
@@ -44,17 +49,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  const uploadForm = document.getElementById('mediaUploadForm');
-  if (uploadForm) {
-    uploadForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      uploadNewMedia();
-    });
+  const fileInputEl = document.getElementById('mediaFileInput');
+  if (fileInputEl) {
+    fileInputEl.addEventListener('change', handleMediaFileSelect);
   }
 
   const insertBtn = document.getElementById('insertMediaBtn');
   if (insertBtn) insertBtn.addEventListener('click', insertSelectedMedia);
 });
+
+/* Capture phase: always intercept upload form submit (avoids accidental native GET submit or missed listeners) */
+document.addEventListener('submit', function(e) {
+  if (e.target && e.target.id === 'mediaUploadForm') {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadNewMedia();
+  }
+}, true);
 
 function shouldAllowMultipleSelection(targetInputId) {
   const multipleFields = ['gallery_image_new', 'room_gallery_images', 'gallery_images'];
@@ -91,8 +102,6 @@ function switchMediaTab(tabName) {
   document.querySelectorAll('.media-tab').forEach(tab => {
     const active = tab.getAttribute('data-tab') === tabName;
     tab.classList.toggle('active', active);
-    tab.style.borderBottomColor = active ? '#0073aa' : 'transparent';
-    tab.style.color = active ? '#0073aa' : '#666';
   });
 
   document.querySelectorAll('.media-tab-content').forEach(content => {
@@ -120,7 +129,7 @@ function loadMediaLibrary() {
   const params = new URLSearchParams({ page: mediaModalState.currentPage, per_page: 20 });
   if (mediaModalState.currentSearch) params.append('search', mediaModalState.currentSearch);
 
-  const adminUrl = (typeof ADMIN_URL !== 'undefined' ? ADMIN_URL : (window.ADMIN_URL || ''));
+  const adminUrl = normalizeAdminBase();
   fetch(adminUrl + 'api/media.php?' + params.toString(), { method: 'GET', headers: { 'X-CSRF-Token': csrfToken }, credentials: 'include' })
     .then(r => r.json())
     .then(data => {
@@ -216,55 +225,119 @@ function insertSelectedMedia() {
   if (typeof showToast === 'function') showToast('Image selected successfully', 'success');
 }
 
-function handleMediaFileSelect() {}
+function isAllowedImageFile(file) {
+  if (!file || !file.name) return false;
+  const type = (file.type || '').toLowerCase();
+  const byMime = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(type);
+  if (byMime) return true;
+  return /\.(jpe?g|png|webp)$/i.test(file.name);
+}
+
+function handleMediaFileSelect(ev) {
+  const input = ev && ev.target ? ev.target : document.getElementById('mediaFileInput');
+  const info = document.getElementById('selectedFilesInfo');
+  if (!input || !info) return;
+  if (!input.files || input.files.length === 0) {
+    info.style.display = 'none';
+    info.textContent = '';
+    return;
+  }
+  const names = Array.from(input.files).map(function(f) { return f.name; }).join(', ');
+  info.textContent = input.files.length === 1 ? ('Selected: ' + names) : (String(input.files.length) + ' files: ' + names);
+  info.style.display = 'block';
+}
+
 function uploadNewMedia() {
   const fileInput = document.getElementById('mediaFileInput');
   const submitBtn = document.getElementById('uploadSubmitBtn');
   if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-    if (typeof showToast === 'function') showToast('Please select file(s)', 'error');
+    if (typeof showToast === 'function') showToast('Choose one or more images first, then tap Upload.', 'error');
     return;
   }
 
   const files = Array.from(fileInput.files);
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-  const validFiles = files.filter(f => allowedTypes.includes((f.type || '').toLowerCase()));
+  const validFiles = files.filter(isAllowedImageFile);
   if (validFiles.length === 0) {
-    if (typeof showToast === 'function') showToast('Please select JPEG, PNG, or WebP images only', 'error');
+    if (typeof showToast === 'function') {
+      showToast('Those files are not accepted. Use JPEG, PNG, or WebP (by extension or type).', 'error');
+    }
     return;
   }
 
-  const originalText = submitBtn ? submitBtn.textContent : '';
-  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = `Uploading ${validFiles.length} file(s)...`; }
-
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-  const adminUrl = (typeof ADMIN_URL !== 'undefined' ? ADMIN_URL : (window.ADMIN_URL || ''));
+  if (!csrfToken) {
+    if (typeof showToast === 'function') showToast('Session security token missing. Refresh the page and try again.', 'error');
+    return;
+  }
 
-  let uploadedCount = 0;
-  let failedCount = 0;
+  const uploadUrl = normalizeAdminBase() + 'api/media.php';
+  const originalText = submitBtn ? submitBtn.textContent : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Uploading ' + String(validFiles.length) + ' file(s)...';
+  }
+
+  var uploadedCount = 0;
+  var failedCount = 0;
+
+  function finishUploads() {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+    if (typeof showToast === 'function') {
+      if (uploadedCount > 0 && failedCount === 0) {
+        showToast(String(uploadedCount) + ' file(s) uploaded.', 'success');
+      } else if (uploadedCount > 0 && failedCount > 0) {
+        showToast(String(uploadedCount) + ' uploaded, ' + String(failedCount) + ' failed.', 'warning');
+      } else if (failedCount > 0) {
+        showToast('Upload failed. Check the error messages above or try again.', 'error');
+      }
+    }
+    fileInput.value = '';
+    handleMediaFileSelect({ target: fileInput });
+    switchMediaTab('library');
+  }
 
   function uploadNext(index) {
     if (index >= validFiles.length) {
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalText; }
-      if (typeof showToast === 'function') {
-        const msg = failedCount > 0 ? `${uploadedCount} uploaded, ${failedCount} failed` : `${uploadedCount} uploaded successfully`;
-        showToast(msg, failedCount > 0 ? 'warning' : 'success');
-      }
-      switchMediaTab('library');
+      finishUploads();
       return;
     }
-
-    const file = validFiles[index];
-    const formData = new FormData();
+    var file = validFiles[index];
+    var formData = new FormData();
     formData.append('file', file);
     formData.append('csrf_token', csrfToken);
 
-    fetch(adminUrl + 'api/media.php', { method: 'POST', credentials: 'include', body: formData })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) uploadedCount++; else failedCount++;
+    fetch(uploadUrl, { method: 'POST', credentials: 'include', body: formData })
+      .then(function(r) { return r.text().then(function(text) { return { r: r, text: text }; }); })
+      .then(function(res) {
+        var data;
+        try {
+          data = JSON.parse(res.text);
+        } catch (err) {
+          failedCount++;
+          if (typeof showToast === 'function') {
+            showToast('Server did not return JSON (HTTP ' + String(res.r.status) + '). Try logging in again.', 'error');
+          }
+          uploadNext(index + 1);
+          return;
+        }
+        if (data.success) {
+          uploadedCount++;
+        } else {
+          failedCount++;
+          if (typeof showToast === 'function') {
+            showToast(data.message || 'Upload rejected.', 'error');
+          }
+        }
         uploadNext(index + 1);
       })
-      .catch(() => { failedCount++; uploadNext(index + 1); });
+      .catch(function() {
+        failedCount++;
+        if (typeof showToast === 'function') showToast('Network error while uploading.', 'error');
+        uploadNext(index + 1);
+      });
   }
 
   uploadNext(0);

@@ -86,6 +86,9 @@ $csrfToken = generateCSRFToken();
 
         <button type="submit" class="btn-login"><span>Sign In</span></button>
       </form>
+      <p style="text-align:center;margin-top:16px;font-size:13px;">
+        <a href="register-temp.php" style="color:#6b7280;">Temporary: create admin account</a>
+      </p>
     </div>
   </div>
   <script>

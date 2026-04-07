@@ -1,0 +1,80 @@
+<?php
+$pageTitle = 'Rooms';
+require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../includes/auth.php';
+requireLogin();
+require_once __DIR__ . '/../../includes/header.php';
+
+try {
+    $rooms = $pdo->query("SELECT id,title,slug,price,is_active,is_featured,display_order,created_at FROM rooms ORDER BY display_order ASC, created_at DESC")->fetchAll();
+} catch (PDOException $e) {
+    $rooms = [];
+}
+?>
+
+<div class="card">
+  <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <h2>Rooms</h2>
+    <a class="btn btn-primary" href="<?= ADMIN_URL ?>pages/rooms/edit.php">Add Room</a>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Slug</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th>Featured</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      <?php if (empty($rooms)): ?>
+        <tr><td colspan="6" style="color:var(--text-muted);">No rooms yet.</td></tr>
+      <?php else: ?>
+        <?php foreach ($rooms as $r): ?>
+          <tr>
+            <td><?= sanitize($r['title']) ?></td>
+            <td><?= sanitize($r['slug']) ?></td>
+            <td><?= sanitize($r['price']) ?></td>
+            <td><?= (int)$r['is_active'] ? 'Active' : 'Hidden' ?></td>
+            <td><?= (int)$r['is_featured'] ? 'Yes' : 'No' ?></td>
+            <td>
+              <a class="btn btn-sm btn-outline" href="<?= ADMIN_URL ?>pages/rooms/edit.php?id=<?= (int)$r['id'] ?>">Edit</a>
+              <a class="btn btn-sm btn-outline" target="_blank" href="<?= SITE_URL ?>room-details.php?slug=<?= sanitize($r['slug']) ?>">View</a>
+              <button type="button" class="btn btn-sm btn-outline danger-delete-room" data-id="<?= (int)$r['id'] ?>" data-title="<?= htmlspecialchars($r['title'], ENT_QUOTES, 'UTF-8') ?>">Delete</button>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.danger-delete-room').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var id = this.getAttribute('data-id');
+    var title = this.getAttribute('data-title') || 'this room';
+    if (!id || !confirm('Delete ' + title + '? This cannot be undone.')) return;
+    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    fetch('<?= ADMIN_URL ?>api/rooms.php?id=' + encodeURIComponent(id), {
+      method: 'DELETE',
+      headers: { 'X-CSRF-Token': csrfToken }
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.success) {
+        showToast('Room deleted', 'success');
+        window.location.reload();
+      } else {
+        showToast(data.message || 'Delete failed', 'error');
+      }
+    }).catch(function () { showToast('Delete failed', 'error'); });
+  });
+});
+</script>
+
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+

@@ -1,0 +1,23 @@
+# Local secrets / environment overrides (never commit)
+/admin/includes/config.php
+/admin/includes/config.secrets.php
+
+# Logs
+/admin/logs/
+
+# User uploads (optional: if you prefer committing placeholder only)
+/assets/uploads/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Dependencies / build artifacts (if added later)
+node_modules/
+vendor/
+
+# Design originals / source HTML
+/html-originals/

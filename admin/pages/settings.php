@@ -1,0 +1,415 @@
+<?php
+/**
+ * Site Settings Page
+ */
+
+$pageTitle = 'Settings';
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/header.php';
+
+// Get all settings
+try {
+    $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings ORDER BY setting_key");
+    $settingsRows = $stmt->fetchAll();
+    $settings = [];
+    foreach ($settingsRows as $row) {
+        $settings[$row['setting_key']] = $row['setting_value'];
+    }
+} catch(PDOException $e) {
+    error_log("Settings page error: " . $e->getMessage());
+    $settings = [];
+}
+
+$csrfToken = generateCSRFToken();
+?>
+
+<form id="settingsForm" style="max-width: 800px;">
+    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+    
+    <!-- General Settings -->
+    <div class="card">
+        <div class="card-header">
+            <h2>General Settings</h2>
+        </div>
+        <div style="padding: 20px;">
+            <div class="form-group">
+                <label for="site_name">Site Name</label>
+                <input type="text" id="site_name" name="site_name" value="<?= sanitize($settings['site_name'] ?? '') ?>">
+            </div>
+            
+            <div class="form-group">
+                <label for="site_tagline">Site Tagline</label>
+                <input type="text" id="site_tagline" name="site_tagline" value="<?= sanitize($settings['site_tagline'] ?? '') ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="room_detail_hero_badge">Room detail hero badge</label>
+                <input type="text" id="room_detail_hero_badge" name="room_detail_hero_badge" value="<?= sanitize($settings['room_detail_hero_badge'] ?? 'Lusso Abuja') ?>" placeholder="Lusso Abuja">
+                <p class="form-help">Small uppercase label above the room title on single-room pages.</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="currency_symbol">Currency Symbol</label>
+                <input type="text" id="currency_symbol" name="currency_symbol" value="<?= sanitize($settings['currency_symbol'] ?? '$') ?>" placeholder="$" maxlength="5">
+                <p class="form-help">Currency symbol used throughout the site (e.g., $, ₦, €, £). Default: $</p>
+            </div>
+            
+            <div class="form-group">
+                <label>Site Logo</label>
+                <div style="margin-bottom: 10px;">
+                    <button type="button" class="btn btn-outline" onclick="openMediaModal('site_logo', 'logo_preview')">
+                        <i class="fas fa-image"></i> Select Logo
+                    </button>
+                </div>
+                <input type="hidden" id="site_logo" name="site_logo" value="<?= sanitize($settings['site_logo'] ?? '') ?>">
+                <div id="logo_preview" class="image-preview" style="margin-top: 10px; <?= !empty($settings['site_logo']) ? 'display: block;' : 'display: none;' ?>">
+                    <?php if (!empty($settings['site_logo'])): ?>
+                        <img id="logo_img" src="<?= SITE_URL . ltrim($settings['site_logo'], '/') ?>" style="max-width: 200px; max-height: 200px;">
+                    <?php else: ?>
+                        <img id="logo_img" src="" style="max-width: 200px; max-height: 200px;">
+                    <?php endif; ?>
+                </div>
+                <p class="form-help">Select an image from the media library or upload a new one</p>
+            </div>
+            
+            <div class="form-group">
+                <label>Favicon</label>
+                <div style="margin-bottom: 10px;">
+                    <button type="button" class="btn btn-outline" onclick="openMediaModal('site_favicon', 'favicon_preview')">
+                        <i class="fas fa-image"></i> Select Favicon
+                    </button>
+                </div>
+                <input type="hidden" id="site_favicon" name="site_favicon" value="<?= sanitize($settings['site_favicon'] ?? '') ?>">
+                <div id="favicon_preview" class="image-preview" style="margin-top: 10px; <?= !empty($settings['site_favicon']) ? 'display: block;' : 'display: none;' ?>">
+                    <?php if (!empty($settings['site_favicon'])): ?>
+                        <img id="favicon_img" src="<?= SITE_URL . ltrim($settings['site_favicon'], '/') ?>" style="max-width: 64px; max-height: 64px;">
+                    <?php else: ?>
+                        <img id="favicon_img" src="" style="max-width: 64px; max-height: 64px;">
+                    <?php endif; ?>
+                </div>
+                <p class="form-help">Select an image from the media library or upload a new one</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer Settings -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Footer Settings</h2>
+        </div>
+        <div style="padding: 20px;">
+            <div class="form-group">
+                <label for="footer_copyright">Copyright Text</label>
+                <input type="text" id="footer_copyright" name="footer_copyright" value="<?= sanitize($settings['footer_copyright'] ?? '') ?>">
+                <p class="form-help">This will be shown as: Copyright © [Year] [Your Text]. All rights reserved.</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="footer_address">Address</label>
+                <textarea id="footer_address" name="footer_address" rows="2"><?= sanitize($settings['footer_address'] ?? '123 Luxury Blvd, Malibu, CA 90265') ?></textarea>
+                <p class="form-help">Physical address displayed in the footer contact section</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="footer_phone">Phone Number(s)</label>
+                <input type="text" id="footer_phone" name="footer_phone" value="<?= sanitize($settings['footer_phone'] ?? '+1 (555) 123-4567') ?>">
+                <p class="form-help">Enter phone number(s) to display in the footer (e.g., +234 813 480 7718 | +234 907 676 0923)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="footer_email">Email Address</label>
+                <input type="email" id="footer_email" name="footer_email" value="<?= sanitize($settings['footer_email'] ?? 'concierge@lusso.com') ?>">
+                <p class="form-help">Email address displayed in the footer contact section</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="contact_email">Contact Form Email</label>
+                <input type="email" id="contact_email" name="contact_email" value="<?= sanitize($settings['contact_email'] ?? $settings['footer_email'] ?? 'concierge@lusso.com') ?>">
+                <p class="form-help">Email address where contact form submissions will be sent</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="whatsapp_number">WhatsApp Number</label>
+                <input type="text" id="whatsapp_number" name="whatsapp_number" value="<?= sanitize($settings['whatsapp_number'] ?? '') ?>" placeholder="+2341234567890">
+                <p class="form-help">WhatsApp number with country code (e.g., +2341234567890). This will be used for the WhatsApp button on the contact page.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SMTP Settings -->
+    <div class="card">
+        <div class="card-header">
+            <h2>SMTP Email Settings</h2>
+        </div>
+        <div style="padding: 20px;">
+            <p class="form-help" style="margin-bottom: 15px; color: #d97706; font-weight: 500;">
+                <strong>Note:</strong> Configure SMTP settings to enable contact form email sending. Without SMTP configuration, contact form submissions will not be sent.
+            </p>
+            
+            <div class="form-group">
+                <label for="smtp_host">SMTP Host</label>
+                <input type="text" id="smtp_host" name="smtp_host" value="<?= sanitize($settings['smtp_host'] ?? '') ?>" placeholder="smtp.gmail.com">
+                <p class="form-help">SMTP server hostname (e.g., smtp.gmail.com, smtp.mailtrap.io)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="smtp_port">SMTP Port</label>
+                <input type="number" id="smtp_port" name="smtp_port" value="<?= sanitize($settings['smtp_port'] ?? '587') ?>" placeholder="587">
+                <p class="form-help">SMTP port (usually 587 for TLS, 465 for SSL, 25 for unencrypted)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="smtp_username">SMTP Username</label>
+                <input type="text" id="smtp_username" name="smtp_username" value="<?= sanitize($settings['smtp_username'] ?? '') ?>" placeholder="your-email@gmail.com">
+                <p class="form-help">SMTP authentication username (usually your email address)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="smtp_password">SMTP Password</label>
+                <input type="password" id="smtp_password" name="smtp_password" value="<?= sanitize($settings['smtp_password'] ?? '') ?>" placeholder="Your SMTP password">
+                <p class="form-help">SMTP authentication password (for Gmail, use an App Password)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="smtp_encryption">SMTP Encryption</label>
+                <select id="smtp_encryption" name="smtp_encryption" class="form-control">
+                    <option value="tls" <?= ($settings['smtp_encryption'] ?? 'tls') === 'tls' ? 'selected' : '' ?>>TLS</option>
+                    <option value="ssl" <?= ($settings['smtp_encryption'] ?? '') === 'ssl' ? 'selected' : '' ?>>SSL</option>
+                    <option value="" <?= empty($settings['smtp_encryption']) ? 'selected' : '' ?>>None</option>
+                </select>
+                <p class="form-help">Encryption method (TLS for port 587, SSL for port 465)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="smtp_from_email">From Email</label>
+                <input type="email" id="smtp_from_email" name="smtp_from_email" value="<?= sanitize($settings['smtp_from_email'] ?? $settings['contact_email'] ?? '') ?>" placeholder="noreply@yourdomain.com">
+                <p class="form-help">Email address that will appear as the sender</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="smtp_from_name">From Name</label>
+                <input type="text" id="smtp_from_name" name="smtp_from_name" value="<?= sanitize($settings['smtp_from_name'] ?? ($settings['site_name'] ?? 'Lusso Hotels')) ?>" placeholder="Site / hotel name">
+                <p class="form-help">Name that will appear as the sender</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Social Media Links -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Social Media Links</h2>
+        </div>
+        <div style="padding: 20px;">
+            <div id="socialMediaList">
+                <!-- Social media items will be rendered here -->
+            </div>
+            <button type="button" class="btn btn-outline" onclick="addSocialMedia()" style="margin-top: 15px;">
+                <i class="fas fa-plus"></i> Add Social Media
+            </button>
+            <input type="hidden" id="social_media_json" name="social_media_json" value="<?= htmlspecialchars($settings['social_media_json'] ?? '[]', ENT_QUOTES, 'UTF-8') ?>">
+        </div>
+    </div>
+    
+    <!-- Google Maps Settings -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Google Maps</h2>
+        </div>
+        <div style="padding: 20px;">
+            <div class="form-group">
+                <label for="google_maps_api_key">Google Maps API Key</label>
+                <input type="text" id="google_maps_api_key" name="google_maps_api_key" value="<?= sanitize($settings['google_maps_api_key'] ?? '') ?>" placeholder="AIzaSy...">
+                <p class="form-help">Enter your Google Maps API key to enable interactive maps on the contact page. Get your API key from <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a>. The contact page will show a static placeholder image until an API key is configured.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Custom Scripts -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Custom Scripts</h2>
+        </div>
+        <div style="padding: 20px;">
+            <div class="form-group">
+                <label for="header_scripts">Header Scripts</label>
+                <textarea id="header_scripts" name="header_scripts" rows="6" style="font-family: monospace; font-size: 12px;"><?= htmlspecialchars($settings['header_scripts'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                <p class="form-help">Scripts will be added in the &lt;head&gt; section (e.g., Google Analytics, Meta Pixel, etc.)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="body_scripts">Body Scripts</label>
+                <textarea id="body_scripts" name="body_scripts" rows="6" style="font-family: monospace; font-size: 12px;"><?= htmlspecialchars($settings['body_scripts'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                <p class="form-help">Scripts will be added right after the opening &lt;body&gt; tag (e.g., chat widgets, tracking scripts)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="footer_scripts">Footer Scripts</label>
+                <textarea id="footer_scripts" name="footer_scripts" rows="6" style="font-family: monospace; font-size: 12px;"><?= htmlspecialchars($settings['footer_scripts'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                <p class="form-help">Scripts will be added right before the closing &lt;/body&gt; tag (e.g., analytics, custom JavaScript)</p>
+            </div>
+        </div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+    </div>
+</form>
+
+<script>
+// Media modal integration - the openMediaModal function is provided by media-library.js
+
+// Social Media Management
+let socialMediaList = [];
+
+// Load social media from hidden input
+function loadSocialMedia() {
+    const jsonInput = document.getElementById('social_media_json');
+    try {
+        socialMediaList = JSON.parse(jsonInput.value || '[]');
+    } catch (e) {
+        console.error('Error parsing social media JSON:', e);
+        socialMediaList = [];
+    }
+    renderSocialMedia();
+}
+
+// Render social media list
+function renderSocialMedia() {
+    const container = document.getElementById('socialMediaList');
+    container.innerHTML = '';
+    
+    if (socialMediaList.length === 0) {
+        container.innerHTML = '<p class="form-help" style="margin-bottom: 15px;">No social media links added yet. Click "Add Social Media" to add one.</p>';
+    } else {
+        socialMediaList.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            div.style.border = '1px solid #ddd';
+            div.style.padding = '15px';
+            div.style.marginBottom = '15px';
+            div.style.borderRadius = '4px';
+            div.style.backgroundColor = '#f9f9f9';
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong>Social Media #${index + 1}</strong>
+                    <button type="button" class="btn btn-outline" onclick="removeSocialMedia(${index})" style="padding: 5px 10px; font-size: 12px;">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label>Icon Name (Material Symbols)</label>
+                    <input type="text" class="form-control" value="${(item.icon || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" 
+                           onchange="updateSocialMedia(${index}, 'icon', this.value)" 
+                           placeholder="e.g., public, photo_camera, alternate_email">
+                    <p class="form-help">Enter Material Symbols icon name (e.g., public, photo_camera, alternate_email, facebook, instagram, twitter)</p>
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label>Link URL</label>
+                    <input type="url" class="form-control" value="${(item.url || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" 
+                           onchange="updateSocialMedia(${index}, 'url', this.value)" 
+                           placeholder="https://...">
+                    <p class="form-help">Full URL to the social media profile/page</p>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    // Update hidden input
+    document.getElementById('social_media_json').value = JSON.stringify(socialMediaList);
+}
+
+// Add new social media
+function addSocialMedia() {
+    socialMediaList.push({
+        icon: 'public',
+        url: ''
+    });
+    renderSocialMedia();
+}
+
+// Remove social media
+function removeSocialMedia(index) {
+    if (confirm('Are you sure you want to remove this social media link?')) {
+        socialMediaList.splice(index, 1);
+        renderSocialMedia();
+    }
+}
+
+// Update social media item
+function updateSocialMedia(index, field, value) {
+    if (socialMediaList[index]) {
+        socialMediaList[index][field] = value;
+        document.getElementById('social_media_json').value = JSON.stringify(socialMediaList);
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadSocialMedia();
+});
+
+// Form submission
+document.getElementById('settingsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Ensure social media JSON is up to date
+    document.getElementById('social_media_json').value = JSON.stringify(socialMediaList);
+    
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((value, key) => {
+        if (key !== 'csrf_token') {
+            data[key] = value;
+        }
+    });
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving...';
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    fetch('<?= ADMIN_URL ?>api/settings.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+        }
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('Invalid JSON response:', text);
+                throw new Error('Server returned invalid response. Please check server logs.');
+            }
+        });
+    })
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+        } else {
+            showToast(data.message || 'Operation failed', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Settings save error:', error);
+        showToast('Error: ' + error.message, 'error');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    });
+});
+</script>
+
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+

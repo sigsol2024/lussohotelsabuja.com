@@ -10,6 +10,10 @@ $hero_cta_text = getPageSection('index', 'hero_cta_text', 'Discover Suites');
 $hero_cta_href = getPageSection('index', 'hero_cta_href', 'rooms.php');
 $hero_bg = getPageSection('index', 'hero_bg', "https://lh3.googleusercontent.com/aida-public/AB6AXuA09AOzJGi3HFlO4iws6G405bZGiytnUaZEFTya_spJrXDa5fTKSrBScsDkxZAQCuS6ae2mJpC0laUldei8amf2jOsK9UIg9NX305aHkrG5uIMWhPQ-1e4r8CAydwyR5KzlbYjN4mWRnao2gNBHBrofxEv7u5nEs6wpDuCE4GwvUSepjITkua6sUOfXNKlnd3aW_eBFeHSCedk94uypJTs6palB8AtN0hFG3qGsOckYndru2W3fVdobc9Goi1Jn_x4wNASClu7QbTw");
 
+// Booking / calendar embed (paste HTML from admin homepage editor — bridges hero → next section)
+$booking_widget_html = getPageSection('index', 'booking_widget_html', '');
+$hasBookingBridge = trim((string)$booking_widget_html) !== '';
+
 $hp_kicker = getPageSection('index', 'home_philosophy_kicker', 'Our Philosophy');
 $hp_title_html = getPageSection('index', 'home_philosophy_title_html', "The Lusso <br/> Standard");
 $hp_body = getPageSection('index', 'home_philosophy_body', 'A sanctuary where modern elegance meets timeless hospitality. Every detail is curated for the discerning traveler, offering an escape into a world of refined comfort and understated opulence.');
@@ -53,40 +57,53 @@ $featuredRooms = getFeaturedRoomsForHome(12);
 <body class="bg-background-light dark:bg-background-dark text-text-main font-display antialiased overflow-x-hidden selection:bg-primary/30">
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
-<!-- Cinematic Hero Section -->
-<header class="relative w-full h-screen min-h-[600px] overflow-hidden group">
-  <div class="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-[10s] ease-out group-hover:scale-105"
-       data-alt="Luxury hotel bedroom interior with golden lighting and plush bedding"
-       style="background-image: url('<?= e($hero_bg) ?>');">
-  </div>
-  <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60"></div>
+<section class="relative z-0">
+  <!-- Cinematic Hero Section -->
+  <header class="relative w-full h-screen min-h-[600px] overflow-hidden group">
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-[10s] ease-out group-hover:scale-105"
+         data-alt="Luxury hotel bedroom interior with golden lighting and plush bedding"
+         style="background-image: url('<?= e($hero_bg) ?>');">
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60"></div>
 
-  <div class="relative h-full flex flex-col justify-center items-center text-center px-6 z-10">
-    <h2 class="text-white/90 text-sm md:text-base font-medium uppercase tracking-[0.2em] mb-4 animate-[fadeIn_1s_ease-out]">
-      <?= e($hero_kicker) ?>
-    </h2>
-    <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium leading-tight mb-8 max-w-4xl text-cinematic animate-[fadeIn_1s_ease-out_0.2s]">
-      <?= $hero_title ?>
-    </h1>
-    <p class="text-white/80 text-lg md:text-xl font-light max-w-xl mb-10 animate-[fadeIn_1s_ease-out_0.4s]">
-      <?= e($hero_subtitle) ?>
-    </p>
-    <div class="animate-[fadeIn_1s_ease-out_0.6s]">
-      <a class="bg-primary text-white hover:bg-primary-light transition-all duration-300 px-8 py-4 rounded-sm text-sm font-bold uppercase tracking-widest min-w-[200px] inline-block shadow-lg shadow-primary/25"
-         href="<?= e($hero_cta_href) ?>">
-        <?= e($hero_cta_text) ?>
-      </a>
+    <div class="relative h-full flex flex-col justify-center items-center text-center px-6 z-10">
+      <h2 class="text-white/90 text-sm md:text-base font-medium uppercase tracking-[0.2em] mb-4 animate-[fadeIn_1s_ease-out]">
+        <?= e($hero_kicker) ?>
+      </h2>
+      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium leading-tight mb-8 max-w-4xl text-cinematic animate-[fadeIn_1s_ease-out_0.2s]">
+        <?= $hero_title ?>
+      </h1>
+      <p class="text-white/80 text-lg md:text-xl font-light max-w-xl mb-10 animate-[fadeIn_1s_ease-out_0.4s]">
+        <?= e($hero_subtitle) ?>
+      </p>
+      <div class="animate-[fadeIn_1s_ease-out_0.6s]">
+        <a class="bg-primary text-white hover:bg-primary-light transition-all duration-300 px-8 py-4 rounded-sm text-sm font-bold uppercase tracking-widest min-w-[200px] inline-block shadow-lg shadow-primary/25"
+           href="<?= e($hero_cta_href) ?>">
+          <?= e($hero_cta_text) ?>
+        </a>
+      </div>
+    </div>
+
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-70 pointer-events-none">
+      <span class="text-white text-xs tracking-widest uppercase">Scroll</span>
+      <span class="material-symbols-outlined text-white">keyboard_arrow_down</span>
+    </div>
+  </header>
+
+  <?php if ($hasBookingBridge): ?>
+  <!-- Booking widget bridge (same placement pattern as BlueOrange): overlaps hero bottom on desktop -->
+  <div class="relative md:absolute bottom-0 left-0 md:left-1/2 md:-translate-x-1/2 translate-y-0 md:translate-y-1/2 w-full max-w-6xl px-6 lg:px-12 z-30 mt-8 md:mt-0">
+    <div class="rounded-lg bg-white/95 backdrop-blur-md border border-black/[0.08] shadow-elevation p-4 md:p-6 overflow-x-auto">
+      <div id="booking-lusso" class="w-full">
+        <?= $booking_widget_html ?>
+      </div>
     </div>
   </div>
-
-  <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-70">
-    <span class="text-white text-xs tracking-widest uppercase">Scroll</span>
-    <span class="material-symbols-outlined text-white">keyboard_arrow_down</span>
-  </div>
-</header>
+  <?php endif; ?>
+</section>
 
 <!-- Asymmetrical Editorial Section: The Lusso Standard -->
-<section class="relative w-full py-24 md:py-32 overflow-hidden bg-background-light">
+<section class="relative w-full <?= $hasBookingBridge ? 'pt-28 md:pt-40 pb-24 md:pb-32' : 'py-24 md:py-32' ?> overflow-hidden bg-background-light">
   <div class="absolute inset-0 opacity-[0.04] pointer-events-none" style="background-image: radial-gradient(#363636 1px, transparent 1px); background-size: 32px 32px;"></div>
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
     <div class="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-0 mb-32 relative">

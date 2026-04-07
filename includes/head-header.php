@@ -64,6 +64,82 @@ $lussoHeadLoaded = true;
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .text-cinematic { text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+  /* Homepage booking bridge: tames common embeds (e.g. StayEazi-style #booking-widget / #booking-form) */
+  #booking-lusso {
+    width: 100% !important;
+  }
+  #booking-lusso * {
+    box-sizing: border-box;
+  }
+  #booking-lusso #booking-widget {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+  #booking-lusso #booking-form {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  #booking-lusso #booking-form > div {
+    width: auto !important;
+    min-width: 160px !important;
+    flex: 1 1 160px !important;
+    margin: 0 !important;
+  }
+  #booking-lusso #booking-form label {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 6px !important;
+    color: #363636 !important;
+  }
+  #booking-lusso #booking-form input,
+  #booking-lusso #booking-form select {
+    width: 100% !important;
+    height: 44px !important;
+    padding: 10px 12px !important;
+    border: 1px solid #d8d0bc !important;
+    border-radius: 10px !important;
+    background: #fff !important;
+    color: #363636 !important;
+  }
+  #booking-lusso #booking-form button {
+    width: 100% !important;
+    height: 44px !important;
+    margin-top: 0 !important;
+    border: 0 !important;
+    border-radius: 10px !important;
+    background: #411d13 !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+  }
+  #booking-lusso #booking-form button:hover {
+    background: #5a2a1f !important;
+  }
+  @media (max-width: 1024px) {
+    #booking-lusso #booking-form {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+    #booking-lusso #booking-form > div {
+      min-width: 100% !important;
+      flex: 1 1 100% !important;
+    }
+  }
 </style>
 <?php
 // Optional: site-wide injected header scripts (analytics etc)

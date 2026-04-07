@@ -63,6 +63,18 @@ function hsec($sectionsArray, $key, $default = '') {
   </div>
 
   <div class="card">
+    <div class="card-header"><h2>Booking widget (bridge)</h2></div>
+    <div style="padding:20px;">
+      <div class="form-group">
+        <label for="booking_widget_html">Widget HTML</label>
+        <textarea id="booking_widget_html" name="booking_widget_html" rows="10" style="font-family:monospace;font-size:12px;"><?= htmlspecialchars($sectionsArray['booking_widget_html'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+        <p class="form-help">Paste the booking engine embed HTML here. It appears between the hero and the next section (floating over the hero edge on desktop), inside a styled card.</p>
+        <p class="form-help">If your provider needs a script tag, add it under <strong>Admin → Settings → Header scripts</strong> or <strong>Body scripts</strong>. The bridge styles target <code>#booking-lusso #booking-widget</code> / <code>#booking-form</code> when your embed uses those ids (e.g. StayEazi).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-header"><h2>Philosophy block</h2></div>
     <div style="padding:20px;">
       <div class="form-group">
@@ -261,7 +273,7 @@ document.getElementById('homepageForm').addEventListener('submit', function (e) 
   var formData = new FormData(this);
   var keys = [];
   formData.forEach(function (_, k) { if (keys.indexOf(k) === -1) keys.push(k); });
-  var htmlKeys = { hero_title: 1, home_philosophy_title_html: 1, home_dining_body_html: 1 };
+  var htmlKeys = { hero_title: 1, home_philosophy_title_html: 1, home_dining_body_html: 1, booking_widget_html: 1 };
   var imageKeys = { hero_bg: 1, home_philosophy_main_img: 1, home_philosophy_secondary_img: 1, home_arch_image: 1, home_dining_image: 1 };
   var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 

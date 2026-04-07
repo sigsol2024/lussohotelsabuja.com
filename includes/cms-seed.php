@@ -84,6 +84,7 @@ $pageSections = [
     ['index', 'home_dining_cta1_href', 'text', 'dining.php'],
     ['index', 'home_dining_cta2', 'text', 'View Menu'],
     ['index', 'home_dining_cta2_href', 'text', 'dining.php'],
+    ['index', 'booking_widget_html', 'html', ''],
 
     // --- About ---
     ['about', 'page_title', 'text', 'The Lusso Legacy - About Us'],

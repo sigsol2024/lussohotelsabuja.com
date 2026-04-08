@@ -38,7 +38,7 @@ function hsec($sectionsArray, $key, $default = '') {
       </div>
       <div class="form-group">
         <label for="hero_title">Title (HTML allowed)</label>
-        <textarea id="hero_title" name="hero_title" rows="3"><?= htmlspecialchars($sectionsArray['hero_title'] ?? 'Refined Luxury in <br/><span class="italic text-primary border border-white/90 rounded-lg px-3 py-1 inline-block shadow-sm">Absolute Silence</span>', ENT_QUOTES, 'UTF-8') ?></textarea>
+        <textarea id="hero_title" name="hero_title" rows="3"><?= htmlspecialchars($sectionsArray['hero_title'] ?? 'Refined Luxury in <br/><span class="italic text-primary lusso-hero-accent-text">Absolute Silence</span>', ENT_QUOTES, 'UTF-8') ?></textarea>
       </div>
       <div class="form-group">
         <label for="hero_subtitle">Subtitle</label>

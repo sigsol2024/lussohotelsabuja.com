@@ -87,6 +87,37 @@ if (function_exists('getSiteSetting') && function_exists('lusso_media_src') && f
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .text-cinematic { text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 
+  /* Hero: light stroke / outline on accent words (not a box border) */
+  .lusso-hero-accent-text {
+    -webkit-text-stroke: 1.25px rgba(255, 255, 255, 0.9);
+    paint-order: stroke fill;
+    text-shadow:
+      0 0 1px rgba(255, 255, 255, 0.95),
+      0 2px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Mobile nav modal (centered card, not sidebar) */
+  .lusso-mobile-menu-overlay {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .lusso-mobile-menu-overlay.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .lusso-mobile-menu-modal {
+    opacity: 0;
+    transform: scale(0.94) translateY(-0.5rem);
+    transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .lusso-mobile-menu-overlay.open .lusso-mobile-menu-modal {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
   /* Homepage booking bridge: tames common embeds (e.g. StayEazi-style #booking-widget / #booking-form) */
   #booking-lusso {
     width: 100% !important;

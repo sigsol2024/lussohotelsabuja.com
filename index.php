@@ -4,7 +4,7 @@ require_once __DIR__ . '/includes/content-loader.php';
 $pageTitle = getSiteSetting('site_name', 'Lusso Hotels Abuja');
 
 $hero_kicker = getPageSection('index', 'hero_kicker', 'Welcome to Abuja');
-$hero_title = getPageSection('index', 'hero_title', 'Refined Luxury in <br/><span class="italic text-primary border border-white/90 rounded-lg px-3 py-1 inline-block shadow-sm">Absolute Silence</span>');
+$hero_title = getPageSection('index', 'hero_title', 'Refined Luxury in <br/><span class="italic text-primary lusso-hero-accent-text">Absolute Silence</span>');
 $hero_subtitle = getPageSection('index', 'hero_subtitle', 'Experience the sanctuary of Lusso. Where every detail creates a symphony of comfort.');
 $hero_cta_text = getPageSection('index', 'hero_cta_text', 'Discover Suites');
 $hero_cta_href = getPageSection('index', 'hero_cta_href', '/rooms');
@@ -99,7 +99,7 @@ $featuredRooms = getFeaturedRoomsForHome(12);
         <?= e($hero_subtitle) ?>
       </p>
       <div class="animate-[fadeIn_1s_ease-out_0.6s]">
-        <a class="inline-block min-w-[200px] px-8 py-4 rounded-xl text-sm font-bold uppercase tracking-widest text-white bg-white/15 hover:bg-white/25 backdrop-blur-md border border-black/50 shadow-lg transition-all duration-300"
+        <a class="inline-block min-w-[200px] px-8 py-4 rounded-2xl text-sm font-bold uppercase tracking-widest text-white bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/35 ring-1 ring-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.18)] transition-all duration-300"
            href="<?= e(lusso_href((string)$hero_cta_href)) ?>">
           <?= e($hero_cta_text) ?>
         </a>

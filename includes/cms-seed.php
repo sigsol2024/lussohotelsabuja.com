@@ -55,7 +55,7 @@ $jsonEncode = static function ($data) {
 $pageSections = [
     // --- Homepage (index) ---
     ['index', 'hero_kicker', 'text', 'Welcome to Abuja'],
-    ['index', 'hero_title', 'html', 'Refined Luxury in <br/><span class="italic text-primary border border-white/90 rounded-lg px-3 py-1 inline-block shadow-sm">Absolute Silence</span>'],
+    ['index', 'hero_title', 'html', 'Refined Luxury in <br/><span class="italic text-primary lusso-hero-accent-text">Absolute Silence</span>'],
     ['index', 'hero_subtitle', 'text', 'Experience the sanctuary of Lusso. Where every detail creates a symphony of comfort.'],
     ['index', 'hero_cta_text', 'text', 'Discover Suites'],
     ['index', 'hero_cta_href', 'text', '/rooms'],

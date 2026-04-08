@@ -26,7 +26,7 @@ ON DUPLICATE KEY UPDATE `setting_value` = VALUES(`setting_value`), `updated_at` 
 -- Homepage (index): hero + philosophy teaser
 INSERT INTO `page_sections` (`page`, `section_key`, `content_type`, `content`) VALUES
 ('index', 'hero_kicker', 'text', 'Welcome to Abuja'),
-('index', 'hero_title', 'html', 'Refined Luxury in <br/><span class="italic text-primary border border-white/90 rounded-lg px-3 py-1 inline-block shadow-sm">Absolute Silence</span>'),
+('index', 'hero_title', 'html', 'Refined Luxury in <br/><span class="italic text-primary lusso-hero-accent-text">Absolute Silence</span>'),
 ('index', 'hero_subtitle', 'text', 'The Lusso Hotels & Suites delivers an unparalleled guest experience: refined sophistication, genuine care, and uncompromising quality — with a strong operational framework and a people-centric culture.'),
 ('index', 'home_philosophy_body', 'text', 'We are dedicated to creating a world-class environment that supports exceptional service delivery and professional growth. Our 36 luxurious guest rooms, modern facilities, and strategic Maitama location — approximately 30 minutes from Nnamdi Azikiwe International Airport and minutes from key embassies and business districts — make us a hotel of choice for discerning travellers and events.'),
 ('index', 'hero_bg_slides', 'json', '[]')

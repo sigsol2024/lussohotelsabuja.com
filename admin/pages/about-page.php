@@ -97,11 +97,46 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
     </div>
   </div></div>
 
-  <div class="card"><div class="card-header"><h2>Timeline & team (JSON)</h2></div><div style="padding:20px;">
-    <p class="form-help">Timeline: array of <code>year</code>, <code>kind</code> (<code>circle</code>|<code>dot</code>|<code>dot_primary</code>), <code>title</code>, <code>body</code>.</p>
-    <textarea id="timeline_json" name="timeline_json" rows="14" style="font-family:monospace;font-size:12px;"><?= htmlspecialchars($timelineRaw, ENT_QUOTES, 'UTF-8') ?></textarea>
-    <p class="form-help" style="margin-top:16px;">Team: array of <code>name</code>, <code>role</code>, <code>image</code> (URL or media path).</p>
-    <textarea id="team_json" name="team_json" rows="12" style="font-family:monospace;font-size:12px;"><?= htmlspecialchars($teamRaw, ENT_QUOTES, 'UTF-8') ?></textarea>
+  <div class="card"><div class="card-header"><h2>Timeline & team</h2></div><div style="padding:20px;">
+    <p class="form-help" style="margin-top:0;">Visual editor. Items are saved as JSON behind the scenes.</p>
+
+    <!-- Hidden fields saved to page_sections -->
+    <textarea id="timeline_json" name="timeline_json" style="display:none;"><?= htmlspecialchars($timelineRaw, ENT_QUOTES, 'UTF-8') ?></textarea>
+    <textarea id="team_json" name="team_json" style="display:none;"><?= htmlspecialchars($teamRaw, ENT_QUOTES, 'UTF-8') ?></textarea>
+
+    <div class="card card--nested">
+      <div class="card-header"><h3>Timeline</h3></div>
+      <div class="card-body card-body--stack">
+        <p class="form-help">Each item: <code>year</code>, <code>kind</code> (<code>circle</code>|<code>dot</code>|<code>dot_primary</code>), <code>title</code>, <code>body</code>.</p>
+        <div id="timelineEditor"></div>
+        <button type="button" class="btn btn-outline btn-sm" id="timelineAddBtn">Add timeline item</button>
+
+        <details style="margin-top:14px;">
+          <summary style="cursor:pointer; color: var(--text-muted);">Advanced JSON (optional)</summary>
+          <textarea id="timeline_json_advanced" rows="10" style="margin-top:10px;font-family:monospace;font-size:12px;"></textarea>
+          <div style="margin-top:10px;">
+            <button type="button" class="btn btn-outline btn-sm" id="timelineApplyJsonBtn">Apply JSON</button>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="card card--nested" style="margin-top: 16px;">
+      <div class="card-header"><h3>Team</h3></div>
+      <div class="card-body card-body--stack">
+        <p class="form-help">Each member: <code>name</code>, <code>role</code>, <code>image</code> (URL or media path).</p>
+        <div id="teamEditor"></div>
+        <button type="button" class="btn btn-outline btn-sm" id="teamAddBtn">Add team member</button>
+
+        <details style="margin-top:14px;">
+          <summary style="cursor:pointer; color: var(--text-muted);">Advanced JSON (optional)</summary>
+          <textarea id="team_json_advanced" rows="10" style="margin-top:10px;font-family:monospace;font-size:12px;"></textarea>
+          <div style="margin-top:10px;">
+            <button type="button" class="btn btn-outline btn-sm" id="teamApplyJsonBtn">Apply JSON</button>
+          </div>
+        </details>
+      </div>
+    </div>
   </div></div>
 
   <div class="card"><div class="card-header"><h2>Journey header</h2></div><div style="padding:20px;">
@@ -158,6 +193,239 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
     closeMediaModal();
     return true;
   };
+})();
+
+(function () {
+  function safeParseJson(text, fallback) {
+    try {
+      var v = JSON.parse(text || '');
+      return v;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function escHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, function (m) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+    });
+  }
+
+  function normalizeTeamImageUrl(val) {
+    var v = String(val || '').trim();
+    if (!v) return '';
+    if (v.indexOf('http') === 0) return v;
+    return '<?= SITE_URL ?>' + v.replace(/^\/+/, '');
+  }
+
+  function getTimelineItemsFromDom() {
+    var out = [];
+    document.querySelectorAll('#timelineEditor .js-tl-item').forEach(function (row) {
+      var year = (row.querySelector('.js-tl-year')?.value || '').trim();
+      var kind = (row.querySelector('.js-tl-kind')?.value || 'dot').trim() || 'dot';
+      var title = (row.querySelector('.js-tl-title')?.value || '').trim();
+      var body = (row.querySelector('.js-tl-body')?.value || '').trim();
+      if (!year && !title && !body) return;
+      out.push({ year: year, kind: kind, title: title, body: body });
+    });
+    return out;
+  }
+
+  function getTeamItemsFromDom() {
+    var out = [];
+    document.querySelectorAll('#teamEditor .js-team-item').forEach(function (row) {
+      var name = (row.querySelector('.js-team-name')?.value || '').trim();
+      var role = (row.querySelector('.js-team-role')?.value || '').trim();
+      var image = (row.querySelector('.js-team-image')?.value || '').trim();
+      if (!name && !role && !image) return;
+      out.push({ name: name, role: role, image: image });
+    });
+    return out;
+  }
+
+  function syncHiddenJson() {
+    var tl = getTimelineItemsFromDom();
+    var tm = getTeamItemsFromDom();
+    var tlEl = document.getElementById('timeline_json');
+    var tmEl = document.getElementById('team_json');
+    if (tlEl) tlEl.value = JSON.stringify(tl);
+    if (tmEl) tmEl.value = JSON.stringify(tm);
+    var tlAdv = document.getElementById('timeline_json_advanced');
+    var tmAdv = document.getElementById('team_json_advanced');
+    if (tlAdv) tlAdv.value = JSON.stringify(tl, null, 2);
+    if (tmAdv) tmAdv.value = JSON.stringify(tm, null, 2);
+  }
+
+  function renderTimeline(items) {
+    var host = document.getElementById('timelineEditor');
+    if (!host) return;
+    host.innerHTML = '';
+    (items || []).forEach(function (it, idx) {
+      var year = (it && it.year) || '';
+      var kind = (it && it.kind) || 'dot';
+      var title = (it && it.title) || '';
+      var body = (it && it.body) || '';
+      var wrap = document.createElement('div');
+      wrap.className = 'card js-tl-item';
+      wrap.style.cssText = 'margin-bottom: 12px; padding: 12px;';
+      wrap.innerHTML =
+        '<div class="form-row" style="align-items:flex-end; gap: 10px;">' +
+          '<div class="form-group" style="flex:0 0 120px; margin-bottom:0;">' +
+            '<label>Year</label>' +
+            '<input type="text" class="form-control js-tl-year" value="' + escHtml(year) + '" placeholder="2024">' +
+          '</div>' +
+          '<div class="form-group" style="flex:0 0 170px; margin-bottom:0;">' +
+            '<label>Kind</label>' +
+            '<select class="form-control js-tl-kind">' +
+              '<option value="dot"' + (kind === 'dot' ? ' selected' : '') + '>dot</option>' +
+              '<option value="dot_primary"' + (kind === 'dot_primary' ? ' selected' : '') + '>dot_primary</option>' +
+              '<option value="circle"' + (kind === 'circle' ? ' selected' : '') + '>circle</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="form-group" style="flex:1; margin-bottom:0;">' +
+            '<label>Title</label>' +
+            '<input type="text" class="form-control js-tl-title" value="' + escHtml(title) + '" placeholder="Milestone title">' +
+          '</div>' +
+          '<button type="button" class="btn btn-outline btn-sm js-tl-remove">Remove</button>' +
+        '</div>' +
+        '<div class="form-group" style="margin-bottom:0;">' +
+          '<label>Body</label>' +
+          '<textarea class="form-control js-tl-body" rows="3" placeholder="Short description">' + escHtml(body) + '</textarea>' +
+        '</div>';
+      wrap.querySelector('.js-tl-remove').addEventListener('click', function () {
+        wrap.remove();
+        syncHiddenJson();
+      });
+      wrap.addEventListener('input', function () { syncHiddenJson(); });
+      wrap.addEventListener('change', function () { syncHiddenJson(); });
+      host.appendChild(wrap);
+    });
+  }
+
+  function renderTeam(items) {
+    var host = document.getElementById('teamEditor');
+    if (!host) return;
+    host.innerHTML = '';
+    (items || []).forEach(function (it, idx) {
+      var name = (it && it.name) || '';
+      var role = (it && it.role) || '';
+      var image = (it && it.image) || '';
+      var inputId = 'team_image_' + idx;
+      var prevId = 'team_image_' + idx + '_preview';
+      var imgUrl = normalizeTeamImageUrl(image);
+
+      var wrap = document.createElement('div');
+      wrap.className = 'card js-team-item';
+      wrap.style.cssText = 'margin-bottom: 12px; padding: 12px;';
+      wrap.innerHTML =
+        '<div class="form-row" style="align-items:flex-end; gap: 10px;">' +
+          '<div class="form-group" style="flex: 1; margin-bottom:0;">' +
+            '<label>Name</label>' +
+            '<input type="text" class="form-control js-team-name" value="' + escHtml(name) + '" placeholder="Full name">' +
+          '</div>' +
+          '<div class="form-group" style="flex: 1; margin-bottom:0;">' +
+            '<label>Role</label>' +
+            '<input type="text" class="form-control js-team-role" value="' + escHtml(role) + '" placeholder="Title / position">' +
+          '</div>' +
+          '<button type="button" class="btn btn-outline btn-sm js-team-remove">Remove</button>' +
+        '</div>' +
+        '<div class="form-group" style="margin-top:10px;">' +
+          '<label>Image</label>' +
+          '<div style="display:flex; gap: 10px; align-items:center; flex-wrap:wrap;">' +
+            '<button type="button" class="btn btn-outline js-team-pick">Select from media</button>' +
+            '<input type="text" id="' + escHtml(inputId) + '" class="form-control js-team-image" value="' + escHtml(image) + '" placeholder="/assets/uploads/… or https://…">' +
+          '</div>' +
+          '<div id="' + escHtml(prevId) + '" class="image-preview" style="' + (imgUrl ? 'display:block;margin-top:10px;' : 'display:none;margin-top:10px;') + '">' +
+            (imgUrl ? ('<img src="' + escHtml(imgUrl) + '" style="max-width:260px;max-height:180px;border-radius:6px;">') : '') +
+          '</div>' +
+        '</div>';
+
+      wrap.querySelector('.js-team-pick').addEventListener('click', function () {
+        openMediaModal(inputId, prevId, false);
+      });
+      wrap.querySelector('.js-team-remove').addEventListener('click', function () {
+        wrap.remove();
+        syncHiddenJson();
+      });
+      wrap.addEventListener('input', function () {
+        // Update preview if someone pastes a URL/path.
+        var v = (wrap.querySelector('.js-team-image')?.value || '').trim();
+        var p = document.getElementById(prevId);
+        if (p) {
+          var u = normalizeTeamImageUrl(v);
+          if (!u) {
+            p.style.display = 'none';
+            p.innerHTML = '';
+          } else {
+            p.style.display = 'block';
+            p.innerHTML = '<img src="' + escHtml(u) + '" style="max-width:260px;max-height:180px;border-radius:6px;">';
+          }
+        }
+        syncHiddenJson();
+      });
+      wrap.addEventListener('change', function () { syncHiddenJson(); });
+      host.appendChild(wrap);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var tlRaw = document.getElementById('timeline_json')?.value || '[]';
+    var tmRaw = document.getElementById('team_json')?.value || '[]';
+    var tl = safeParseJson(tlRaw, []);
+    var tm = safeParseJson(tmRaw, []);
+    if (!Array.isArray(tl)) tl = [];
+    if (!Array.isArray(tm)) tm = [];
+
+    // If empty, start with one blank item so the UI doesn't look broken.
+    if (tl.length === 0) tl = [{ year: '', kind: 'dot', title: '', body: '' }];
+    if (tm.length === 0) tm = [{ name: '', role: '', image: '' }];
+
+    renderTimeline(tl);
+    renderTeam(tm);
+    syncHiddenJson();
+
+    var tlAdd = document.getElementById('timelineAddBtn');
+    if (tlAdd) tlAdd.addEventListener('click', function () {
+      var cur = getTimelineItemsFromDom();
+      cur.push({ year: '', kind: 'dot', title: '', body: '' });
+      renderTimeline(cur);
+      syncHiddenJson();
+    });
+
+    var tmAdd = document.getElementById('teamAddBtn');
+    if (tmAdd) tmAdd.addEventListener('click', function () {
+      var cur = getTeamItemsFromDom();
+      cur.push({ name: '', role: '', image: '' });
+      renderTeam(cur);
+      syncHiddenJson();
+    });
+
+    var tlApply = document.getElementById('timelineApplyJsonBtn');
+    if (tlApply) tlApply.addEventListener('click', function () {
+      var t = document.getElementById('timeline_json_advanced')?.value || '';
+      var v = safeParseJson(t, null);
+      if (!Array.isArray(v)) {
+        showToast('Timeline JSON must be an array', 'error');
+        return;
+      }
+      renderTimeline(v);
+      syncHiddenJson();
+      showToast('Timeline applied', 'success');
+    });
+
+    var tmApply = document.getElementById('teamApplyJsonBtn');
+    if (tmApply) tmApply.addEventListener('click', function () {
+      var t = document.getElementById('team_json_advanced')?.value || '';
+      var v = safeParseJson(t, null);
+      if (!Array.isArray(v)) {
+        showToast('Team JSON must be an array', 'error');
+        return;
+      }
+      renderTeam(v);
+      syncHiddenJson();
+      showToast('Team applied', 'success');
+    });
+  });
 })();
 document.getElementById('aboutPageForm').addEventListener('submit', function (e) {
   e.preventDefault();

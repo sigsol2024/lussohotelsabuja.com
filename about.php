@@ -62,12 +62,12 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
 
 <section class="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
   <div class="absolute inset-0 z-0">
-    <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/70 z-10"></div>
-    <div class="w-full h-full bg-cover bg-center bg-no-repeat scale-105 animate-[pulse_10s_ease-in-out_infinite]" style='background-image: url("<?= e($hero_bg) ?>");'>
+    <div class="absolute inset-0 z-10" style="background: rgba(107, 51, 39, 0.72);"></div>
+    <div class="w-full h-full bg-cover bg-center bg-no-repeat scale-105" style='background-image: url("<?= e($hero_bg) ?>");'>
     </div>
   </div>
   <div class="relative z-20 container mx-auto px-6 lg:px-12 flex flex-col items-center text-center pt-20">
-    <span class="text-primary text-sm uppercase tracking-[0.2em] font-bold mb-4 animate-[fadeIn_1s_ease-out]"><?= e($hero_established) ?></span>
+    <span class="text-white/90 text-sm uppercase tracking-[0.2em] font-bold mb-4 animate-[fadeIn_1s_ease-out]"><?= e($hero_established) ?></span>
     <h1 class="text-white text-5xl md:text-7xl lg:text-8xl font-light tracking-tight leading-[1.1] mb-8 max-w-4xl drop-shadow-2xl">
       <?= $hero_title_html ?>
     </h1>

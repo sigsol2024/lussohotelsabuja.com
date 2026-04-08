@@ -458,6 +458,8 @@ window.insertSelectedMediaOverride = function() {
 
 document.getElementById('roomForm').addEventListener('submit', function(e){
   e.preventDefault();
+  const submitBtn = this.querySelector('button[type=\"submit\"]');
+  if (typeof setSaveButtonSavingState === 'function') setSaveButtonSavingState(submitBtn, true);
   const csrfToken = document.querySelector('meta[name=\"csrf-token\"]')?.getAttribute('content') || '';
   const payload = {
     title: document.getElementById('title').value,
@@ -507,7 +509,10 @@ document.getElementById('roomForm').addEventListener('submit', function(e){
     } else {
       showToast(data.message || 'Save failed', 'error');
     }
-  }).catch(() => showToast('Save failed', 'error'));
+  }).catch(() => showToast('Save failed', 'error'))
+  .finally(function () {
+    if (typeof setSaveButtonSavingState === 'function') setSaveButtonSavingState(submitBtn, false);
+  });
 });
 </script>
 

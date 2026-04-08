@@ -71,6 +71,63 @@ $featuredRooms = getFeaturedRoomsForHome(12);
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title><?= e($pageTitle) ?></title>
   <?php require_once __DIR__ . '/includes/head-header.php'; ?>
+  <?php if (!empty($hasBookingBridge)): ?>
+  <style>
+    /* StayEazi / booking embed — normalize layout inside #booking-lusso (see BlueOrange pattern) */
+    #booking-lusso { width: 100% !important; }
+    #booking-lusso * { box-sizing: border-box; }
+    #booking-lusso #booking-widget,
+    #booking-lusso #booking-blueorange #booking-widget {
+      margin: 0 !important; padding: 0 !important; border: 0 !important;
+      box-shadow: none !important; border-radius: 0 !important;
+      background: transparent !important; max-width: none !important; width: 100% !important;
+    }
+    #booking-lusso #booking-form,
+    #booking-lusso #booking-blueorange #booking-form {
+      display: flex !important; flex-wrap: wrap !important; gap: 10px !important;
+      align-items: flex-end !important; justify-content: space-between !important;
+      padding: 0 !important; margin: 0 !important; width: 100% !important;
+    }
+    #booking-lusso #booking-form > div,
+    #booking-lusso #booking-blueorange #booking-form > div {
+      width: auto !important; min-width: 140px !important;
+      flex: 1 1 160px !important; margin: 0 !important;
+    }
+    #booking-lusso #booking-form label,
+    #booking-lusso #booking-blueorange #booking-form label {
+      font-size: 11px !important; font-weight: 700 !important;
+      letter-spacing: 0.06em !important; text-transform: uppercase !important;
+      margin-bottom: 6px !important; color: #363636 !important;
+    }
+    #booking-lusso #booking-form input,
+    #booking-lusso #booking-blueorange #booking-form input {
+      width: 100% !important; min-height: 44px !important;
+      padding: 10px 12px !important; border: 1px solid #d8d0bc !important;
+      border-radius: 10px !important; background: #fff !important; color: #363636 !important;
+    }
+    #booking-lusso #booking-form button,
+    #booking-lusso #booking-blueorange #booking-form button {
+      width: 100% !important; min-height: 44px !important; margin-top: 0 !important;
+      border: 0 !important; border-radius: 10px !important;
+      background: #411d13 !important; color: #fff !important;
+      font-weight: 700 !important; cursor: pointer !important;
+    }
+    #booking-lusso #booking-form button:hover,
+    #booking-lusso #booking-blueorange #booking-form button:hover {
+      background: #5a2a1f !important;
+    }
+    @media (max-width: 1024px) {
+      #booking-lusso #booking-form,
+      #booking-lusso #booking-blueorange #booking-form {
+        flex-direction: column !important; align-items: stretch !important;
+      }
+      #booking-lusso #booking-form > div,
+      #booking-lusso #booking-blueorange #booking-form > div {
+        min-width: 100% !important; flex: 1 1 100% !important;
+      }
+    }
+  </style>
+  <?php endif; ?>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-text-main font-display antialiased overflow-x-hidden selection:bg-primary/30">
 <?php require_once __DIR__ . '/includes/header.php'; ?>
@@ -152,21 +209,21 @@ $featuredRooms = getFeaturedRoomsForHome(12);
   })();
   </script>
   <?php endif; ?>
-
-  <?php if ($hasBookingBridge): ?>
-  <!-- Booking widget bridge (same placement pattern as BlueOrange): overlaps hero bottom on desktop -->
-  <div class="relative md:absolute bottom-0 left-0 md:left-1/2 md:-translate-x-1/2 translate-y-0 md:translate-y-1/2 w-full max-w-6xl px-6 lg:px-12 z-30 mt-8 md:mt-0">
-    <div class="rounded-lg bg-white/95 backdrop-blur-md border border-black/[0.08] shadow-elevation p-4 md:p-6 overflow-x-auto">
-      <div id="booking-lusso" class="w-full">
-        <?= $booking_widget_html ?>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
 </section>
 
+<?php if ($hasBookingBridge): ?>
+<!-- Booking bridge: own stacking layer so the next section does not paint over the widget -->
+<div class="lusso-booking-bridge relative z-[60] w-full max-w-6xl mx-auto px-6 lg:px-12 -mt-16 sm:-mt-20 md:-mt-28 mb-10 md:mb-14">
+  <div class="rounded-xl bg-white/95 backdrop-blur-md border border-black/[0.08] shadow-elevation p-4 md:p-6 overflow-x-auto">
+    <div id="booking-lusso" class="w-full">
+      <?= $booking_widget_html ?>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
 <!-- Asymmetrical Editorial Section: The Lusso Standard -->
-<section class="relative w-full <?= $hasBookingBridge ? 'pt-28 md:pt-40 pb-24 md:pb-32' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
+<section class="relative z-10 w-full <?= $hasBookingBridge ? 'pt-12 md:pt-16 pb-24 md:pb-32' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
   <div class="absolute inset-0 opacity-[0.04] pointer-events-none" style="background-image: radial-gradient(#363636 1px, transparent 1px); background-size: 32px 32px;"></div>
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
     <div class="flex flex-col lg:flex-row items-stretch lg:items-start gap-12 lg:gap-0 mb-32 relative">

@@ -22,6 +22,43 @@ try {
             if (!verifyCSRFToken($csrfToken)) {
                 jsonResponse(['success' => false, 'message' => 'Invalid security token. Please refresh and try again.'], 403);
             }
+            $action = $_POST['action'] ?? '';
+            if ($action === 'bulk_delete') {
+                $idsRaw = $_POST['ids'] ?? '[]';
+                $ids = is_string($idsRaw) ? json_decode($idsRaw, true) : $idsRaw;
+                if (!is_array($ids) || empty($ids)) {
+                    jsonResponse(['success' => false, 'message' => 'No items selected.'], 400);
+                }
+                $ids = array_values(array_unique(array_filter(array_map('intval', $ids), function ($id) {
+                    return $id > 0;
+                })));
+                if (empty($ids)) {
+                    jsonResponse(['success' => false, 'message' => 'Invalid selection.'], 400);
+                }
+                if (count($ids) > 100) {
+                    jsonResponse(['success' => false, 'message' => 'Too many items (max 100 per request).'], 400);
+                }
+                $deleted = 0;
+                foreach ($ids as $mid) {
+                    $stmt = $pdo->prepare('SELECT file_path FROM media WHERE id = ?');
+                    $stmt->execute([$mid]);
+                    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                    if (!$row) {
+                        continue;
+                    }
+                    deleteFile($row['file_path']);
+                    $del = $pdo->prepare('DELETE FROM media WHERE id = ?');
+                    $del->execute([$mid]);
+                    if ($del->rowCount() > 0) {
+                        $deleted++;
+                    }
+                }
+                jsonResponse([
+                    'success' => true,
+                    'message' => $deleted === 1 ? '1 file deleted.' : ($deleted . ' files deleted.'),
+                    'deleted' => $deleted
+                ]);
+            }
             if (!isset($_FILES['file'])) {
                 jsonResponse(['success' => false, 'message' => 'No file uploaded.'], 400);
             }
@@ -71,25 +108,25 @@ try {
             $where = [];
             $params = [];
             if ($search) {
-                $where[] = "(original_name LIKE ? OR filename LIKE ?)";
+                $where[] = '(m.original_name LIKE ? OR m.filename LIKE ?)';
                 $searchTerm = "%{$search}%";
                 $params[] = $searchTerm;
                 $params[] = $searchTerm;
             }
             $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
-            $countStmt = $pdo->prepare("SELECT COUNT(*) FROM media {$whereClause}");
+            $countStmt = $pdo->prepare("SELECT COUNT(*) FROM media m {$whereClause}");
             $countStmt->execute($params);
             $total = (int)$countStmt->fetchColumn();
 
-            $stmt = $pdo->prepare("SELECT * FROM media {$whereClause} ORDER BY uploaded_at DESC LIMIT ? OFFSET ?");
+            $stmt = $pdo->prepare("SELECT m.* FROM media m {$whereClause} ORDER BY m.uploaded_at DESC LIMIT ? OFFSET ?");
             $params[] = $perPage;
             $params[] = $offset;
             $stmt->execute($params);
             $media = $stmt->fetchAll();
 
             foreach ($media as &$item) {
-                $item['url'] = SITE_URL . $item['file_path'];
+                $item['url'] = rtrim(SITE_URL, '/') . '/' . ltrim((string)($item['file_path'] ?? ''), '/');
             }
             unset($item);
 
@@ -104,6 +141,31 @@ try {
                 ]
             ]);
             break;
+
+        case 'DELETE':
+            $csrfToken = $_GET['csrf_token'] ?? '';
+            if (!verifyCSRFToken($csrfToken)) {
+                jsonResponse(['success' => false, 'message' => 'Invalid security token.'], 403);
+            }
+            $id = (int)($_GET['id'] ?? 0);
+            if ($id <= 0) {
+                jsonResponse(['success' => false, 'message' => 'Invalid media ID.'], 400);
+            }
+            $stmt = $pdo->prepare('SELECT file_path FROM media WHERE id = ?');
+            $stmt->execute([$id]);
+            $media = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$media) {
+                jsonResponse(['success' => false, 'message' => 'Media not found.'], 404);
+            }
+            deleteFile($media['file_path']);
+            try {
+                $stmt = $pdo->prepare('DELETE FROM media WHERE id = ?');
+                $stmt->execute([$id]);
+                jsonResponse(['success' => true, 'message' => 'Media deleted successfully.']);
+            } catch (PDOException $e) {
+                error_log('Media delete DB error: ' . $e->getMessage());
+                jsonResponse(['success' => false, 'message' => 'Failed to delete media record.'], 500);
+            }
 
         default:
             jsonResponse(['success' => false, 'message' => 'Method not allowed'], 405);

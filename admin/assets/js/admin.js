@@ -48,19 +48,62 @@ function savePageSection(payload) {
 }
 
 /**
+ * @param {HTMLButtonElement|HTMLInputElement|null} btn
+ * @param {boolean} on
+ */
+function setSaveButtonSavingState(btn, on) {
+  if (!btn) return;
+  const isInput = btn.tagName === 'INPUT';
+  if (on) {
+    if (!btn.dataset.lussoSaveHtml) {
+      btn.dataset.lussoSaveHtml = isInput ? String(btn.value) : btn.innerHTML;
+    }
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    btn.classList.add('is-saving');
+    if (isInput) {
+      btn.value = 'Saving…';
+    } else {
+      btn.innerHTML =
+        '<span class="admin-btn-spinner" aria-hidden="true"></span><span>Saving…</span>';
+    }
+  } else {
+    btn.disabled = false;
+    btn.removeAttribute('aria-busy');
+    if (btn.dataset.lussoSaveHtml != null) {
+      if (isInput) {
+        btn.value = btn.dataset.lussoSaveHtml;
+      } else {
+        btn.innerHTML = btn.dataset.lussoSaveHtml;
+      }
+      delete btn.dataset.lussoSaveHtml;
+    }
+    btn.classList.remove('is-saving');
+  }
+}
+
+/**
  * Save all named fields in a form as page_sections rows. Keys come from FormData (no hardcoded list).
  * @param {HTMLFormElement} formEl
  * @param {string} pageSlug
  * @param {Object<string,string>} [typeOverrides] section_key -> content_type
+ * @param {{ submitButton?: HTMLButtonElement|HTMLInputElement }} [options]
  */
-function savePageForm(formEl, pageSlug, typeOverrides) {
+function savePageForm(formEl, pageSlug, typeOverrides, options) {
   typeOverrides = typeOverrides || {};
+  options = options || {};
+  const submitBtn =
+    options.submitButton ||
+    formEl.querySelector('button[type="submit"], input[type="submit"]');
+  setSaveButtonSavingState(submitBtn, true);
+
   const formData = new FormData(formEl);
   const keys = [];
   formData.forEach(function (_, k) {
     if (keys.indexOf(k) === -1) keys.push(k);
   });
-  return Promise.all(
+
+  const promise = Promise.all(
     keys.map(function (key) {
       const ct =
         Object.prototype.hasOwnProperty.call(typeOverrides, key) && typeOverrides[key]
@@ -76,6 +119,10 @@ function savePageForm(formEl, pageSlug, typeOverrides) {
       });
     })
   );
+
+  return promise.finally(function () {
+    setSaveButtonSavingState(submitBtn, false);
+  });
 }
 
 function showToast(message, type = 'info') {

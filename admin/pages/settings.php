@@ -405,11 +405,8 @@ document.getElementById('settingsForm').addEventListener('submit', function(e) {
     });
     
     const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving...';
-    
+    if (typeof setSaveButtonSavingState === 'function') setSaveButtonSavingState(submitBtn, true);
+
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     fetch('<?= ADMIN_URL ?>api/settings.php', {
         method: 'POST',
@@ -444,8 +441,7 @@ document.getElementById('settingsForm').addEventListener('submit', function(e) {
         showToast('Error: ' + error.message, 'error');
     })
     .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
+        if (typeof setSaveButtonSavingState === 'function') setSaveButtonSavingState(submitBtn, false);
     });
 });
 </script>

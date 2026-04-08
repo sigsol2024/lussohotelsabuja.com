@@ -133,7 +133,7 @@ $masonryRaw = trim($sections['masonry_json'] ?? '') !== '' ? $sections['masonry_
     <div class="form-group">
       <label for="menu_iframe_url">Menu iframe URL</label>
       <input type="text" id="menu_iframe_url" name="menu_iframe_url" value="<?= sanitize($sections['menu_iframe_url'] ?? 'https://our-menu.online/restaurant/the-lusso-restaurant') ?>">
-      <p class="form-help">Paste the menu URL. Note: some providers block iframe embedding via <code>X-Frame-Options</code>; in that case the site will show an “Open menu” button instead of an embedded frame.</p>
+      <p class="form-help">Paste the menu URL. If the provider allows embedding, it will display in an iframe on the dining page; otherwise visitors will use the “Open menu” button.</p>
     </div>
     <details style="margin-top:14px;">
       <summary style="cursor:pointer; color: var(--text-muted);">Advanced (legacy JSON menu)</summary>

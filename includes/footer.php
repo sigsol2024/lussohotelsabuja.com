@@ -38,9 +38,9 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
     <div class="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16 mb-16">
       <!-- Brand (logo + socials) -->
       <div class="min-w-0">
-        <div class="lusso-brand-logo lusso-brand-logo--footer flex items-center mb-8 md:mb-10 min-h-[5rem] md:min-h-[7.5rem] py-2 pe-4 md:py-3 md:pe-6">
+        <div class="lusso-brand-logo lusso-brand-logo--footer flex items-center justify-center md:justify-start mb-8 md:mb-10 min-h-[5rem] md:min-h-[7.5rem] py-2 md:py-3">
           <?php if ($useFooterLogo): ?>
-          <img src="<?= e($siteLogoLightUrl) ?>" alt="<?= e($siteName) ?>" class="h-[104px] w-auto md:h-[120px] lg:h-[144px] max-w-[min(100%,32rem)] object-contain object-left" decoding="async"/>
+          <img src="<?= e($siteLogoLightUrl) ?>" alt="<?= e($siteName) ?>" class="h-[124px] w-auto md:h-[120px] lg:h-[144px] max-w-[min(100%,32rem)] object-contain object-center md:object-left" decoding="async"/>
           <?php else: ?>
           <span class="material-symbols-outlined text-champagne text-2xl">diamond</span>
           <span class="font-serif text-xl font-bold tracking-tight text-background-light"><?= e($siteName) ?></span>
@@ -64,6 +64,7 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
 
       <!-- Brand description (2nd column) -->
       <div class="min-w-0">
+        <h4 class="font-serif text-lg mb-6 text-champagne">About</h4>
         <p class="text-background-light/70 text-sm leading-relaxed">
           <?= e($footerTagline) ?>
         </p>

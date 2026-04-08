@@ -127,6 +127,8 @@ $pageSections = [
     ['contact', 'intro_title', 'text', 'Get in Touch'],
     ['contact', 'intro_body', 'text', 'Experience the quiet luxury of Lusso Abuja. Whether planning a stay or an event, we are here to assist with your every request.'],
     ['contact', 'address_html', 'html', "123 Diplomatic Drive<br/>\nCentral Business District,<br/>\nAbuja, Nigeria"],
+    ['contact', 'map_address', 'text', ''],
+    ['contact', 'map_embed_url', 'text', ''],
     ['contact', 'directions_href', 'text', '#'],
     ['contact', 'concierge_phone', 'text', '+234 800 LUSSO'],
     ['contact', 'inquiries_email', 'text', 'concierge@lussohotels.com'],

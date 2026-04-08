@@ -48,6 +48,16 @@ try {
         <textarea id="address_html" name="address_html" rows="4"><?= htmlspecialchars($sections['address_html'] ?? "123 Diplomatic Drive<br/>\nCentral Business District,<br/>\nAbuja, Nigeria", ENT_QUOTES, 'UTF-8') ?></textarea>
       </div>
       <div class="form-group">
+        <label for="map_address">Map address (used for embed)</label>
+        <input type="text" id="map_address" name="map_address" value="<?= sanitize($sections['map_address'] ?? '') ?>" placeholder="No. 33 Usuma Street, off Gana Street, Maitama, Abuja Nigeria">
+        <p class="form-help">Optional. If empty, we auto-derive from the Address field.</p>
+      </div>
+      <div class="form-group">
+        <label for="map_embed_url">Custom map embed URL (optional)</label>
+        <input type="text" id="map_embed_url" name="map_embed_url" value="<?= sanitize($sections['map_embed_url'] ?? '') ?>" placeholder="https://www.google.com/maps/embed?...">
+        <p class="form-help">Paste a Google Maps embed URL (Share → Embed). If set, it overrides the generated map.</p>
+      </div>
+      <div class="form-group">
         <label for="directions_href">Directions link</label>
         <input type="text" id="directions_href" name="directions_href" value="<?= sanitize($sections['directions_href'] ?? '#') ?>">
       </div>
@@ -61,20 +71,6 @@ try {
           <input type="text" id="inquiries_email" name="inquiries_email" value="<?= sanitize($sections['inquiries_email'] ?? 'concierge@lussohotels.com') ?>">
         </div>
       </div>
-      <div class="form-group">
-        <label>Map / aerial image</label>
-        <button type="button" class="btn btn-outline" onclick="openMediaModal('map_image','map_image_preview')">Select</button>
-        <input type="hidden" id="map_image" name="map_image" value="<?= sanitize($sections['map_image'] ?? '') ?>">
-        <div id="map_image_preview" class="image-preview" style="<?= !empty($sections['map_image']) ? 'display:block;' : 'display:none;' ?>">
-          <?php if (!empty($sections['map_image'])): ?>
-            <img src="<?= SITE_URL . ltrim($sections['map_image'], '/') ?>" style="max-width:500px;">
-          <?php endif; ?>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="map_pin_label">Map pin label</label>
-        <input type="text" id="map_pin_label" name="map_pin_label" value="<?= sanitize($sections['map_pin_label'] ?? 'Lusso Abuja') ?>">
-      </div>
     </div>
   </div>
 
@@ -83,14 +79,7 @@ try {
 
 <script>
 window.insertSelectedMediaOverride = function () {
-  var s = mediaModalState.selectedMedia;
-  if (!s || mediaModalState.targetInputId !== 'map_image') return false;
-  document.getElementById('map_image').value = s.path;
-  var p = document.getElementById('map_image_preview');
-  p.style.display = 'block';
-  p.innerHTML = '<img src="<?= SITE_URL ?>' + s.path.replace(/^\/+/, '') + '" style="max-width:500px;">';
-  closeMediaModal();
-  return true;
+  return false;
 };
 document.getElementById('contactPageForm').addEventListener('submit', function (e) {
   e.preventDefault();

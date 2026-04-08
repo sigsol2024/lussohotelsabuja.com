@@ -9,8 +9,30 @@ $address_html = getPageSection('contact', 'address_html', "123 Diplomatic Drive<
 $directions_href = getPageSection('contact', 'directions_href', '#');
 $concierge_phone = getPageSection('contact', 'concierge_phone', '+234 800 LUSSO');
 $inquiries_email = getPageSection('contact', 'inquiries_email', 'concierge@lussohotels.com');
-$map_image = getPageSection('contact', 'map_image', 'https://lh3.googleusercontent.com/aida-public/AB6AXuAK_uzWkbR7rEovHVUwT02daL4jG0KZoBuT3aKk-b0PKZbeHgLb-bs6-sAYadAWnRTYyZV42HkpJOXsw-Toccx_1HckozB8hIVInA8MzcVlmiFHtgd5_9kHvcm3Jz-0JmZVLiq6EDmrVRV9sT-s6InQ3Y09Bp24mO10aVSdVRVTPo-vrGoO1R4oYFd6VjZaOLskG8CrXcQwSVzoV9i30JsEevxP9EKAww9JrTXljPIZyLtC5tbq6OFt_dyKltcSXMLFAnwIQ-e6yBs');
-$map_pin_label = getPageSection('contact', 'map_pin_label', 'Lusso Abuja');
+$map_address = getPageSection('contact', 'map_address', '');
+$map_embed_url = getPageSection('contact', 'map_embed_url', '');
+$googleMapsApiKey = getSiteSetting('google_maps_api_key', '');
+
+$mapAddressPlain = trim(strip_tags(str_replace(['<br/>', '<br />', '<br>'], ', ', (string)$address_html)));
+if ($map_address !== '' && is_string($map_address)) {
+    $mapAddressPlain = trim($map_address);
+}
+
+$mapUrl = '';
+if (trim((string)$map_embed_url) !== '') {
+    $mapUrl = trim((string)$map_embed_url);
+} elseif (trim((string)$googleMapsApiKey) !== '' && $mapAddressPlain !== '') {
+    $mapUrl = 'https://www.google.com/maps/embed/v1/place?key=' . urlencode((string)$googleMapsApiKey) . '&q=' . urlencode($mapAddressPlain);
+} elseif ($mapAddressPlain !== '') {
+    $mapUrl = 'https://www.google.com/maps?q=' . urlencode($mapAddressPlain) . '&output=embed';
+}
+
+$directionsUrl = trim((string)$directions_href);
+if ($directionsUrl === '' || $directionsUrl === '#') {
+    $directionsUrl = $mapAddressPlain !== ''
+        ? ('https://www.google.com/maps/dir/?api=1&destination=' . urlencode($mapAddressPlain))
+        : '#';
+}
 ?>
 <!DOCTYPE html>
 <html class="light" lang="en">
@@ -31,8 +53,8 @@ $map_pin_label = getPageSection('contact', 'map_pin_label', 'Lusso Abuja');
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
 <main class="flex-grow w-full max-w-[1440px] mx-auto px-6 lg:px-20 py-12 lg:py-20">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
-    <div class="lg:col-span-5 flex flex-col justify-center">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-12 lg:gap-24 items-start">
+    <div class="md:col-span-5 flex flex-col md:pt-8">
       <div class="mb-10">
         <span class="block text-primary text-xs font-bold uppercase tracking-[0.2em] mb-3"><?= e($intro_kicker) ?></span>
         <h1 class="text-4xl lg:text-6xl font-display font-medium tracking-tight text-text-main mb-6">
@@ -80,7 +102,7 @@ $map_pin_label = getPageSection('contact', 'map_pin_label', 'Lusso Abuja');
         </a>
       </div>
     </div>
-    <div class="lg:col-span-7 flex flex-col gap-10 lg:pt-8">
+    <div class="md:col-span-7 flex flex-col gap-10 md:pt-8">
       <div class="bg-white rounded-2xl border border-black/[0.06] shadow-elevation p-8 lg:p-10">
         <h3 class="text-xs font-bold uppercase tracking-widest text-text-muted mb-5">Address</h3>
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
@@ -112,20 +134,32 @@ $map_pin_label = getPageSection('contact', 'map_pin_label', 'Lusso Abuja');
           </div>
         </div>
       </div>
-      <div class="relative w-full h-[400px] lg:h-[500px] overflow-hidden rounded-sm bg-gray-100 group">
-        <div class="absolute inset-0 bg-cover bg-center map-filter transition-all duration-700 ease-out group-hover:scale-105"
-             style="background-image: url('<?= e($map_image) ?>');">
-        </div>
-        <div class="absolute inset-0 bg-gradient-to-t from-background-light/20 to-transparent"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-          <div class="relative flex items-center justify-center size-12">
-            <div class="absolute size-full rounded-full bg-primary/20 animate-ping"></div>
-            <div class="relative size-3 rounded-full bg-primary shadow-lg ring-4 ring-white"></div>
+      <div class="relative w-full h-[400px] lg:h-[500px] overflow-hidden rounded-sm bg-gray-100 shadow-elevation group">
+        <?php if ($mapUrl !== ''): ?>
+          <iframe
+            class="w-full h-full border-0"
+            src="<?= e($mapUrl) ?>"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Map showing <?= e($pageTitle) ?> location"></iframe>
+        <?php else: ?>
+          <div class="w-full h-full flex items-center justify-center text-sm text-text-muted">
+            Map not configured yet.
           </div>
-          <div class="mt-2 bg-white/90 backdrop-blur px-3 py-1.5 rounded shadow-sm">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-text-main"><?= e($map_pin_label) ?></span>
+        <?php endif; ?>
+
+        <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-background-light/10 to-transparent"></div>
+
+        <?php if ($directionsUrl !== '#'): ?>
+          <div class="absolute bottom-4 right-4">
+            <a href="<?= e($directionsUrl) ?>" target="_blank" rel="noopener noreferrer"
+               class="bg-white text-text-main px-4 py-2 rounded-lg shadow-lg text-sm font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors">
+              <span class="material-symbols-outlined text-primary">directions</span>
+              <span>Get Directions</span>
+            </a>
           </div>
-        </div>
+        <?php endif; ?>
       </div>
     </div>
   </div>

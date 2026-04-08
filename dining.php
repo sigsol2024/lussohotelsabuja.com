@@ -200,25 +200,37 @@ $cta_btn2 = getPageSection('dining', 'cta_btn2', 'Private Dining');
       $menu_is_http = ($menu_iframe_url !== '' && (str_starts_with($menu_iframe_url, 'http://') || str_starts_with($menu_iframe_url, 'https://')));
     ?>
     <?php if ($menu_is_http): ?>
-      <div class="rounded-xl overflow-hidden border border-gray-100 dark:border-white/10 shadow-xl bg-white dark:bg-surface-dark">
-        <iframe
-          src="<?= e($menu_iframe_url) ?>"
-          title="Menu"
-          loading="lazy"
-          referrerpolicy="strict-origin-when-cross-origin"
-          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
-          style="width:100%; height: 900px; border: 0;"
-        ></iframe>
+      <div class="rounded-xl border border-gray-100 dark:border-white/10 shadow-xl bg-white dark:bg-surface-dark p-8 md:p-10 text-center">
+        <p class="text-text-muted dark:text-white/70 max-w-2xl mx-auto leading-relaxed">
+          Our menu provider blocks in-page embedding (browser security header <code>X-Frame-Options</code>). Use the button below to open the live menu.
+        </p>
+        <div class="mt-8">
+          <a class="inline-flex items-center justify-center gap-3 px-8 py-3 bg-primary text-white font-bold tracking-wide rounded-lg hover:bg-primary-light transition-colors shadow-md shadow-primary/20"
+             href="<?= e($menu_iframe_url) ?>" target="_blank" rel="noopener noreferrer">
+            <span>Open menu</span>
+            <span class="material-symbols-outlined text-sm">open_in_new</span>
+          </a>
+        </div>
       </div>
-      <div class="mt-10 text-center">
-        <a class="inline-flex items-center justify-center gap-3 px-8 py-3 bg-primary text-white font-bold tracking-wide rounded-lg hover:bg-primary-light transition-colors shadow-md shadow-primary/20"
-           href="<?= e($menu_iframe_url) ?>" target="_blank" rel="noopener noreferrer">
-          <span>Open menu</span>
-          <span class="material-symbols-outlined text-sm">open_in_new</span>
-        </a>
+
+      <?php if (!empty($menuItems) && is_array($menuItems)): ?>
+      <div class="mt-14 space-y-12 md:space-y-16">
+        <?php
+          $previewRows = array_slice($menuItems, 0, 8);
+          foreach ($previewRows as $row):
+        ?>
+        <div class="group flex flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center justify-between border-b border-sand-darker dark:border-white/10 pb-12">
+          <div class="flex-1">
+            <h4 class="font-serif text-2xl md:text-3xl text-text-main dark:text-white mb-2 group-hover:text-primary transition-colors"><?= e((string)($row['name'] ?? '')) ?></h4>
+            <p class="text-text-muted dark:text-white/60 font-light leading-relaxed max-w-md"><?= e((string)($row['desc'] ?? '')) ?></p>
+          </div>
+          <div class="text-lg font-medium text-primary dark:text-champagne"><?= e((string)($row['price'] ?? '')) ?></div>
+        </div>
+        <?php endforeach; ?>
       </div>
+      <?php endif; ?>
     <?php else: ?>
-      <p class="text-text-muted dark:text-white/70 text-center">Menu embed URL is not configured yet.</p>
+      <p class="text-text-muted dark:text-white/70 text-center">Menu URL is not configured yet.</p>
     <?php endif; ?>
   </div>
 </section>

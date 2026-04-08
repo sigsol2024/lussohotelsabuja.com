@@ -300,21 +300,32 @@ function hsec($sectionsArray, $key, $default = '') {
   }
   window.renderHeroSlidesStrip = renderHeroSlidesStrip;
   window.insertSelectedMediaOverride = function () {
-    var selected = mediaModalState.selectedMedia;
-    if (!selected) return false;
+    var list = mediaModalState.allowMultiple
+      ? mediaModalState.selectedMediaMultiple
+      : (mediaModalState.selectedMedia ? [mediaModalState.selectedMedia] : []);
+    if (!list.length) return false;
     var tid = mediaModalState.targetInputId;
     if (tid === 'hero_bg_slides_pick') {
       var input = document.getElementById('hero_bg_slides');
       var arr = [];
       try { arr = JSON.parse(input.value || '[]'); } catch (e) { arr = []; }
       if (!Array.isArray(arr)) arr = [];
-      arr.push(selected.path);
+      var seen = {};
+      arr.forEach(function (p) { if (p) seen[p] = true; });
+      list.forEach(function (s) {
+        var p = s.path || '';
+        if (p && !seen[p]) { arr.push(p); seen[p] = true; }
+      });
       input.value = JSON.stringify(arr);
       renderHeroSlidesStrip();
       closeMediaModal();
-      if (typeof showToast === 'function') showToast('Slide added', 'success');
+      var n = list.length;
+      if (typeof showToast === 'function') {
+        showToast(n === 1 ? 'Slide added' : (n + ' slides added'), 'success');
+      }
       return true;
     }
+    var selected = list[0];
     var prevId = map[tid];
     if (!prevId) return false;
     var input = document.getElementById(tid);

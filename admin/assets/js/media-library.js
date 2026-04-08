@@ -9,7 +9,11 @@ let mediaModalState = {
   selectedMediaMultiple: [],
   allowMultiple: false,
   currentPage: 1,
-  currentSearch: ''
+  currentSearch: '',
+  /** Current library page items (for shift-range selection). */
+  currentGridItems: [],
+  /** Anchor row index for Shift+click range (grid index on current page). */
+  shiftAnchorIndex: null
 };
 
 function normalizeAdminBase() {
@@ -56,6 +60,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const insertBtn = document.getElementById('insertMediaBtn');
   if (insertBtn) insertBtn.addEventListener('click', insertSelectedMedia);
+
+  const gridContainer = document.getElementById('mediaGridContainer');
+  if (gridContainer) {
+    gridContainer.addEventListener('click', function (e) {
+      const cell = e.target.closest('.media-grid-item');
+      if (!cell) return;
+      e.preventDefault();
+      const idx = parseInt(cell.getAttribute('data-media-idx'), 10);
+      const media = mediaModalState.currentGridItems && mediaModalState.currentGridItems[idx];
+      if (!media) return;
+      selectMediaItem(
+        parseInt(media.id, 10),
+        media.file_path || '',
+        media.url || '',
+        idx,
+        e
+      );
+    });
+  }
 });
 
 /* Capture phase: always intercept upload form submit (avoids accidental native GET submit or missed listeners) */
@@ -68,8 +91,14 @@ document.addEventListener('submit', function(e) {
 }, true);
 
 function shouldAllowMultipleSelection(targetInputId) {
-  const multipleFields = ['gallery_image_new', 'room_gallery_images', 'gallery_images'];
-  return multipleFields.some(field => targetInputId.includes(field) || targetInputId === field);
+  if (!targetInputId) return false;
+  const multipleFields = [
+    'gallery_image_new',
+    'room_gallery_images',
+    'gallery_images',
+    'hero_bg_slides_pick'
+  ];
+  return multipleFields.some(field => targetInputId === field || targetInputId.includes(field));
 }
 
 function openMediaModal(targetInputId, targetPreviewId, allowMultiple = null) {
@@ -77,10 +106,14 @@ function openMediaModal(targetInputId, targetPreviewId, allowMultiple = null) {
   mediaModalState.targetPreviewId = targetPreviewId;
   mediaModalState.selectedMedia = null;
   mediaModalState.selectedMediaMultiple = [];
+  mediaModalState.currentGridItems = [];
+  mediaModalState.shiftAnchorIndex = null;
   mediaModalState.allowMultiple = allowMultiple === null ? shouldAllowMultipleSelection(targetInputId) : allowMultiple;
 
   const modal = document.getElementById('mediaLibraryModal');
   if (!modal) return;
+  const hint = document.getElementById('mediaMultiSelectHint');
+  if (hint) hint.style.display = mediaModalState.allowMultiple ? 'block' : 'none';
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   switchMediaTab('library');
@@ -95,6 +128,8 @@ function closeMediaModal() {
   document.body.style.overflow = '';
   mediaModalState.selectedMedia = null;
   mediaModalState.selectedMediaMultiple = [];
+  mediaModalState.currentGridItems = [];
+  mediaModalState.shiftAnchorIndex = null;
   updateInsertButton();
 }
 
@@ -144,24 +179,24 @@ function loadMediaLibrary() {
 function renderMediaGrid(mediaItems) {
   const gridContainer = document.getElementById('mediaGridContainer');
   if (!gridContainer) return;
+  mediaModalState.currentGridItems = Array.isArray(mediaItems) ? mediaItems : [];
   if (!mediaItems || mediaItems.length === 0) {
     gridContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;"><p>No media files found.</p></div>';
     return;
   }
 
   let html = '';
-  mediaItems.forEach(media => {
-    const mediaId = parseInt(media.id);
+  mediaItems.forEach((media, gridIdx) => {
+    const mediaId = parseInt(media.id, 10);
     const isSelected = mediaModalState.allowMultiple
-      ? mediaModalState.selectedMediaMultiple.some(m => parseInt(m.id) === mediaId)
-      : (mediaModalState.selectedMedia && parseInt(mediaModalState.selectedMedia.id) === mediaId);
+      ? mediaModalState.selectedMediaMultiple.some(m => parseInt(m.id, 10) === mediaId)
+      : (mediaModalState.selectedMedia && parseInt(mediaModalState.selectedMedia.id, 10) === mediaId);
 
     const borderColor = isSelected ? '#0073aa' : '#ddd';
     const borderWidth = isSelected ? '3px' : '2px';
     html += `
-      <div class="media-grid-item" data-media-id="${media.id}"
-           style="border:${borderWidth} solid ${borderColor}; border-radius:4px; overflow:hidden; cursor:pointer; background:white; position:relative;"
-           onclick='selectMediaItem(${media.id}, ${JSON.stringify(media.file_path || '')}, ${JSON.stringify(media.url || '')})'>
+      <div class="media-grid-item" data-media-id="${media.id}" data-media-idx="${gridIdx}"
+           style="border:${borderWidth} solid ${borderColor}; border-radius:4px; overflow:hidden; cursor:pointer; background:white; position:relative;">
         <div style="position: relative; padding-top: 100%; background: #f0f0f0;">
           <img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.original_name || '')}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;">
           ${isSelected ? '<div class="media-selection-checkmark" style="position:absolute;top:5px;right:5px;background:#0073aa;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;">✓</div>' : ''}
@@ -174,18 +209,65 @@ function renderMediaGrid(mediaItems) {
   updateInsertButton();
 }
 
-function selectMediaItem(mediaId, mediaPath, mediaUrl) {
-  mediaId = parseInt(mediaId);
-  if (mediaModalState.allowMultiple) {
-    const idx = mediaModalState.selectedMediaMultiple.findIndex(m => parseInt(m.id) === mediaId);
-    if (idx >= 0) mediaModalState.selectedMediaMultiple.splice(idx, 1);
-    else mediaModalState.selectedMediaMultiple.push({ id: mediaId, path: mediaPath, url: mediaUrl });
-    mediaModalState.selectedMedia = null;
-  } else {
-    mediaModalState.selectedMedia = { id: mediaId, path: mediaPath, url: mediaUrl };
+/**
+ * @param {number} gridIndex - Index in currentGridItems (current page), for shift-range selection.
+ * @param {MouseEvent} [ev]
+ */
+function selectMediaItem(mediaId, mediaPath, mediaUrl, gridIndex, ev) {
+  mediaId = parseInt(mediaId, 10);
+  const item = { id: mediaId, path: mediaPath, url: mediaUrl };
+
+  if (!mediaModalState.allowMultiple) {
+    mediaModalState.selectedMedia = item;
     mediaModalState.selectedMediaMultiple = [];
+    renderMediaGrid(mediaModalState.currentGridItems);
+    updateInsertButton();
+    return;
   }
-  loadMediaLibrary();
+
+  const items = mediaModalState.currentGridItems || [];
+  const ctrl = ev && (ev.ctrlKey || ev.metaKey);
+  const shift = ev && ev.shiftKey;
+
+  if (shift && mediaModalState.shiftAnchorIndex != null && typeof gridIndex === 'number' && !isNaN(gridIndex)) {
+    const a = Math.min(mediaModalState.shiftAnchorIndex, gridIndex);
+    const b = Math.max(mediaModalState.shiftAnchorIndex, gridIndex);
+    const next = [];
+    const seen = new Set();
+    for (let i = a; i <= b; i++) {
+      const m = items[i];
+      if (!m) continue;
+      const id = parseInt(m.id, 10);
+      if (seen.has(id)) continue;
+      seen.add(id);
+      next.push({ id, path: m.file_path || '', url: m.url || '' });
+    }
+    mediaModalState.selectedMediaMultiple = next;
+    mediaModalState.selectedMedia = null;
+    mediaModalState.shiftAnchorIndex = gridIndex;
+  } else if (shift && typeof gridIndex === 'number' && !isNaN(gridIndex)) {
+    mediaModalState.selectedMediaMultiple = [item];
+    mediaModalState.selectedMedia = null;
+    mediaModalState.shiftAnchorIndex = gridIndex;
+  } else if (ctrl) {
+    const list = mediaModalState.selectedMediaMultiple;
+    const idx = list.findIndex(m => parseInt(m.id, 10) === mediaId);
+    if (idx >= 0) list.splice(idx, 1);
+    else list.push(item);
+    mediaModalState.selectedMedia = null;
+    if (typeof gridIndex === 'number' && !isNaN(gridIndex)) {
+      mediaModalState.shiftAnchorIndex = gridIndex;
+    }
+  } else {
+    mediaModalState.selectedMediaMultiple = [item];
+    mediaModalState.selectedMedia = null;
+    if (typeof gridIndex === 'number' && !isNaN(gridIndex)) {
+      mediaModalState.shiftAnchorIndex = gridIndex;
+    }
+  }
+
+  renderMediaGrid(mediaModalState.currentGridItems);
+  updateInsertButton();
 }
 
 function updateInsertButton() {
@@ -222,7 +304,10 @@ function insertSelectedMedia() {
   }
 
   closeMediaModal();
-  if (typeof showToast === 'function') showToast('Image selected successfully', 'success');
+  if (typeof showToast === 'function') {
+    const n = selected.length;
+    showToast(n > 1 ? (n + ' images selected') : 'Image selected successfully', 'success');
+  }
 }
 
 function isAllowedImageFile(file) {

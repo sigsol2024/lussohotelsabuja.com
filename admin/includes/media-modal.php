@@ -17,6 +17,7 @@
         <div style="margin-bottom: 20px;">
           <input type="text" id="mediaSearchInput" placeholder="Search media…" autocomplete="off">
         </div>
+        <p id="mediaMultiSelectHint" class="form-help" style="display:none;margin:0 0 12px 0;font-size:13px;color:var(--text-muted);">Click an image to select it. <strong>Ctrl</strong> or <strong>⌘</strong>+click to add or remove. <strong>Shift</strong>+click to select a range.</p>
         <div id="mediaGridContainer"></div>
       </div>
       <div id="mediaUploadTab" class="media-tab-content" style="display:none;">

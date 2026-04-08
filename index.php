@@ -537,7 +537,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
           <div class="absolute bottom-0 left-0 p-8 w-full">
             <div class="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-end mb-2">
               <h3 class="font-serif text-2xl text-white"><?= e($rtitle) ?></h3>
-              <span class="text-white font-bold bg-white/10 backdrop-blur-sm border border-white/30 rounded px-3 py-1 shadow-sm">
+              <span class="inline-flex w-fit self-start sm:self-auto text-white font-bold bg-white/10 backdrop-blur-sm border border-white/30 rounded px-3 py-1 shadow-sm">
                 <?= e($currency) ?><?= e($rprice) ?>/n
               </span>
             </div>

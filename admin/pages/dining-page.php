@@ -190,25 +190,9 @@ $masonryRaw = trim($sections['masonry_json'] ?? '') !== '' ? $sections['masonry_
 })();
 document.getElementById('diningPageForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-  var form = this;
-  var keys = ['page_title', 'hero_kicker', 'hero_title_html', 'hero_subtitle', 'hero_hours', 'hero_bg', 'intro_vertical', 'chef_title_html', 'chef_body_html', 'chef_signature', 'chef_main_img', 'chef_circle_img', 'visual_title', 'visual_link_href', 'masonry_json', 'menu_kicker', 'menu_heading', 'menu_quote', 'menu_json', 'cta_bg', 'cta_title', 'cta_body', 'cta_btn1', 'cta_btn2', 'sticky_kicker', 'sticky_subtitle'];
-  Promise.all(keys.map(function (key) {
-    var el = form.querySelector('[name="' + key + '"]');
-    var val = el ? el.value : '';
-    var ct = 'text';
-    if (key.endsWith('_html')) ct = 'html';
-    if (key.endsWith('_bg') || key.indexOf('_img') !== -1) ct = 'image';
-    if (key.endsWith('_json')) ct = 'json';
-    return fetch('<?= ADMIN_URL ?>api/pages.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
-      body: JSON.stringify({ page: 'dining', section_key: key, content_type: ct, content: val })
-    }).then(function (r) { return r.json(); });
-  })).then(function (results) {
-    var ok = results.every(function (r) { return r.success; });
-    showToast(ok ? 'Saved' : 'Save failed', ok ? 'success' : 'error');
-  });
+  savePageForm(this, 'dining')
+    .then(function () { showToast('Saved', 'success'); })
+    .catch(function (err) { showToast(err.message || 'Save failed', 'error'); });
 });
 </script>
 

@@ -4,11 +4,27 @@ require_once __DIR__ . '/includes/content-loader.php';
 $pageTitle = getSiteSetting('site_name', 'Lusso Hotels Abuja');
 
 $hero_kicker = getPageSection('index', 'hero_kicker', 'Welcome to Abuja');
-$hero_title = getPageSection('index', 'hero_title', "Refined Luxury in <br/><span class=\"italic text-primary\">Absolute Silence</span>");
+$hero_title = getPageSection('index', 'hero_title', 'Refined Luxury in <br/><span class="italic text-primary border border-white/90 rounded-lg px-3 py-1 inline-block shadow-sm">Absolute Silence</span>');
 $hero_subtitle = getPageSection('index', 'hero_subtitle', 'Experience the sanctuary of Lusso. Where every detail creates a symphony of comfort.');
 $hero_cta_text = getPageSection('index', 'hero_cta_text', 'Discover Suites');
 $hero_cta_href = getPageSection('index', 'hero_cta_href', '/rooms');
 $hero_bg = getPageSection('index', 'hero_bg', "https://lh3.googleusercontent.com/aida-public/AB6AXuA09AOzJGi3HFlO4iws6G405bZGiytnUaZEFTya_spJrXDa5fTKSrBScsDkxZAQCuS6ae2mJpC0laUldei8amf2jOsK9UIg9NX305aHkrG5uIMWhPQ-1e4r8CAydwyR5KzlbYjN4mWRnao2gNBHBrofxEv7u5nEs6wpDuCE4GwvUSepjITkua6sUOfXNKlnd3aW_eBFeHSCedk94uypJTs6palB8AtN0hFG3qGsOckYndru2W3fVdobc9Goi1Jn_x4wNASClu7QbTw");
+
+$hero_bg_slides_raw = getPageSection('index', 'hero_bg_slides', '');
+$hero_slide_paths = [];
+if (trim((string)$hero_bg_slides_raw) !== '') {
+    $decodedSlides = json_decode((string)$hero_bg_slides_raw, true);
+    if (is_array($decodedSlides)) {
+        foreach ($decodedSlides as $p) {
+            if (is_string($p) && trim($p) !== '') {
+                $hero_slide_paths[] = trim($p);
+            }
+        }
+    }
+}
+if (count($hero_slide_paths) === 0) {
+    $hero_slide_paths = [$hero_bg];
+}
 
 // Booking / calendar embed (paste HTML from admin homepage editor — bridges hero → next section)
 $booking_widget_html = getPageSection('index', 'booking_widget_html', '');
@@ -59,31 +75,56 @@ $featuredRooms = getFeaturedRoomsForHome(12);
 
 <section class="relative z-0">
   <!-- Cinematic Hero Section -->
-  <header class="relative w-full h-screen min-h-[600px] overflow-hidden group">
-    <div class="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-[10s] ease-out group-hover:scale-105"
-         data-alt="Luxury hotel bedroom interior with golden lighting and plush bedding"
-         style="background-image: url('<?= e($hero_bg) ?>');">
+  <header class="relative w-full h-screen min-h-[600px] overflow-hidden group" id="lusso-home-hero">
+    <div class="absolute inset-0 overflow-hidden">
+      <?php foreach ($hero_slide_paths as $si => $slidePath): ?>
+        <?php $slideUrl = lusso_media_src($slidePath); ?>
+      <div class="hero-bg-slide absolute inset-0 bg-cover bg-center transition-opacity duration-[1200ms] ease-in-out group-hover:scale-105 <?= $si === 0 ? 'opacity-100 z-[1]' : 'opacity-0 z-0' ?>"
+           data-slide-index="<?= (int)$si ?>"
+           data-alt="Hero background"
+           style="background-image: url('<?= e($slideUrl) ?>');">
+      </div>
+      <?php endforeach; ?>
     </div>
-    <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-black/75 z-[5] pointer-events-none"></div>
 
     <div class="relative h-full flex flex-col justify-center items-center text-center px-6 z-10">
       <h2 class="text-white/90 text-sm md:text-base font-medium uppercase tracking-[0.2em] mb-4 animate-[fadeIn_1s_ease-out]">
         <?= e($hero_kicker) ?>
       </h2>
-      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium leading-tight mb-8 max-w-4xl text-cinematic animate-[fadeIn_1s_ease-out_0.2s]">
+      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium leading-tight mb-8 max-w-4xl text-cinematic animate-[fadeIn_1s_ease-out_0.2s] drop-shadow-md">
         <?= $hero_title ?>
       </h1>
-      <p class="text-white/80 text-lg md:text-xl font-light max-w-xl mb-10 animate-[fadeIn_1s_ease-out_0.4s]">
+      <p class="text-white/90 text-lg md:text-xl font-light max-w-xl mb-10 animate-[fadeIn_1s_ease-out_0.4s] drop-shadow-sm">
         <?= e($hero_subtitle) ?>
       </p>
       <div class="animate-[fadeIn_1s_ease-out_0.6s]">
-        <a class="bg-primary text-white hover:bg-primary-light transition-all duration-300 px-8 py-4 rounded-sm text-sm font-bold uppercase tracking-widest min-w-[200px] inline-block shadow-lg shadow-primary/25"
+        <a class="inline-block min-w-[200px] px-8 py-4 rounded-xl text-sm font-bold uppercase tracking-widest text-white bg-white/15 hover:bg-white/25 backdrop-blur-md border border-black/50 shadow-lg transition-all duration-300"
            href="<?= e(lusso_href((string)$hero_cta_href)) ?>">
           <?= e($hero_cta_text) ?>
         </a>
       </div>
     </div>
   </header>
+  <?php if (count($hero_slide_paths) > 1): ?>
+  <script>
+  (function () {
+    var root = document.getElementById('lusso-home-hero');
+    if (!root) return;
+    var slides = root.querySelectorAll('.hero-bg-slide');
+    if (slides.length < 2) return;
+    var cur = 0;
+    var n = slides.length;
+    setInterval(function () {
+      slides[cur].classList.remove('opacity-100', 'z-[1]');
+      slides[cur].classList.add('opacity-0', 'z-0');
+      cur = (cur + 1) % n;
+      slides[cur].classList.remove('opacity-0', 'z-0');
+      slides[cur].classList.add('opacity-100', 'z-[1]');
+    }, 7000);
+  })();
+  </script>
+  <?php endif; ?>
 
   <?php if ($hasBookingBridge): ?>
   <!-- Booking widget bridge (same placement pattern as BlueOrange): overlaps hero bottom on desktop -->

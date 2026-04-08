@@ -82,25 +82,9 @@ window.insertSelectedMediaOverride = function () {
 };
 document.getElementById('galleryPageForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-  var keys = ['page_title', 'hero_kicker', 'hero_title_html', 'hero_subtitle', 'hero_bg', 'items_json'];
-  var form = this;
-  Promise.all(keys.map(function (key) {
-    var el = form.querySelector('[name="' + key + '"]');
-    var val = el ? el.value : '';
-    var ct = 'text';
-    if (key === 'hero_title_html') ct = 'html';
-    if (key === 'hero_bg') ct = 'image';
-    if (key === 'items_json') ct = 'json';
-    return fetch('<?= ADMIN_URL ?>api/pages.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
-      body: JSON.stringify({ page: 'gallery', section_key: key, content_type: ct, content: val })
-    }).then(function (r) { return r.json(); });
-  })).then(function (results) {
-    var ok = results.every(function (r) { return r.success; });
-    showToast(ok ? 'Saved' : 'Save failed', ok ? 'success' : 'error');
-  });
+  savePageForm(this, 'gallery')
+    .then(function () { showToast('Saved', 'success'); })
+    .catch(function (err) { showToast(err.message || 'Save failed', 'error'); });
 });
 </script>
 

@@ -234,6 +234,41 @@ function deleteFile($filePath) {
     return true;
 }
 
+/**
+ * Validate CMS page slug for page_sections.page (alphanumeric, underscore, hyphen).
+ *
+ * @return string|null
+ */
+function validatePageSlug($page) {
+    $page = trim((string)$page);
+    if ($page === '' || strlen($page) > 50) {
+        return null;
+    }
+    return preg_match('/^[a-z0-9_-]+$/i', $page) ? $page : null;
+}
+
+/**
+ * Validate section_key for page_sections (alphanumeric, underscore, hyphen).
+ *
+ * @return string|null
+ */
+function validateSectionKey($key) {
+    $key = trim((string)$key);
+    if ($key === '' || strlen($key) > 100) {
+        return null;
+    }
+    return preg_match('/^[a-z0-9_-]+$/i', $key) ? $key : null;
+}
+
+/**
+ * Normalize content_type to allowed ENUM values.
+ */
+function validateContentType($type) {
+    $type = strtolower(trim((string)$type));
+    $allowed = ['text', 'html', 'image', 'json'];
+    return in_array($type, $allowed, true) ? $type : 'text';
+}
+
 function jsonResponse($data, $statusCode = 200) {
     while (ob_get_level()) {
         ob_end_clean();

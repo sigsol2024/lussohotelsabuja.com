@@ -161,25 +161,9 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
 })();
 document.getElementById('aboutPageForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-  var form = this;
-  var keys = ['page_title', 'hero_established', 'hero_title_html', 'hero_subtitle', 'hero_bg', 'story_title_html', 'story_p1', 'story_p2', 'story_image', 'story_quote', 'values_kicker', 'values_title', 'values_image', 'values_card_icon', 'values_card_title', 'values_card_body', 'values_card_link', 'values_card_link_href', 'timeline_json', 'journey_title_html', 'journey_subtitle', 'team_kicker', 'team_heading', 'team_intro', 'team_json', 'parallax_bg', 'parallax_quote', 'cta_title', 'cta_body', 'cta_btn1', 'cta_btn1_href', 'cta_btn2', 'cta_btn2_href'];
-  Promise.all(keys.map(function (key) {
-    var el = form.querySelector('[name="' + key + '"]');
-    var val = el ? el.value : '';
-    var ct = 'text';
-    if (key.endsWith('_html')) ct = 'html';
-    if (key.endsWith('_json')) ct = 'json';
-    if (key.endsWith('_bg') || key.endsWith('_image')) ct = 'image';
-    return fetch('<?= ADMIN_URL ?>api/pages.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
-      body: JSON.stringify({ page: 'about', section_key: key, content_type: ct, content: val })
-    }).then(function (r) { return r.json(); });
-  })).then(function (results) {
-    var ok = results.every(function (r) { return r.success; });
-    showToast(ok ? 'Saved' : 'Save failed', ok ? 'success' : 'error');
-  });
+  savePageForm(this, 'about')
+    .then(function () { showToast('Saved', 'success'); })
+    .catch(function (err) { showToast(err.message || 'Save failed', 'error'); });
 });
 </script>
 

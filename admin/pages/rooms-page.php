@@ -62,22 +62,9 @@ window.insertSelectedMediaOverride = function () {
 };
 document.getElementById('roomsPageForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  var form = this;
-  var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-  var keys = ['page_title', 'hero_title', 'hero_subtitle', 'hero_bg'];
-  Promise.all(keys.map(function (key) {
-    var el = form.querySelector('[name="' + key + '"]');
-    var val = el ? el.value : '';
-    var ctype = key === 'hero_title' ? 'html' : (key === 'hero_bg' ? 'image' : 'text');
-    return fetch('<?= ADMIN_URL ?>api/pages.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
-      body: JSON.stringify({ page: 'rooms', section_key: key, content_type: ctype, content: val })
-    }).then(function (r) { return r.json(); });
-  })).then(function (results) {
-    var ok = results.every(function (r) { return r.success; });
-    showToast(ok ? 'Saved' : 'Save failed', ok ? 'success' : 'error');
-  });
+  savePageForm(this, 'rooms', { hero_title: 'html' })
+    .then(function () { showToast('Saved', 'success'); })
+    .catch(function (err) { showToast(err.message || 'Save failed', 'error'); });
 });
 </script>
 

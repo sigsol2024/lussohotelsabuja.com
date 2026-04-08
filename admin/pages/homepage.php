@@ -16,6 +16,13 @@ try {
     error_log($e->getMessage());
 }
 
+$heroBgSlidesJson = trim($sectionsArray['hero_bg_slides'] ?? '');
+if ($heroBgSlidesJson === '' && !empty($sectionsArray['hero_bg'])) {
+    $heroBgSlidesJson = json_encode([$sectionsArray['hero_bg']]);
+} elseif ($heroBgSlidesJson === '') {
+    $heroBgSlidesJson = '[]';
+}
+
 function hsec($sectionsArray, $key, $default = '') {
     return sanitize($sectionsArray[$key] ?? $default);
 }
@@ -31,7 +38,7 @@ function hsec($sectionsArray, $key, $default = '') {
       </div>
       <div class="form-group">
         <label for="hero_title">Title (HTML allowed)</label>
-        <textarea id="hero_title" name="hero_title" rows="3"><?= htmlspecialchars($sectionsArray['hero_title'] ?? 'Refined Luxury in <br/><span class="italic text-primary">Absolute Silence</span>', ENT_QUOTES, 'UTF-8') ?></textarea>
+        <textarea id="hero_title" name="hero_title" rows="3"><?= htmlspecialchars($sectionsArray['hero_title'] ?? 'Refined Luxury in <br/><span class="italic text-primary border border-white/90 rounded-lg px-3 py-1 inline-block shadow-sm">Absolute Silence</span>', ENT_QUOTES, 'UTF-8') ?></textarea>
       </div>
       <div class="form-group">
         <label for="hero_subtitle">Subtitle</label>
@@ -48,6 +55,16 @@ function hsec($sectionsArray, $key, $default = '') {
             <img src="<?= SITE_URL . ltrim($sectionsArray['hero_bg'], '/') ?>" style="max-width:500px;max-height:300px;">
           <?php endif; ?>
         </div>
+        <p class="form-help" style="margin-top:12px;">Used as fallback if the slide list below is empty.</p>
+      </div>
+      <div class="form-group">
+        <label>Hero background slides (rotating)</label>
+        <p class="form-help">Add multiple images; only the background cross-fades (about every 7s). The first slide uses <strong>Hero Background</strong> above if this list is empty.</p>
+        <input type="hidden" id="hero_bg_slides" name="hero_bg_slides" value="<?= htmlspecialchars($heroBgSlidesJson, ENT_QUOTES, 'UTF-8') ?>">
+        <div style="margin-bottom:10px;">
+          <button type="button" class="btn btn-outline" onclick="openMediaModal('hero_bg_slides_pick','hero_slides_strip')"><i class="fas fa-images"></i> Add slide from library</button>
+        </div>
+        <div id="hero_slides_strip" class="image-preview" style="display:block;margin-top:10px;"></div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -249,10 +266,55 @@ function hsec($sectionsArray, $key, $default = '') {
     home_arch_image: 'home_arch_preview',
     home_dining_image: 'home_dining_preview'
   };
+  function renderHeroSlidesStrip() {
+    var input = document.getElementById('hero_bg_slides');
+    var strip = document.getElementById('hero_slides_strip');
+    if (!input || !strip) return;
+    var arr = [];
+    try { arr = JSON.parse(input.value || '[]'); } catch (e) { arr = []; }
+    if (!Array.isArray(arr) || arr.length === 0) {
+      strip.innerHTML = '<p class="form-help" style="margin:0;">No extra slides — the single Hero Background image is used.</p>';
+      return;
+    }
+    var base = '<?= rtrim(SITE_URL, '/') ?>/';
+    var html = '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;">';
+    arr.forEach(function (path, idx) {
+      var p = (path || '').replace(/^\\//, '');
+      html += '<div style="position:relative;border:1px solid var(--border-color);border-radius:6px;padding:4px;background:var(--surface-elevated);">';
+      html += '<img src="' + base + p + '" alt="" style="width:100px;height:70px;object-fit:cover;display:block;border-radius:4px;">';
+      html += '<button type="button" class="btn btn-sm btn-outline" style="margin-top:6px;width:100%;" data-slide-idx="' + idx + '">Remove</button></div>';
+    });
+    html += '</div>';
+    strip.innerHTML = html;
+    strip.querySelectorAll('[data-slide-idx]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var i = parseInt(btn.getAttribute('data-slide-idx'), 10);
+        var a = [];
+        try { a = JSON.parse(input.value || '[]'); } catch (e2) { a = []; }
+        if (!Array.isArray(a)) a = [];
+        a.splice(i, 1);
+        input.value = JSON.stringify(a);
+        renderHeroSlidesStrip();
+      });
+    });
+  }
+  window.renderHeroSlidesStrip = renderHeroSlidesStrip;
   window.insertSelectedMediaOverride = function () {
     var selected = mediaModalState.selectedMedia;
     if (!selected) return false;
     var tid = mediaModalState.targetInputId;
+    if (tid === 'hero_bg_slides_pick') {
+      var input = document.getElementById('hero_bg_slides');
+      var arr = [];
+      try { arr = JSON.parse(input.value || '[]'); } catch (e) { arr = []; }
+      if (!Array.isArray(arr)) arr = [];
+      arr.push(selected.path);
+      input.value = JSON.stringify(arr);
+      renderHeroSlidesStrip();
+      closeMediaModal();
+      if (typeof showToast === 'function') showToast('Slide added', 'success');
+      return true;
+    }
     var prevId = map[tid];
     if (!prevId) return false;
     var input = document.getElementById(tid);
@@ -266,32 +328,16 @@ function hsec($sectionsArray, $key, $default = '') {
     if (typeof showToast === 'function') showToast('Image selected', 'success');
     return true;
   };
+  document.addEventListener('DOMContentLoaded', function () { renderHeroSlidesStrip(); });
 })();
 
 document.getElementById('homepageForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  var formData = new FormData(this);
-  var keys = [];
-  formData.forEach(function (_, k) { if (keys.indexOf(k) === -1) keys.push(k); });
-  var htmlKeys = { hero_title: 1, home_philosophy_title_html: 1, home_dining_body_html: 1, booking_widget_html: 1 };
-  var imageKeys = { hero_bg: 1, home_philosophy_main_img: 1, home_philosophy_secondary_img: 1, home_arch_image: 1, home_dining_image: 1 };
-  var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-
-  Promise.all(keys.map(function (key) {
-    return fetch('<?= ADMIN_URL ?>api/pages.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
-      body: JSON.stringify({
-        page: 'index',
-        section_key: key,
-        content_type: htmlKeys[key] ? 'html' : (imageKeys[key] ? 'image' : 'text'),
-        content: formData.get(key) || ''
-      })
-    }).then(function (r) { return r.json(); });
-  })).then(function (results) {
-    var ok = results.every(function (r) { return r.success; });
-    showToast(ok ? 'Saved' : 'Some fields failed', ok ? 'success' : 'warning');
-  }).catch(function () { showToast('Save failed', 'error'); });
+  var form = this;
+  var typeOverrides = { hero_title: 'html', hero_bg_slides: 'json' };
+  savePageForm(form, 'index', typeOverrides)
+    .then(function () { showToast('Saved', 'success'); })
+    .catch(function (err) { showToast(err.message || 'Save failed', 'error'); });
 });
 </script>
 

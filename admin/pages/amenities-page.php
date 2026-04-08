@@ -48,22 +48,9 @@ if (trim($raw) === '') {
 <script>
 document.getElementById('amenitiesPageForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-  var form = this;
-  function save(key, val, ct) {
-    return fetch('<?= ADMIN_URL ?>api/pages.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
-      body: JSON.stringify({ page: 'amenities', section_key: key, content_type: ct, content: val })
-    }).then(function (r) { return r.json(); });
-  }
-  Promise.all([
-    save('page_title', form.querySelector('[name="page_title"]').value, 'text'),
-    save('sections_json', form.querySelector('[name="sections_json"]').value, 'json')
-  ]).then(function (results) {
-    var ok = results.every(function (r) { return r.success; });
-    showToast(ok ? 'Saved' : 'Save failed', ok ? 'success' : 'error');
-  });
+  savePageForm(this, 'amenities')
+    .then(function () { showToast('Saved', 'success'); })
+    .catch(function (err) { showToast(err.message || 'Save failed', 'error'); });
 });
 </script>
 

@@ -55,11 +55,12 @@ $jsonEncode = static function ($data) {
 $pageSections = [
     // --- Homepage (index) ---
     ['index', 'hero_kicker', 'text', 'Welcome to Abuja'],
-    ['index', 'hero_title', 'html', 'Refined Luxury in <br/><span class="italic text-primary">Absolute Silence</span>'],
+    ['index', 'hero_title', 'html', 'Refined Luxury in <br/><span class="italic text-primary border border-white/90 rounded-lg px-3 py-1 inline-block shadow-sm">Absolute Silence</span>'],
     ['index', 'hero_subtitle', 'text', 'Experience the sanctuary of Lusso. Where every detail creates a symphony of comfort.'],
     ['index', 'hero_cta_text', 'text', 'Discover Suites'],
     ['index', 'hero_cta_href', 'text', '/rooms'],
     ['index', 'hero_bg', 'image', 'https://lh3.googleusercontent.com/aida-public/AB6AXuA09AOzJGi3HFlO4iws6G405bZGiytnUaZEFTya_spJrXDa5fTKSrBScsDkxZAQCuS6ae2mJpC0laUldei8amf2jOsK9UIg9NX305aHkrG5uIMWhPQ-1e4r8CAydwyR5KzlbYjN4mWRnao2gNBHBrofxEv7u5nEs6wpDuCE4GwvUSepjITkua6sUOfXNKlnd3aW_eBFeHSCedk94uypJTs6palB8AtN0hFG3qGsOckYndru2W3fVdobc9Goi1Jn_x4wNASClu7QbTw'],
+    ['index', 'hero_bg_slides', 'json', '[]'],
     ['index', 'home_philosophy_kicker', 'text', 'Our Philosophy'],
     ['index', 'home_philosophy_title_html', 'html', 'The Lusso <br/> Standard'],
     ['index', 'home_philosophy_body', 'text', 'A sanctuary where modern elegance meets timeless hospitality. Every detail is curated for the discerning traveler, offering an escape into a world of refined comfort and understated opulence.'],

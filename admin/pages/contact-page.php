@@ -94,22 +94,9 @@ window.insertSelectedMediaOverride = function () {
 };
 document.getElementById('contactPageForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-  var keys = ['page_title', 'intro_kicker', 'intro_title', 'intro_body', 'address_html', 'directions_href', 'concierge_phone', 'inquiries_email', 'map_image', 'map_pin_label'];
-  var form = this;
-  Promise.all(keys.map(function (key) {
-    var el = form.querySelector('[name="' + key + '"]');
-    var val = el ? el.value : '';
-    var ct = (key === 'address_html') ? 'html' : (key === 'map_image' ? 'image' : 'text');
-    return fetch('<?= ADMIN_URL ?>api/pages.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
-      body: JSON.stringify({ page: 'contact', section_key: key, content_type: ct, content: val })
-    }).then(function (r) { return r.json(); });
-  })).then(function (results) {
-    var ok = results.every(function (r) { return r.success; });
-    showToast(ok ? 'Saved' : 'Save failed', ok ? 'success' : 'error');
-  });
+  savePageForm(this, 'contact')
+    .then(function () { showToast('Saved', 'success'); })
+    .catch(function (err) { showToast(err.message || 'Save failed', 'error'); });
 });
 </script>
 

@@ -66,6 +66,9 @@ function amenities_body_class($layout) {
     .text-outline { text-shadow: 0px 0px 1px rgba(255,255,255,0.3); }
     .lusso-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); display:none; z-index: 9999; }
     .lusso-modal-backdrop.open { display: flex; }
+    /* Prevent modal from exceeding viewport height */
+    .lusso-amenities-modal-panel { max-height: 90vh; }
+    .lusso-amenities-modal-body { min-height: 0; }
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display antialiased overflow-x-hidden">
@@ -131,7 +134,7 @@ function amenities_body_class($layout) {
 
 <!-- Gallery modal (per section) -->
 <div id="amenitiesGalleryModal" class="lusso-modal-backdrop items-center justify-center p-4" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="w-full max-w-5xl bg-black/70 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+  <div class="lusso-amenities-modal-panel w-full max-w-5xl bg-black/70 border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
     <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
       <div class="text-white/80 text-xs font-bold tracking-[0.25em] uppercase">
         Gallery <span id="amenitiesGalleryCount" class="text-white/60"></span>
@@ -140,8 +143,8 @@ function amenities_body_class($layout) {
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
-    <div class="relative w-full aspect-[16/10] bg-black">
-      <img id="amenitiesGalleryImg" src="" alt="Gallery image" class="absolute inset-0 w-full h-full object-cover"/>
+    <div class="lusso-amenities-modal-body relative w-full bg-black flex-1">
+      <img id="amenitiesGalleryImg" src="" alt="Gallery image" class="absolute inset-0 w-full h-full object-contain"/>
       <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none"></div>
       <button type="button" id="amenitiesGalleryPrev" class="absolute left-3 top-1/2 -translate-y-1/2 size-12 rounded-full bg-white/10 border border-white/15 text-white hover:bg-white/20 backdrop-blur-sm transition-colors flex items-center justify-center">
         <span class="material-symbols-outlined">chevron_left</span>
@@ -150,8 +153,8 @@ function amenities_body_class($layout) {
         <span class="material-symbols-outlined">chevron_right</span>
       </button>
     </div>
-    <div class="px-5 py-4 bg-black/50 border-t border-white/10">
-      <div id="amenitiesGalleryThumbs" class="flex gap-3 overflow-x-auto pb-1"></div>
+    <div class="px-5 py-4 bg-black/50 border-t border-white/10 shrink-0">
+      <div id="amenitiesGalleryThumbs" class="flex gap-3 overflow-x-auto pb-1 max-h-24"></div>
     </div>
   </div>
 </div>

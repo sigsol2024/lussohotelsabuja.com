@@ -535,16 +535,17 @@ $featuredRooms = getFeaturedRoomsForHome(5);
                style="background-image: url('<?= e($rimg) ?>');"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-transparent pointer-events-none"></div>
           <div class="absolute bottom-0 left-0 p-8 w-full">
-            <div class="flex justify-between items-end mb-2">
+            <div class="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-end mb-2">
               <h3 class="font-serif text-2xl text-white"><?= e($rtitle) ?></h3>
               <span class="text-white font-bold bg-white/10 backdrop-blur-sm border border-white/30 rounded px-3 py-1 shadow-sm">
                 <?= e($currency) ?><?= e($rprice) ?>/n
               </span>
             </div>
             <p class="text-white/80 text-sm mb-6 line-clamp-2"><?= e($rdesc) ?></p>
-            <a class="inline-flex items-center justify-center px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded text-white text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-text-main transition-colors text-center"
+            <a class="inline-flex items-center gap-2 text-white text-sm font-bold uppercase tracking-wider border-b border-white/35 pb-1 hover:border-white transition-colors text-center"
                href="<?= e(lusso_url('room-details', ['slug' => $rslug])) ?>">
               View Details
+              <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_forward</span>
             </a>
           </div>
         </div>

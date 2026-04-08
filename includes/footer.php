@@ -70,7 +70,7 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
       </div>
 
       <!-- Links: only routes that have a real page at site root -->
-      <div class="min-w-0 md:max-w-md">
+      <div class="min-w-0">
         <h4 class="font-serif text-lg mb-6 text-champagne">Explore</h4>
         <ul class="space-y-3 text-sm text-background-light/80">
           <?php
@@ -94,7 +94,7 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
       </div>
 
       <!-- Contact -->
-      <div class="min-w-0 md:max-w-lg">
+      <div class="min-w-0">
         <h4 class="font-serif text-lg mb-6 text-champagne">Contact</h4>
         <ul class="space-y-3 text-sm text-background-light/80">
           <li class="flex items-start gap-3">

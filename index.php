@@ -101,7 +101,7 @@ foreach ($home_amenity_grid_cards as $gc) {
 $showAmenityGridSection = ($amenity_grid_kicker !== '' || $amenity_grid_title !== '' || $amenity_grid_intro !== '' || $hasAmenityGridCard);
 
 $currency = getSiteSetting('currency_symbol', '$');
-$featuredRooms = getFeaturedRoomsForHome(12);
+$featuredRooms = getFeaturedRoomsForHome(5);
 ?>
 <!DOCTYPE html>
 <html class="light" lang="en">
@@ -455,11 +455,16 @@ $featuredRooms = getFeaturedRoomsForHome(12);
 <!-- Featured rooms (CMS: mark rooms Featured in admin) -->
 <section class="py-24 bg-white relative">
   <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+    <?php
+      $roomsForSlider = is_array($featuredRooms) ? array_slice($featuredRooms, 0, 5) : [];
+      $showRoomsNav = count($roomsForSlider) > 4;
+    ?>
     <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
       <div>
         <span class="text-primary text-sm font-bold uppercase tracking-widest"><?= e($rooms_kicker) ?></span>
         <h2 class="font-serif text-4xl md:text-5xl text-text-main mt-3"><?= e($rooms_title) ?></h2>
       </div>
+      <?php if ($showRoomsNav): ?>
       <div class="flex gap-2">
         <button type="button" id="homeRoomsPrev" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-white transition-all" aria-label="Scroll rooms left">
           <span class="material-symbols-outlined">arrow_back</span>
@@ -468,13 +473,14 @@ $featuredRooms = getFeaturedRoomsForHome(12);
           <span class="material-symbols-outlined">arrow_forward</span>
         </button>
       </div>
+      <?php endif; ?>
     </div>
 
     <div id="homeRoomsScroller" class="flex overflow-x-auto gap-8 pb-12 pt-4 px-2 no-scrollbar snap-x snap-mandatory scroll-smooth">
-      <?php if (empty($featuredRooms)): ?>
+      <?php if (empty($roomsForSlider)): ?>
         <p class="text-text-muted py-8">No rooms to show yet. Add rooms and mark them as <strong>Featured</strong> in Admin → Rooms.</p>
       <?php else: ?>
-        <?php foreach ($featuredRooms as $room):
+        <?php foreach ($roomsForSlider as $room):
           $rtitle = (string)($room['title'] ?? '');
           $rslug = (string)($room['slug'] ?? '');
           $rprice = is_numeric($room['price'] ?? null) ? number_format((float)$room['price'], 0) : '';
@@ -499,10 +505,12 @@ $featuredRooms = getFeaturedRoomsForHome(12);
           <div class="absolute bottom-0 left-0 p-8 w-full">
             <div class="flex justify-between items-end mb-2">
               <h3 class="font-serif text-2xl text-white"><?= e($rtitle) ?></h3>
-              <span class="text-primary font-bold"><?= e($currency) ?><?= e($rprice) ?>/n</span>
+              <span class="text-white font-bold bg-white/10 backdrop-blur-sm border border-white/30 rounded px-3 py-1 shadow-sm">
+                <?= e($currency) ?><?= e($rprice) ?>/n
+              </span>
             </div>
             <p class="text-white/80 text-sm mb-6 line-clamp-2"><?= e($rdesc) ?></p>
-            <a class="w-full py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded text-white text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-text-main transition-colors block text-center"
+            <a class="inline-flex items-center justify-center px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded text-white text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-text-main transition-colors text-center"
                href="<?= e(lusso_url('room-details', ['slug' => $rslug])) ?>">
               View Details
             </a>
@@ -511,15 +519,16 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       </div>
         <?php endforeach; ?>
       <?php endif; ?>
+    </div>
 
-      <div class="min-w-[100px] flex items-center justify-center">
-        <a class="flex flex-col items-center gap-2 group text-text-muted hover:text-primary transition-colors" href="<?= e(lusso_href((string)$rooms_view_all)) ?>">
-          <span class="w-12 h-12 rounded-full border border-current flex items-center justify-center">
-            <span class="material-symbols-outlined">arrow_forward</span>
-          </span>
-          <span class="text-sm font-medium">View All</span>
-        </a>
-      </div>
+    <div class="mt-4 flex items-center justify-start">
+      <a class="inline-flex items-center gap-2 text-text-muted hover:text-primary transition-colors"
+         href="<?= e(lusso_href((string)$rooms_view_all)) ?>">
+        <span class="w-10 h-10 rounded-full border border-current flex items-center justify-center">
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </span>
+        <span class="text-sm font-medium">View All</span>
+      </a>
     </div>
   </div>
 </section>

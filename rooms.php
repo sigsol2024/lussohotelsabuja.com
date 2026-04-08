@@ -29,6 +29,7 @@ $rooms = getRooms(['is_active' => 1]);
 <!-- Hero Section -->
 <section class="relative min-h-[90vh] flex items-center justify-center pt-20 overflow-hidden">
   <div class="absolute inset-0 z-0">
+    <div class="absolute inset-x-0 top-0 h-40 md:h-56 bg-gradient-to-b from-white/18 via-white/6 to-transparent z-20 pointer-events-none"></div>
     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-background-light z-10"></div>
     <div class="w-full h-full bg-cover bg-center bg-no-repeat bg-fixed scale-105"
          data-alt="Wide angle view of a dimly lit, ultra-luxury hotel bedroom with floor-to-ceiling windows"
@@ -66,7 +67,6 @@ $rooms = getRooms(['is_active' => 1]);
         $desc = $room['short_description'] ?: ($room['description'] ?? '');
         $mainImage = $room['main_image'] ?? '';
         $gallery = is_array($room['gallery_images'] ?? null) ? $room['gallery_images'] : [];
-        $detailImage = !empty($gallery) ? ($gallery[0] ?? '') : '';
         $size = $room['size'] ?? '';
         $bed = '';
         $view = '';
@@ -89,19 +89,12 @@ $rooms = getRooms(['is_active' => 1]);
         ?>
 
       <article class="group relative flex flex-col <?= $reverse ? 'lg:flex-row-reverse' : 'lg:flex-row' ?> items-stretch lg:items-center gap-12 lg:gap-24">
-        <div class="w-full lg:w-3/5 flex flex-col items-center gap-6 min-w-0<?= !empty($detailImage) ? ' md:pb-16 lg:pb-0' : '' ?>">
+        <div class="w-full lg:w-3/5 flex flex-col items-center gap-6 min-w-0">
           <div class="relative w-full aspect-[4/3] overflow-hidden rounded-lg shadow-2xl">
             <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 group-hover:scale-105"
                  data-alt="<?= e($title) ?>"
                  style="background-image: url('<?= e($mainImage) ?>');"></div>
           </div>
-          <?php if (!empty($detailImage)): ?>
-          <div class="relative w-40 max-w-[min(100%,240px)] aspect-square shrink-0 rounded-lg border-4 border-white shadow-xl overflow-hidden z-10 md:absolute md:mt-0 md:w-64 md:max-w-none md:-bottom-12 <?= $reverse ? 'md:-left-6 lg:-left-12' : 'md:-right-6 lg:-right-12' ?>">
-            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat hover:scale-110 transition-transform duration-500"
-                 data-alt="<?= e($title) ?> detail"
-                 style="background-image: url('<?= e($detailImage) ?>');"></div>
-          </div>
-          <?php endif; ?>
         </div>
 
         <div class="w-full lg:w-2/5 flex flex-col justify-center min-w-0 <?= $reverse ? 'lg:items-end lg:text-right' : '' ?>">

@@ -38,7 +38,6 @@ $cta_bg = getPageSection('dining', 'cta_bg', 'https://lh3.googleusercontent.com/
 $cta_title = getPageSection('dining', 'cta_title', 'Secure Your Table at the Center of Abuja');
 $cta_body = getPageSection('dining', 'cta_body', 'We recommend booking at least 48 hours in advance for weekend dinner service.');
 $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
-$cta_btn2 = getPageSection('dining', 'cta_btn2', 'Private Dining');
 ?>
 <!DOCTYPE html>
 <html class="light" lang="en">
@@ -86,6 +85,12 @@ $cta_btn2 = getPageSection('dining', 'cta_btn2', 'Private Dining');
       <p class="text-white/80 text-lg md:text-xl font-light max-w-lg leading-relaxed">
         <?= e($hero_subtitle) ?>
       </p>
+      <div class="mt-6 md:hidden">
+        <div class="inline-flex items-center gap-2 text-sm font-medium tracking-wide bg-white/10 backdrop-blur-sm border border-white/30 rounded px-3 py-1 shadow-sm text-white/90">
+          <span class="material-symbols-outlined text-white/90">schedule</span>
+          <span><?= e($hero_hours) ?></span>
+        </div>
+      </div>
     </div>
     <div class="hidden md:flex flex-col items-end gap-4 text-white/90">
       <div class="flex items-center gap-2 text-sm font-medium tracking-wide bg-white/10 backdrop-blur-sm border border-white/30 rounded px-3 py-1 shadow-sm">
@@ -127,7 +132,7 @@ $cta_btn2 = getPageSection('dining', 'cta_btn2', 'Private Dining');
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105 hover:scale-100 transition-transform duration-[1.5s]" data-alt="Chef" style="background-image: url('<?= e($chef_main_img) ?>');"></div>
       </div>
       <div class="hidden lg:block absolute -bottom-10 -left-10 w-2/3 aspect-square bg-sand-darker dark:bg-gray-800 -z-10 rounded-lg"></div>
-      <div class="relative w-44 max-w-[min(100%,220px)] aspect-square rounded-full border-8 border-background-light dark:border-background-dark overflow-hidden shadow-xl z-20 md:absolute md:mt-0 md:ml-0 md:max-w-none md:w-48 md:-bottom-16 md:-right-6 lg:-right-12 lg:w-64">
+      <div class="relative w-44 max-w-[min(100%,220px)] aspect-square rounded-full border-8 border-background-light dark:border-background-dark overflow-hidden shadow-xl z-20 -mt-24 sm:-mt-28 md:mt-0 md:absolute md:ml-0 md:max-w-none md:w-48 md:-bottom-16 md:-right-6 lg:-right-12 lg:w-64">
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat hover:scale-110 transition-transform duration-700" data-alt="Detail" style="background-image: url('<?= e($chef_circle_img) ?>');"></div>
       </div>
     </div>
@@ -135,7 +140,7 @@ $cta_btn2 = getPageSection('dining', 'cta_btn2', 'Private Dining');
 </section>
 
 <!-- Cinematic Masonry Gallery -->
-<section class="py-20 px-6 md:px-10 max-w-[1840px] mx-auto">
+<section class="py-20 px-4 sm:px-6 md:px-10 lg:px-16 max-w-[1960px] mx-auto">
   <div class="flex flex-col md:flex-row items-end justify-between mb-12">
     <h3 class="font-serif text-3xl md:text-4xl text-text-main dark:text-white"><?= e($visual_title) ?></h3>
     <a class="group flex items-center gap-2 text-sm font-bold tracking-wider uppercase mt-4 md:mt-0 text-text-main" href="<?= e(lusso_href((string)$visual_link_href)) ?>">
@@ -233,11 +238,8 @@ $cta_btn2 = getPageSection('dining', 'cta_btn2', 'Private Dining');
       <h2 class="font-serif text-4xl md:text-6xl max-w-3xl leading-tight"><?= e($cta_title) ?></h2>
       <p class="text-white/70 max-w-lg text-lg"><?= e($cta_body) ?></p>
       <div class="flex flex-row flex-nowrap gap-2 sm:gap-4 w-full justify-center mt-4 min-w-0 max-w-2xl mx-auto px-1">
-        <button class="flex-1 min-w-0 px-3 sm:px-8 py-3 sm:py-4 text-xs sm:text-base bg-transparent border border-champagne/60 text-champagne hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 font-bold tracking-wide rounded-lg backdrop-blur-sm shadow-[0_0_24px_rgba(65,29,19,0.25)] hover:shadow-[0_0_36px_rgba(65,29,19,0.45)] text-center leading-tight" type="button">
+        <button class="w-full sm:w-auto px-6 sm:px-10 py-3 sm:py-4 text-xs sm:text-base bg-transparent border border-champagne/60 text-champagne hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 font-bold tracking-wide rounded-lg backdrop-blur-sm shadow-[0_0_24px_rgba(65,29,19,0.25)] hover:shadow-[0_0_36px_rgba(65,29,19,0.45)] text-center leading-tight" type="button">
           <?= e($cta_btn1) ?>
-        </button>
-        <button class="flex-1 min-w-0 px-3 sm:px-8 py-3 sm:py-4 text-xs sm:text-base bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all duration-300 font-medium tracking-wide rounded-lg backdrop-blur-sm text-center leading-tight" type="button">
-          <?= e($cta_btn2) ?>
         </button>
       </div>
     </div>

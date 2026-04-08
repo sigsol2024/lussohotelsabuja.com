@@ -112,8 +112,19 @@ $masonryRaw = trim($sections['masonry_json'] ?? '') !== '' ? $sections['masonry_
       </div>
     </div>
     <div class="form-group">
-      <label>Masonry images (JSON array: src, tag, caption)</label>
-      <textarea id="masonry_json" name="masonry_json" rows="14" style="font-family:monospace;font-size:12px;"><?= htmlspecialchars($masonryRaw, ENT_QUOTES, 'UTF-8') ?></textarea>
+      <label>Masonry gallery</label>
+      <p class="form-help" style="margin-top:0;">Visual editor. Images are saved as JSON behind the scenes.</p>
+      <textarea id="masonry_json" name="masonry_json" style="display:none;"><?= htmlspecialchars($masonryRaw, ENT_QUOTES, 'UTF-8') ?></textarea>
+      <div id="masonryEditor"></div>
+      <button type="button" class="btn btn-outline btn-sm" id="masonryAddBtn">Add gallery image</button>
+
+      <details style="margin-top:14px;">
+        <summary style="cursor:pointer; color: var(--text-muted);">Advanced JSON (optional)</summary>
+        <textarea id="masonry_json_advanced" rows="10" style="margin-top:10px;font-family:monospace;font-size:12px;"></textarea>
+        <div style="margin-top:10px;">
+          <button type="button" class="btn btn-outline btn-sm" id="masonryApplyJsonBtn">Apply JSON</button>
+        </div>
+      </details>
     </div>
   </div></div>
 
@@ -165,7 +176,6 @@ $masonryRaw = trim($sections['masonry_json'] ?? '') !== '' ? $sections['masonry_
     </div>
     <div class="form-row">
       <div class="form-group"><label for="cta_btn1">Button 1</label><input type="text" id="cta_btn1" name="cta_btn1" value="<?= sanitize($sections['cta_btn1'] ?? 'Make a Reservation') ?>"></div>
-      <div class="form-group"><label for="cta_btn2">Button 2</label><input type="text" id="cta_btn2" name="cta_btn2" value="<?= sanitize($sections['cta_btn2'] ?? 'Private Dining') ?>"></div>
     </div>
   </div></div>
 
@@ -188,6 +198,130 @@ $masonryRaw = trim($sections['masonry_json'] ?? '') !== '' ? $sections['masonry_
     closeMediaModal();
     return true;
   };
+})();
+
+(function () {
+  function safeParseJson(text, fallback) {
+    try { return JSON.parse(text || ''); } catch (e) { return fallback; }
+  }
+  function escHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, function (m) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+    });
+  }
+  function normalizeImageUrl(val) {
+    var v = String(val || '').trim();
+    if (!v) return '';
+    if (v.indexOf('http') === 0) return v;
+    return '<?= SITE_URL ?>' + v.replace(/^\/+/, '');
+  }
+  function getMasonryItemsFromDom() {
+    var out = [];
+    document.querySelectorAll('#masonryEditor .js-ms-item').forEach(function (row) {
+      var src = (row.querySelector('.js-ms-src')?.value || '').trim();
+      var tag = (row.querySelector('.js-ms-tag')?.value || '').trim();
+      var caption = (row.querySelector('.js-ms-caption')?.value || '').trim();
+      if (!src && !tag && !caption) return;
+      out.push({ src: src, tag: tag, caption: caption });
+    });
+    return out;
+  }
+  function syncHiddenJson() {
+    var items = getMasonryItemsFromDom();
+    var hidden = document.getElementById('masonry_json');
+    if (hidden) hidden.value = JSON.stringify(items);
+    var adv = document.getElementById('masonry_json_advanced');
+    if (adv) adv.value = JSON.stringify(items, null, 2);
+  }
+  function renderMasonry(items) {
+    var host = document.getElementById('masonryEditor');
+    if (!host) return;
+    host.innerHTML = '';
+    (items || []).forEach(function (it, idx) {
+      var src = (it && it.src) || '';
+      var tag = (it && it.tag) || '';
+      var cap = (it && it.caption) || '';
+      var inputId = 'masonry_src_' + idx;
+      var prevId = 'masonry_src_' + idx + '_preview';
+      var imgUrl = normalizeImageUrl(src);
+
+      var wrap = document.createElement('div');
+      wrap.className = 'card js-ms-item';
+      wrap.style.cssText = 'margin-bottom: 12px; padding: 12px;';
+      wrap.innerHTML =
+        '<div class="form-row" style="align-items:flex-end; gap: 10px;">' +
+          '<div class="form-group" style="flex: 1; margin-bottom:0;">' +
+            '<label>Tag (optional)</label>' +
+            '<input type="text" class="form-control js-ms-tag" value="' + escHtml(tag) + '" placeholder="Ambience">' +
+          '</div>' +
+          '<div class="form-group" style="flex: 2; margin-bottom:0;">' +
+            '<label>Caption (optional)</label>' +
+            '<input type="text" class="form-control js-ms-caption" value="' + escHtml(cap) + '" placeholder="The Golden Hour at the Bar">' +
+          '</div>' +
+          '<button type="button" class="btn btn-outline btn-sm js-ms-remove">Remove</button>' +
+        '</div>' +
+        '<div class="form-group" style="margin-top:10px;">' +
+          '<label>Image</label>' +
+          '<div style="display:flex; gap: 10px; align-items:center; flex-wrap:wrap;">' +
+            '<button type="button" class="btn btn-outline js-ms-pick">Select from media</button>' +
+            '<input type="text" id="' + escHtml(inputId) + '" class="form-control js-ms-src" value="' + escHtml(src) + '" placeholder="/assets/uploads/… or https://…">' +
+          '</div>' +
+          '<div id="' + escHtml(prevId) + '" class="image-preview" style="' + (imgUrl ? 'display:block;margin-top:10px;' : 'display:none;margin-top:10px;') + '">' +
+            (imgUrl ? ('<img src="' + escHtml(imgUrl) + '" style="max-width:320px;max-height:220px;border-radius:6px;">') : '') +
+          '</div>' +
+        '</div>';
+
+      wrap.querySelector('.js-ms-pick').addEventListener('click', function () {
+        openMediaModal(inputId, prevId, false);
+      });
+      wrap.querySelector('.js-ms-remove').addEventListener('click', function () {
+        wrap.remove();
+        syncHiddenJson();
+      });
+      wrap.addEventListener('input', function () {
+        var v = (wrap.querySelector('.js-ms-src')?.value || '').trim();
+        var p = document.getElementById(prevId);
+        if (p) {
+          var u = normalizeImageUrl(v);
+          if (!u) { p.style.display = 'none'; p.innerHTML = ''; }
+          else { p.style.display = 'block'; p.innerHTML = '<img src="' + escHtml(u) + '" style="max-width:320px;max-height:220px;border-radius:6px;">'; }
+        }
+        syncHiddenJson();
+      });
+      wrap.addEventListener('change', function () { syncHiddenJson(); });
+      host.appendChild(wrap);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var raw = document.getElementById('masonry_json')?.value || '[]';
+    var items = safeParseJson(raw, []);
+    if (!Array.isArray(items)) items = [];
+    if (items.length === 0) items = [{ src: '', tag: '', caption: '' }];
+    renderMasonry(items);
+    syncHiddenJson();
+
+    var addBtn = document.getElementById('masonryAddBtn');
+    if (addBtn) addBtn.addEventListener('click', function () {
+      var cur = getMasonryItemsFromDom();
+      cur.push({ src: '', tag: '', caption: '' });
+      renderMasonry(cur);
+      syncHiddenJson();
+    });
+
+    var applyBtn = document.getElementById('masonryApplyJsonBtn');
+    if (applyBtn) applyBtn.addEventListener('click', function () {
+      var t = document.getElementById('masonry_json_advanced')?.value || '';
+      var v = safeParseJson(t, null);
+      if (!Array.isArray(v)) {
+        showToast('Gallery JSON must be an array', 'error');
+        return;
+      }
+      renderMasonry(v);
+      syncHiddenJson();
+      showToast('Gallery applied', 'success');
+    });
+  });
 })();
 document.getElementById('diningPageForm').addEventListener('submit', function (e) {
   e.preventDefault();

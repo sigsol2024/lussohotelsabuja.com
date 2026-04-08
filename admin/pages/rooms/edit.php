@@ -43,6 +43,13 @@ if ($id) {
     $stmt->execute([$id]);
     $dbRoom = $stmt->fetch();
     if ($dbRoom) {
+      // Historical bug: some fields were stored HTML-escaped (e.g. "&amp;" in DB).
+      // Decode once for editing; output escaping still happens in templates via sanitize().
+      foreach (['title','slug','room_type','short_description','description','main_image','urgency_message','size','location','book_url'] as $k) {
+        if (isset($dbRoom[$k]) && is_string($dbRoom[$k]) && strpos($dbRoom[$k], '&') !== false) {
+          $dbRoom[$k] = html_entity_decode($dbRoom[$k], ENT_QUOTES, 'UTF-8');
+        }
+      }
       $room = array_merge($room, $dbRoom);
       $room['gallery_images'] = json_decode($dbRoom['gallery_images'] ?? '[]', true) ?: [];
       $room['features'] = json_decode($dbRoom['features'] ?? '[]', true) ?: [];

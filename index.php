@@ -501,7 +501,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
           <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                data-alt="<?= e($rtitle) ?>"
                style="background-image: url('<?= e($rimg) ?>');"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-transparent pointer-events-none"></div>
           <div class="absolute bottom-0 left-0 p-8 w-full">
             <div class="flex justify-between items-end mb-2">
               <h3 class="font-serif text-2xl text-white"><?= e($rtitle) ?></h3>

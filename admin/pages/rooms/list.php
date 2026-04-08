@@ -37,7 +37,7 @@ try {
       <?php else: ?>
         <?php foreach ($rooms as $r): ?>
           <tr>
-            <td><?= sanitize($r['title']) ?></td>
+            <td><?= sanitize(html_entity_decode((string)$r['title'], ENT_QUOTES, 'UTF-8')) ?></td>
             <td><?= sanitize($r['slug']) ?></td>
             <td><?= sanitize($r['price']) ?></td>
             <td><?= (int)$r['is_active'] ? 'Live' : 'Draft' ?></td>

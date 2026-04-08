@@ -85,7 +85,7 @@ try {
                     }
                 }
                 unset($src['id'], $src['created_at'], $src['updated_at']);
-                $src['title'] = sanitize($newTitle);
+                $src['title'] = trim((string)$newTitle);
                 $src['slug'] = $candidate;
                 $src['is_active'] = 0;
                 $src['is_featured'] = 0;
@@ -100,13 +100,13 @@ try {
                 jsonResponse(['success' => true, 'message' => 'Duplicated as draft (title & slug end with -copy). Edit and set Active to publish.', 'room_id' => $newId]);
             }
 
-            $title = sanitize($data['title'] ?? '');
+            $title = trim((string)($data['title'] ?? ''));
             $slug = generateSlug($data['slug'] ?? $title);
             $price = (float)($data['price'] ?? 0);
-            $roomType = sanitize($data['room_type'] ?? '');
-            $short = sanitize($data['short_description'] ?? '');
-            $desc = sanitize($data['description'] ?? '');
-            $mainImage = sanitize($data['main_image'] ?? '');
+            $roomType = trim((string)($data['room_type'] ?? ''));
+            $short = trim((string)($data['short_description'] ?? ''));
+            $desc = trim((string)($data['description'] ?? ''));
+            $mainImage = trim((string)($data['main_image'] ?? ''));
             $galleryImages = json_encode($data['gallery_images'] ?? []);
             $features = json_encode($data['features'] ?? []);
             $amenities = json_encode($data['amenities'] ?? []);
@@ -118,15 +118,19 @@ try {
             ]));
             foreach ($goodToKnow as $k => $v) {
                 if (is_string($v)) {
-                    $goodToKnow[$k] = sanitize($v);
+                    $goodToKnow[$k] = trim($v);
+                } elseif (is_numeric($v)) {
+                    $goodToKnow[$k] = (string)$v;
+                } else {
+                    $goodToKnow[$k] = '';
                 }
             }
             $goodToKnowJson = json_encode($goodToKnow);
-            $urgencyMessage = sanitize($data['urgency_message'] ?? '');
-            $size = sanitize($data['size'] ?? '');
+            $urgencyMessage = trim((string)($data['urgency_message'] ?? ''));
+            $size = trim((string)($data['size'] ?? ''));
             $maxGuests = (int)($data['max_guests'] ?? 0);
-            $location = sanitize($data['location'] ?? '');
-            $bookUrl = sanitize($data['book_url'] ?? '');
+            $location = trim((string)($data['location'] ?? ''));
+            $bookUrl = trim((string)($data['book_url'] ?? ''));
             $isActive = isset($data['is_active']) ? (int)$data['is_active'] : 1;
             $isFeatured = isset($data['is_featured']) ? (int)$data['is_featured'] : 0;
             $displayOrder = (int)($data['display_order'] ?? 0);
@@ -157,7 +161,7 @@ try {
                 jsonResponse(['success' => false, 'message' => 'Invalid JSON'], 400);
             }
 
-            $title = sanitize($data['title'] ?? '');
+            $title = trim((string)($data['title'] ?? ''));
             $slug = generateSlug($data['slug'] ?? $title);
             $dupStmt = $pdo->prepare("SELECT id FROM rooms WHERE slug = ? AND id != ?");
             $dupStmt->execute([$slug, $id]);
@@ -165,10 +169,10 @@ try {
                 $slug = $slug . '-' . time();
             }
             $price = (float)($data['price'] ?? 0);
-            $roomType = sanitize($data['room_type'] ?? '');
-            $short = sanitize($data['short_description'] ?? '');
-            $desc = sanitize($data['description'] ?? '');
-            $mainImage = sanitize($data['main_image'] ?? '');
+            $roomType = trim((string)($data['room_type'] ?? ''));
+            $short = trim((string)($data['short_description'] ?? ''));
+            $desc = trim((string)($data['description'] ?? ''));
+            $mainImage = trim((string)($data['main_image'] ?? ''));
             $galleryImages = json_encode($data['gallery_images'] ?? []);
             $features = json_encode($data['features'] ?? []);
             $amenities = json_encode($data['amenities'] ?? []);
@@ -180,15 +184,19 @@ try {
             ]));
             foreach ($goodToKnow as $k => $v) {
                 if (is_string($v)) {
-                    $goodToKnow[$k] = sanitize($v);
+                    $goodToKnow[$k] = trim($v);
+                } elseif (is_numeric($v)) {
+                    $goodToKnow[$k] = (string)$v;
+                } else {
+                    $goodToKnow[$k] = '';
                 }
             }
             $goodToKnowJson = json_encode($goodToKnow);
-            $urgencyMessage = sanitize($data['urgency_message'] ?? '');
-            $size = sanitize($data['size'] ?? '');
+            $urgencyMessage = trim((string)($data['urgency_message'] ?? ''));
+            $size = trim((string)($data['size'] ?? ''));
             $maxGuests = (int)($data['max_guests'] ?? 0);
-            $location = sanitize($data['location'] ?? '');
-            $bookUrl = sanitize($data['book_url'] ?? '');
+            $location = trim((string)($data['location'] ?? ''));
+            $bookUrl = trim((string)($data['book_url'] ?? ''));
             $isActive = isset($data['is_active']) ? (int)$data['is_active'] : 1;
             $isFeatured = isset($data['is_featured']) ? (int)$data['is_featured'] : 0;
             $displayOrder = (int)($data['display_order'] ?? 0);

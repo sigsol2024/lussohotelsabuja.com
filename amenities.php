@@ -74,6 +74,7 @@ function amenities_body_class($layout) {
     $bg = (string)($sec['bg'] ?? '');
     $gradient = (string)($sec['gradient'] ?? 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7))');
     $kicker = (string)($sec['kicker'] ?? '');
+    $kickerDisplay = preg_replace('/^\s*\d+\s*\/\s*/', '', $kicker);
     $icon = (string)($sec['icon'] ?? 'star');
     $titleHtml = (string)($sec['title_html'] ?? '');
     $body = (string)($sec['body'] ?? '');
@@ -90,11 +91,11 @@ function amenities_body_class($layout) {
     <div class="relative z-10 w-full h-full <?= $zPad ?> flex <?= $inner ?>">
       <div class="flex flex-col gap-6 max-w-2xl <?= $layout === 'center' ? 'items-center max-w-3xl' : ($layout === 'right' ? 'items-end' : ($layout === 'top' ? 'items-start' : '')) ?>">
         <div class="<?= e(amenities_kicker_row_class($layout)) ?>">
-          <span class="text-xs font-bold tracking-[0.3em] uppercase"><?= e($kicker) ?></span>
+          <span class="text-xs font-bold tracking-[0.3em] uppercase"><?= e((string)$kickerDisplay) ?></span>
           <div class="h-[1px] w-12 bg-white/40"></div>
         </div>
         <div class="<?= e(amenities_title_wrap_class($layout)) ?>">
-          <span class="material-symbols-outlined text-5xl md:text-6xl text-primary font-light mb-4"><?= e($icon) ?></span>
+          <span class="material-symbols-outlined text-5xl md:text-6xl text-white/90 font-light mb-4"><?= e($icon) ?></span>
           <h1 class="text-white text-6xl md:text-8xl font-light leading-[0.9] tracking-tighter">
             <?= $titleHtml ?>
           </h1>
@@ -103,17 +104,17 @@ function amenities_body_class($layout) {
           <?= e($body) ?>
         </p>
         <?php if ($layout === 'center'): ?>
-        <button class="flex items-center gap-3 px-8 py-4 bg-primary text-background-dark rounded font-bold hover:bg-white hover:text-black transition-all duration-300" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
+        <button class="inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded font-bold hover:bg-white/20 transition-all duration-300" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
           <span class="text-sm tracking-[0.1em] uppercase"><?= e($btn) ?></span>
           <span class="material-symbols-outlined text-lg">arrow_outward</span>
         </button>
         <?php elseif ($layout === 'top'): ?>
-        <button class="mt-6 flex items-center gap-3 px-8 py-4 border border-white text-white rounded hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
+        <button class="mt-4 inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded hover:bg-white/20 transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
           <span class="text-sm font-bold tracking-[0.1em] uppercase"><?= e($btn) ?></span>
           <span class="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">water_drop</span>
         </button>
         <?php else: ?>
-        <button class="mt-6 flex items-center gap-3 px-8 py-4 border border-white text-white rounded hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
+        <button class="mt-4 inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded hover:bg-white/20 transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
           <span class="text-sm font-bold tracking-[0.1em] uppercase"><?= e($btn) ?></span>
           <span class="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
         </button>

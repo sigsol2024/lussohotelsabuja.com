@@ -40,7 +40,7 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
       <div class="min-w-0">
         <div class="lusso-brand-logo lusso-brand-logo--footer flex items-center justify-center md:justify-start mb-8 md:mb-10 min-h-[5rem] md:min-h-[7.5rem] py-2 md:py-3">
           <?php if ($useFooterLogo): ?>
-          <img src="<?= e($siteLogoLightUrl) ?>" alt="<?= e($siteName) ?>" class="h-[124px] w-auto md:h-[120px] lg:h-[144px] max-w-[min(100%,32rem)] object-contain object-center md:object-left" decoding="async"/>
+          <img src="<?= e($siteLogoLightUrl) ?>" alt="<?= e($siteName) ?>" class="h-[248px] w-auto md:h-[120px] lg:h-[144px] max-w-[min(100%,32rem)] object-contain object-center md:object-left" decoding="async"/>
           <?php else: ?>
           <span class="material-symbols-outlined text-champagne text-2xl">diamond</span>
           <span class="font-serif text-xl font-bold tracking-tight text-background-light"><?= e($siteName) ?></span>

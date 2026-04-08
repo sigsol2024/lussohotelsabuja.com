@@ -125,8 +125,9 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       max-width: 72rem; /* ~max-w-6xl */
       margin-left: auto;
       margin-right: auto;
-      /* Pull slightly upward to “bridge” hero → next section */
-      margin-top: -2.25rem;
+      /* Pull upward to “bridge” hero → next section (use transform to avoid margin-collapsing) */
+      margin-top: 0.5rem;
+      transform: translateY(-2.25rem) !important;
       margin-bottom: 2rem;
       width: 100% !important;
       padding: 14px 16px;
@@ -151,7 +152,9 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       #booking-blueorange #booking-widget,
       #booking-form,
       #booking-blueorange #booking-form {
-        margin-top: -2.75rem; margin-bottom: 2.5rem;
+        margin-top: 0.75rem;
+        transform: translateY(-2.75rem) !important;
+        margin-bottom: 2.5rem;
       }
     }
     #booking-lusso *,

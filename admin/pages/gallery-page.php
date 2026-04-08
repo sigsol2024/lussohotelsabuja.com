@@ -37,7 +37,8 @@ if (trim($itemsRaw) === '') {
       </div>
       <div class="form-group">
         <label for="hero_title_html">Title (HTML)</label>
-        <textarea id="hero_title_html" name="hero_title_html" rows="2"><?= htmlspecialchars($sections['hero_title_html'] ?? 'VISUAL <span class="font-bold italic text-primary">NARRATIVES</span>', ENT_QUOTES, 'UTF-8') ?></textarea>
+      <textarea id="hero_title_html" name="hero_title_html" rows="2"><?= htmlspecialchars($sections['hero_title_html'] ?? 'VISUAL <span class="font-bold italic text-primary">NARRATIVES</span>', ENT_QUOTES, 'UTF-8') ?></textarea>
+      <p class="form-help">Tip: the word wrapped in <code>text-primary</code> in the hero title gets a subtle white outline automatically.</p>
       </div>
       <div class="form-group">
         <label for="hero_subtitle">Subtitle</label>

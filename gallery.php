@@ -41,41 +41,35 @@ function gallery_ratio_class($ratio) {
     ::-webkit-scrollbar-thumb { background: #d1d1d1; border-radius: 4px; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    /* Hero accent stroke (match home/amenities outline feel) */
+    #gallery-hero h1 .text-primary {
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.88);
+      text-shadow: 0 0 1px rgba(255, 255, 255, 0.35);
+    }
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display antialiased text-text-main dark:text-white transition-colors duration-300">
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
 <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
-  <section class="relative w-full h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
-    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105"
-         style='background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url("<?= e($hero_bg) ?>");'>
+  <!-- Hero Section (match About hero pattern) -->
+  <section id="gallery-hero" class="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <div class="absolute inset-0 z-10" style="background: rgba(107, 51, 39, 0.72);"></div>
+      <div class="w-full h-full bg-cover bg-center bg-no-repeat scale-105"
+           style='background-image: url("<?= e($hero_bg) ?>");'></div>
     </div>
-    <div class="relative z-10 text-center px-4 max-w-4xl mx-auto flex flex-col items-center gap-4">
-      <span class="text-primary text-xs md:text-sm font-bold tracking-[0.3em] uppercase mb-2"><?= e($hero_kicker) ?></span>
+    <div class="relative z-20 container mx-auto px-6 lg:px-12 flex flex-col items-center text-center pt-20">
+      <span class="text-white/90 text-xs md:text-sm font-bold tracking-[0.3em] uppercase mb-2"><?= e($hero_kicker) ?></span>
       <h1 class="text-white text-5xl md:text-7xl font-light tracking-[-0.02em] font-display">
         <?= $hero_title_html ?>
       </h1>
       <p class="text-white/90 text-sm md:text-base font-light tracking-wide max-w-lg leading-relaxed mt-4">
         <?= e($hero_subtitle) ?>
       </p>
-    </div>
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 animate-bounce">
-      <span class="material-symbols-outlined">keyboard_arrow_down</span>
+      <div class="h-16 w-[1px] bg-gradient-to-b from-white/40 to-transparent mt-10"></div>
     </div>
   </section>
-
-  <div class="sticky top-[73px] z-40 bg-background-light dark:bg-background-dark py-6 md:py-8 border-b border-gray-100 dark:border-white/5">
-    <div class="flex justify-center overflow-x-auto no-scrollbar px-6">
-      <div class="flex items-center gap-8 md:gap-12 min-w-max">
-        <span class="text-xs font-bold tracking-[0.15em] text-text-main dark:text-white border-b border-primary pb-2">ALL</span>
-        <span class="text-xs font-bold tracking-[0.15em] text-gray-500 dark:text-gray-400">ARCHITECTURE</span>
-        <span class="text-xs font-bold tracking-[0.15em] text-gray-500 dark:text-gray-400">INTERIORS</span>
-        <span class="text-xs font-bold tracking-[0.15em] text-gray-500 dark:text-gray-400">LIFESTYLE</span>
-        <span class="text-xs font-bold tracking-[0.15em] text-gray-500 dark:text-gray-400">DINING</span>
-      </div>
-    </div>
-  </div>
 
   <main class="flex-grow px-4 md:px-12 py-12 max-w-[1600px] mx-auto w-full">
     <div class="columns-1 md:columns-2 lg:columns-3 gap-6 md:gap-8 space-y-6 md:space-y-8">
@@ -97,13 +91,6 @@ function gallery_ratio_class($ratio) {
         </div>
       </div>
       <?php endforeach; ?>
-    </div>
-
-    <div class="flex justify-center mt-20 mb-8">
-      <button class="group flex items-center gap-3 text-sm font-semibold tracking-[0.2em] text-gray-500 hover:text-primary transition-colors duration-300 uppercase" type="button">
-        Load More
-        <span class="material-symbols-outlined transition-transform duration-300 group-hover:translate-y-1">expand_more</span>
-      </button>
     </div>
   </main>
 </div>

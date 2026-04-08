@@ -135,6 +135,70 @@ $pageSections = [
     ['contact', 'map_image', 'image', 'https://lh3.googleusercontent.com/aida-public/AB6AXuAK_uzWkbR7rEovHVUwT02daL4jG0KZoBuT3aKk-b0PKZbeHgLb-bs6-sAYadAWnRTYyZV42HkpJOXsw-Toccx_1HckozB8hIVInA8MzcVlmiFHtgd5_9kHvcm3Jz-0JmZVLiq6EDmrVRV9sT-s6InQ3Y09Bp24mO10aVSdVRVTPo-vrGoO1R4oYFd6VjZaOLskG8CrXcQwSVzoV9i30JsEevxP9EKAww9JrTXljPIZyLtC5tbq6OFt_dyKltcSXMLFAnwIQ-e6yBs'],
     ['contact', 'map_pin_label', 'text', 'Lusso Abuja'],
 
+    // --- Hotel policy ---
+    ['hotel-policy', 'page_title', 'text', 'Hotel Policy - Lusso Hotels Abuja'],
+    ['hotel-policy', 'hero_kicker', 'text', 'Guest Information'],
+    ['hotel-policy', 'hero_title', 'text', 'Hotel Policy'],
+    ['hotel-policy', 'hero_subtitle', 'text', 'A simple guide to ensure a calm, seamless stay for every guest.'],
+    ['hotel-policy', 'last_updated', 'text', 'Last updated: April 8, 2026'],
+    ['hotel-policy', 'body_html', 'html', '<p>We value quiet luxury and thoughtful hospitality. These policies help ensure comfort, safety, and consistency for all guests.</p>
+<h2>Check-in / Check-out</h2>
+<ul>
+  <li><strong>Check-in:</strong> 2:00 PM (or as confirmed with concierge)</li>
+  <li><strong>Check-out:</strong> 12:00 PM</li>
+  <li>Early check-in / late check-out may be available upon request and subject to occupancy.</li>
+</ul>
+<h2>Identification</h2>
+<p>All guests must present a valid government-issued ID at check-in. Additional verification may be requested for security and fraud prevention.</p>
+<h2>Quiet hours</h2>
+<p>To preserve the calm atmosphere of the property, we observe quiet hours from <strong>10:00 PM – 7:00 AM</strong>.</p>
+<h2>Smoking</h2>
+<p>Smoking and vaping are not permitted in guest rooms or indoor areas unless specifically designated.</p>
+<h2>Lost &amp; found</h2>
+<p>If an item is found after departure, we will hold it for a limited period. Shipping may be arranged at the guest’s expense.</p>'],
+
+    // --- Privacy policy ---
+    ['privacy-policy', 'page_title', 'text', 'Privacy Policy - Lusso Hotels Abuja'],
+    ['privacy-policy', 'hero_kicker', 'text', 'Legal'],
+    ['privacy-policy', 'hero_title', 'text', 'Privacy Policy'],
+    ['privacy-policy', 'hero_subtitle', 'text', 'How we collect, use, and protect your personal information.'],
+    ['privacy-policy', 'last_updated', 'text', 'Last updated: April 8, 2026'],
+    ['privacy-policy', 'body_html', 'html', '<p>This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website, contact concierge, or make a reservation.</p>
+<h2>Information we collect</h2>
+<ul>
+  <li><strong>Contact details</strong> (name, email, phone number) when you inquire or request assistance.</li>
+  <li><strong>Reservation details</strong> (stay dates, guests, preferences) when you book or modify a booking.</li>
+  <li><strong>Payment-related data</strong> processed by our payment providers (we do not store full card details on our servers).</li>
+  <li><strong>Technical data</strong> collected through standard server logs and analytics.</li>
+</ul>
+<h2>How we use your information</h2>
+<ul>
+  <li>To provide, manage, and improve reservations and guest services.</li>
+  <li>To respond to inquiries and concierge requests.</li>
+  <li>To maintain site security and prevent fraud.</li>
+</ul>
+<h2>Security</h2>
+<p>We use reasonable safeguards designed to protect your information, but no method of transmission over the internet is 100% secure.</p>'],
+
+    // --- Terms & conditions ---
+    ['terms-and-conditions', 'page_title', 'text', 'Terms & Conditions - Lusso Hotels Abuja'],
+    ['terms-and-conditions', 'hero_kicker', 'text', 'Legal'],
+    ['terms-and-conditions', 'hero_title', 'text', 'Terms & Conditions'],
+    ['terms-and-conditions', 'hero_subtitle', 'text', 'The terms that govern use of our website and services.'],
+    ['terms-and-conditions', 'last_updated', 'text', 'Last updated: April 8, 2026'],
+    ['terms-and-conditions', 'body_html', 'html', '<p>These Terms &amp; Conditions apply to your use of our website and related concierge services.</p>
+<h2>Use of the website</h2>
+<ul>
+  <li>You may use this website for lawful purposes and in accordance with these terms.</li>
+  <li>You must not attempt to disrupt, damage, or gain unauthorized access to the website or its systems.</li>
+</ul>
+<h2>Third-party links and embeds</h2>
+<p>Our website may contain links to third-party websites and services (including maps and booking providers). We do not control third-party services and are not responsible for their content or policies.</p>
+<h2>Intellectual property</h2>
+<p>All content on this site is owned by or licensed to us and is protected by applicable intellectual property laws.</p>
+<h2>Changes</h2>
+<p>We may revise these terms from time to time. Updated terms will be posted on this page with a revised “Last updated” date.</p>'],
+
     // --- Gallery ---
     ['gallery', 'page_title', 'text', 'Lusso Visual Gallery'],
     ['gallery', 'hero_kicker', 'text', 'The Collection'],

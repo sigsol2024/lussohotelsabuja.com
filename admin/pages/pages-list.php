@@ -13,6 +13,9 @@ $availablePages = [
   'gallery' => ['name' => 'Gallery', 'editor' => 'gallery-page.php', 'icon' => 'fa-images'],
   'dining' => ['name' => 'Dining', 'editor' => 'dining-page.php', 'icon' => 'fa-utensils'],
   'amenities' => ['name' => 'Amenities', 'editor' => 'amenities-page.php', 'icon' => 'fa-spa'],
+  'hotel-policy' => ['name' => 'Hotel Policy', 'editor' => 'hotel-policy-page.php', 'icon' => 'fa-clipboard-list'],
+  'privacy-policy' => ['name' => 'Privacy Policy', 'editor' => 'privacy-policy-page.php', 'icon' => 'fa-user-shield'],
+  'terms-and-conditions' => ['name' => 'Terms & Conditions', 'editor' => 'terms-and-conditions-page.php', 'icon' => 'fa-file-contract'],
 ];
 
 try {

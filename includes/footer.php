@@ -28,8 +28,9 @@ if (!is_array($socialMediaList)) {
     $socialMediaList = [];
 }
 
-$privacyHref = getSiteSetting('footer_privacy_href', '#');
-$termsHref = getSiteSetting('footer_terms_href', '#');
+$hotelPolicySlug = 'hotel-policy';
+$privacyPolicySlug = 'privacy-policy';
+$termsSlug = 'terms-and-conditions';
 ?>
 
 <!-- Footer -->
@@ -116,15 +117,26 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
 
     <!-- Bottom -->
     <div class="border-t border-background-light/15 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-background-light/50">
-      <p><?= e($footerCopyright) ?></p>
+      <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-2 gap-y-2">
+        <p class="whitespace-nowrap"><?= e($footerCopyright) ?></p>
+
+        <?php if (lusso_public_page_exists($hotelPolicySlug)): ?>
+          <span class="mx-1 text-background-light/40">|</span>
+          <a class="hover:text-champagne transition-colors whitespace-nowrap" href="<?= e(lusso_url($hotelPolicySlug)) ?>">Hotel Policy</a>
+        <?php endif; ?>
+
+        <?php if (lusso_public_page_exists($privacyPolicySlug)): ?>
+          <span class="mx-1 text-background-light/40">|</span>
+          <a class="hover:text-champagne transition-colors whitespace-nowrap" href="<?= e(lusso_url($privacyPolicySlug)) ?>">Privacy Policy</a>
+        <?php endif; ?>
+
+        <?php if (lusso_public_page_exists($termsSlug)): ?>
+          <span class="mx-1 text-background-light/40">|</span>
+          <a class="hover:text-champagne transition-colors whitespace-nowrap" href="<?= e(lusso_url($termsSlug)) ?>">Terms &amp; Conditions</a>
+        <?php endif; ?>
+      </div>
       <div class="flex gap-6">
         <a class="hover:text-champagne transition-colors" href="https://signature-solutions.com/" target="_blank" rel="noopener noreferrer">Designed By Signature Solutions</a>
-        <?php if (lusso_is_valid_site_nav_href((string)$privacyHref)): ?>
-        <a class="hover:text-champagne transition-colors" href="<?= e(lusso_href($privacyHref)) ?>">Privacy Policy</a>
-        <?php endif; ?>
-        <?php if (lusso_is_valid_site_nav_href((string)$termsHref)): ?>
-        <a class="hover:text-champagne transition-colors" href="<?= e(lusso_href($termsHref)) ?>">Terms of Service</a>
-        <?php endif; ?>
       </div>
     </div>
   </div>

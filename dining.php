@@ -111,7 +111,7 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
 
 <!-- Editorial Intro Section -->
 <section class="relative py-24 md:py-32 px-6 md:px-16 max-w-[1440px] mx-auto">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-stretch lg:items-center">
     <div class="hidden lg:flex col-span-1 justify-center h-full">
       <span class="text-vertical text-xs tracking-[0.3em] uppercase text-text-main/40 font-bold border-l border-text-main/10 py-12 pl-4 h-full">
         <?= e($intro_vertical) ?>
@@ -131,13 +131,13 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
         </div>
       </div>
     </div>
-    <div class="col-span-1 lg:col-span-6 relative mt-12 lg:mt-0">
-      <div class="aspect-[4/5] w-full rounded-lg overflow-hidden relative z-10 shadow-2xl">
-        <div class="w-full h-full bg-cover bg-center transform scale-105 hover:scale-100 transition-transform duration-[1.5s]" data-alt="Chef" style="background-image: url('<?= e($chef_main_img) ?>');"></div>
+    <div class="col-span-1 lg:col-span-6 relative mt-12 lg:mt-0 min-w-0 flex flex-col items-center gap-8 lg:block">
+      <div class="aspect-[4/5] w-full max-w-lg mx-auto lg:max-w-none rounded-lg overflow-hidden relative z-10 shadow-2xl">
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105 hover:scale-100 transition-transform duration-[1.5s]" data-alt="Chef" style="background-image: url('<?= e($chef_main_img) ?>');"></div>
       </div>
-      <div class="absolute -bottom-10 -left-10 w-2/3 aspect-square bg-sand-darker dark:bg-gray-800 -z-10 rounded-lg"></div>
-      <div class="absolute -bottom-16 -right-6 md:-right-12 w-48 md:w-64 aspect-square rounded-full border-8 border-background-light dark:border-background-dark overflow-hidden shadow-xl z-20">
-        <div class="w-full h-full bg-cover bg-center hover:scale-110 transition-transform duration-700" data-alt="Detail" style="background-image: url('<?= e($chef_circle_img) ?>');"></div>
+      <div class="hidden lg:block absolute -bottom-10 -left-10 w-2/3 aspect-square bg-sand-darker dark:bg-gray-800 -z-10 rounded-lg"></div>
+      <div class="relative w-44 max-w-[min(100%,220px)] aspect-square rounded-full border-8 border-background-light dark:border-background-dark overflow-hidden shadow-xl z-20 md:absolute md:mt-0 md:ml-0 md:max-w-none md:w-48 md:-bottom-16 md:-right-6 lg:-right-12 lg:w-64">
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat hover:scale-110 transition-transform duration-700" data-alt="Detail" style="background-image: url('<?= e($chef_circle_img) ?>');"></div>
       </div>
     </div>
   </div>
@@ -160,7 +160,7 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
     $m3 = $masonry[3] ?? $m0;
     $m4 = $masonry[4] ?? $m0;
     ?>
-    <div class="md:col-span-8 row-span-1 md:row-span-2 relative group overflow-hidden rounded-lg">
+    <div class="md:col-span-8 row-span-1 md:row-span-2 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m0['src'] ?? '')) ?>');"></div>
       <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500"></div>
       <?php if (!empty($m0['tag']) || !empty($m0['caption'])): ?>
@@ -170,7 +170,7 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
       </div>
       <?php endif; ?>
     </div>
-    <div class="md:col-span-4 row-span-1 md:row-span-2 relative group overflow-hidden rounded-lg">
+    <div class="md:col-span-4 row-span-1 md:row-span-2 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m1['src'] ?? '')) ?>');"></div>
       <?php if (!empty($m1['tag']) || !empty($m1['caption'])): ?>
       <div class="absolute bottom-6 left-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -179,13 +179,13 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
       </div>
       <?php endif; ?>
     </div>
-    <div class="md:col-span-4 relative group overflow-hidden rounded-lg">
+    <div class="md:col-span-4 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m2['src'] ?? '')) ?>');"></div>
     </div>
-    <div class="md:col-span-4 relative group overflow-hidden rounded-lg">
+    <div class="md:col-span-4 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m3['src'] ?? '')) ?>');"></div>
     </div>
-    <div class="md:col-span-4 relative group overflow-hidden rounded-lg">
+    <div class="md:col-span-4 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m4['src'] ?? '')) ?>');"></div>
     </div>
   </div>

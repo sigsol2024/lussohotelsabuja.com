@@ -209,9 +209,9 @@ $occupancyLabel = $maxGuests > 0
 
   <section class="max-w-[1440px] mx-auto px-6 lg:px-12 pb-24">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
-      <div class="lg:col-span-5 relative">
-        <div class="sticky top-32 h-[600px] w-full rounded-2xl overflow-hidden shadow-2xl">
-          <div class="w-full h-full bg-cover bg-center"
+      <div class="lg:col-span-5 relative min-w-0 w-full">
+        <div class="sticky top-24 md:top-32 min-h-[300px] h-[52vh] max-h-[600px] md:h-[600px] w-full rounded-2xl overflow-hidden shadow-2xl">
+          <div class="w-full min-h-[300px] h-full bg-cover bg-center"
                data-alt="<?= e($title) ?>"
                style="background-image: url('<?= e($stickyImage) ?>');"></div>
           <?php if ($floorplanLabel !== ''): ?>
@@ -332,17 +332,17 @@ $occupancyLabel = $maxGuests > 0
       $n = count($g);
       if ($n >= 4) {
           ?>
-      <div class="md:col-span-2 row-span-1 rounded-lg overflow-hidden relative group cursor-zoom-in">
-        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($g[0]) ?>');"></div>
+      <div class="md:col-span-2 row-span-1 min-h-[300px] h-full rounded-lg overflow-hidden relative group cursor-zoom-in">
+        <div class="w-full min-h-[300px] h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($g[0]) ?>');"></div>
       </div>
-      <div class="md:col-span-1 row-span-2 rounded-lg overflow-hidden relative group cursor-zoom-in">
-        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($g[1]) ?>');"></div>
+      <div class="md:col-span-1 row-span-2 min-h-[300px] h-full rounded-lg overflow-hidden relative group cursor-zoom-in">
+        <div class="w-full min-h-[300px] h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($g[1]) ?>');"></div>
       </div>
-      <div class="md:col-span-1 row-span-1 rounded-lg overflow-hidden relative group cursor-zoom-in">
-        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($g[2]) ?>');"></div>
+      <div class="md:col-span-1 row-span-1 min-h-[300px] h-full rounded-lg overflow-hidden relative group cursor-zoom-in">
+        <div class="w-full min-h-[300px] h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($g[2]) ?>');"></div>
       </div>
-      <div class="md:col-span-1 row-span-1 rounded-lg overflow-hidden relative group cursor-zoom-in">
-        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($g[3]) ?>');"></div>
+      <div class="md:col-span-1 row-span-1 min-h-[300px] h-full rounded-lg overflow-hidden relative group cursor-zoom-in">
+        <div class="w-full min-h-[300px] h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($g[3]) ?>');"></div>
       </div>
           <?php
       } else {

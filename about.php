@@ -81,8 +81,8 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
 
 <section class="py-24 lg:py-32 relative bg-background-light dark:bg-background-dark">
   <div class="container mx-auto px-6 lg:px-12">
-    <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
-      <div class="w-full lg:w-1/2 flex flex-col gap-8">
+    <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-12 lg:gap-24">
+      <div class="w-full lg:w-1/2 flex flex-col gap-8 min-w-0">
         <h2 class="text-4xl md:text-5xl font-light text-text-main dark:text-white leading-tight">
           <?= $story_title_html ?>
         </h2>
@@ -90,9 +90,9 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
         <p class="text-lg text-gray-600 dark:text-gray-300 leading-loose font-light"><?= e($story_p1) ?></p>
         <p class="text-lg text-gray-600 dark:text-gray-300 leading-loose font-light"><?= e($story_p2) ?></p>
       </div>
-      <div class="w-full lg:w-1/2 relative">
-        <div class="aspect-[4/5] rounded-lg overflow-hidden relative shadow-2xl">
-          <div class="w-full h-full bg-cover bg-center" style='background-image: url("<?= e($story_image) ?>");'></div>
+      <div class="w-full lg:w-1/2 relative min-w-0">
+        <div class="aspect-[4/5] rounded-lg overflow-hidden relative shadow-2xl w-full">
+          <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style='background-image: url("<?= e($story_image) ?>");'></div>
           <div class="absolute bottom-8 -left-8 md:-left-12 bg-white dark:bg-[#2c2618] p-6 md:p-8 rounded-lg shadow-xl max-w-xs border-l-4 border-primary hidden md:block">
             <p class="text-sm font-serif italic text-gray-500 dark:text-gray-400"><?= e($story_quote) ?></p>
           </div>
@@ -108,10 +108,10 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
       <span class="text-primary text-xs font-bold tracking-widest uppercase mb-3 block"><?= e($values_kicker) ?></span>
       <h3 class="text-3xl md:text-4xl font-bold text-text-main dark:text-white"><?= e($values_title) ?></h3>
     </div>
-    <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-      <div class="lg:col-span-8 relative z-10">
-        <div class="aspect-[16/9] rounded-lg overflow-hidden shadow-2xl">
-          <div class="w-full h-full bg-cover bg-center transition-transform duration-700 hover:scale-105" style='background-image: url("<?= e($values_image) ?>");'></div>
+    <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch lg:items-center">
+      <div class="lg:col-span-8 relative z-10 min-w-0">
+        <div class="relative aspect-[16/9] w-full rounded-lg overflow-hidden shadow-2xl">
+          <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 hover:scale-105" style='background-image: url("<?= e($values_image) ?>");'></div>
         </div>
       </div>
       <div class="lg:col-span-5 lg:-ml-24 lg:mt-24 relative z-20">
@@ -195,9 +195,9 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
         }
         ?>
       <div class="group cursor-pointer">
-        <div class="aspect-[3/4] overflow-hidden rounded-lg mb-6 relative">
+        <div class="aspect-[3/4] w-full overflow-hidden rounded-lg mb-6 relative">
           <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-500 z-10"></div>
-          <div class="w-full h-full bg-cover bg-top transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($imgUrl) ?>');"></div>
+          <div class="absolute inset-0 bg-cover bg-top bg-no-repeat transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($imgUrl) ?>');"></div>
         </div>
         <div class="flex flex-col">
           <h3 class="text-xl font-bold text-text-main dark:text-white group-hover:text-primary transition-colors"><?= e((string)($member['name'] ?? '')) ?></h3>

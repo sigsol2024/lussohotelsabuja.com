@@ -88,8 +88,8 @@ function gallery_ratio_class($ratio) {
         $ac = gallery_ratio_class($ratio);
         ?>
       <div class="group relative overflow-hidden rounded-md border border-primary/30 break-inside-avoid cursor-pointer">
-        <div class="<?= e($ac) ?> w-full bg-gray-200">
-          <img alt="<?= e($alt) ?>" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="<?= e($src) ?>"/>
+        <div class="<?= e($ac) ?> relative w-full bg-gray-200">
+          <img alt="<?= e($alt) ?>" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="<?= e($src) ?>" loading="lazy" decoding="async"/>
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 md:p-8">
           <span class="text-primary text-[10px] font-bold tracking-[0.2em] uppercase translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75"><?= e($cat) ?></span>

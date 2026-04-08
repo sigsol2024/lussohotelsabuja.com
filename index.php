@@ -4,7 +4,9 @@ require_once __DIR__ . '/includes/content-loader.php';
 $pageTitle = getSiteSetting('site_name', 'Lusso Hotels Abuja');
 
 $hero_kicker = getPageSection('index', 'hero_kicker', 'Welcome to Abuja');
-$hero_title = getPageSection('index', 'hero_title', 'Refined Luxury in <br/><span class="italic text-primary lusso-hero-accent-text">Absolute Silence</span>');
+$hero_title = lusso_normalize_home_hero_title_html(
+    (string) getPageSection('index', 'hero_title', 'Refined Luxury in <br/><span class="italic text-primary lusso-hero-accent-text">Absolute Silence</span>')
+);
 $hero_subtitle = getPageSection('index', 'hero_subtitle', 'Experience the sanctuary of Lusso. Where every detail creates a symphony of comfort.');
 $hero_cta_text = getPageSection('index', 'hero_cta_text', 'Discover Suites');
 $hero_cta_href = getPageSection('index', 'hero_cta_href', '/rooms');
@@ -139,11 +141,11 @@ $featuredRooms = getFeaturedRoomsForHome(12);
 </section>
 
 <!-- Asymmetrical Editorial Section: The Lusso Standard -->
-<section class="relative w-full <?= $hasBookingBridge ? 'pt-28 md:pt-40 pb-24 md:pb-32' : 'py-24 md:py-32' ?> overflow-hidden bg-background-light">
+<section class="relative w-full <?= $hasBookingBridge ? 'pt-28 md:pt-40 pb-24 md:pb-32' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
   <div class="absolute inset-0 opacity-[0.04] pointer-events-none" style="background-image: radial-gradient(#363636 1px, transparent 1px); background-size: 32px 32px;"></div>
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
-    <div class="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-0 mb-32 relative">
-      <div class="lg:w-1/2 lg:pr-16 z-20 pt-10">
+    <div class="flex flex-col lg:flex-row items-stretch lg:items-start gap-12 lg:gap-0 mb-32 relative">
+      <div class="w-full lg:w-1/2 lg:pr-16 z-20 pt-10">
         <span class="block text-primary text-sm font-bold uppercase tracking-widest mb-4"><?= e($hp_kicker) ?></span>
         <h2 class="font-serif text-4xl md:text-5xl lg:text-6xl text-text-main leading-tight mb-6">
           <?= $hp_title_html ?>
@@ -156,22 +158,22 @@ $featuredRooms = getFeaturedRoomsForHome(12);
           <?= e($hp_link_text) ?> <span class="material-symbols-outlined text-sm">arrow_forward</span>
         </a>
       </div>
-      <div class="lg:w-1/2 relative">
+      <div class="w-full lg:w-1/2 relative min-w-0 flex flex-col items-center gap-8 lg:block">
         <div class="absolute top-[-20px] right-[-20px] w-full h-full border border-primary/30 rounded-lg hidden lg:block z-0"></div>
-        <div class="relative z-10 rounded-lg overflow-hidden shadow-2xl aspect-[4/5] lg:aspect-[3/4] max-w-md mx-auto lg:ml-auto">
-          <div class="w-full h-full bg-cover bg-center hover:scale-105 transition-transform duration-700" data-alt="Editorial"
+        <div class="relative z-10 w-full max-w-md mx-auto lg:ml-auto lg:mr-0 rounded-lg overflow-hidden shadow-2xl aspect-[4/5] lg:aspect-[3/4]">
+          <div class="absolute inset-0 bg-cover bg-center bg-no-repeat hover:scale-105 transition-transform duration-700" data-alt="Editorial"
                style="background-image: url('<?= e($hp_main_img) ?>');"></div>
         </div>
-        <div class="absolute bottom-[-40px] left-[-40px] w-48 h-64 rounded-lg overflow-hidden shadow-xl hidden lg:block z-20 border-4 border-white">
-          <div class="w-full h-full bg-cover bg-center" style="background-image: url('<?= e($hp_secondary_img) ?>');"></div>
+        <div class="relative lg:absolute w-full max-w-[280px] aspect-[4/5] mx-auto lg:max-w-none lg:w-48 lg:h-64 lg:aspect-auto lg:mt-0 lg:mx-0 left-auto lg:left-[-40px] bottom-auto lg:bottom-[-40px] rounded-lg overflow-hidden shadow-xl z-20 border-4 border-white">
+          <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('<?= e($hp_secondary_img) ?>');"></div>
         </div>
       </div>
     </div>
 
-    <div class="flex flex-col-reverse lg:flex-row items-center lg:items-center gap-12 lg:gap-24 relative">
-      <div class="lg:w-7/12 relative">
-        <div class="rounded-lg overflow-hidden shadow-elevation aspect-video w-full">
-          <div class="w-full h-full bg-cover bg-center" data-alt="Architecture"
+    <div class="flex flex-col-reverse lg:flex-row items-stretch lg:items-center gap-12 lg:gap-24 relative">
+      <div class="w-full lg:w-7/12 relative min-w-0">
+        <div class="relative rounded-lg overflow-hidden shadow-elevation aspect-video w-full">
+          <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" data-alt="Architecture"
                style="background-image: url('<?= e($arch_img) ?>');"></div>
         </div>
         <div class="absolute -top-6 -right-6 bg-white p-6 shadow-xl rounded-lg max-w-[200px] hidden lg:block">
@@ -179,7 +181,7 @@ $featuredRooms = getFeaturedRoomsForHome(12);
           <p class="text-xs text-text-muted uppercase tracking-wider mt-1"><?= e($arch_badge_sub) ?></p>
         </div>
       </div>
-      <div class="lg:w-5/12 z-20">
+      <div class="w-full lg:w-5/12 z-20 min-w-0">
         <h3 class="font-serif text-3xl md:text-4xl text-text-main mb-4"><?= e($arch_title) ?></h3>
         <p class="text-text-muted text-lg leading-relaxed mb-6">
           <?= e($arch_body) ?>
@@ -288,12 +290,12 @@ $featuredRooms = getFeaturedRoomsForHome(12);
 <!-- Culinary Excellence Section -->
 <section class="py-24 bg-background-light">
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
-    <div class="bg-white rounded-2xl overflow-hidden shadow-elevation flex flex-col lg:flex-row">
-      <div class="lg:w-1/2 relative min-h-[400px]">
-        <div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="Dining"
+    <div class="bg-white rounded-2xl overflow-hidden shadow-elevation flex flex-col lg:flex-row items-stretch">
+      <div class="w-full lg:w-1/2 relative min-h-[260px] md:min-h-[400px]">
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" data-alt="Dining"
              style="background-image: url('<?= e($dining_img) ?>');"></div>
       </div>
-      <div class="lg:w-1/2 p-12 lg:p-20 flex flex-col justify-center">
+      <div class="w-full lg:w-1/2 p-12 lg:p-20 flex flex-col justify-center min-w-0">
         <span class="text-primary text-sm font-bold uppercase tracking-widest mb-3"><?= e($dining_kicker) ?></span>
         <h2 class="font-serif text-4xl text-text-main mb-6"><?= e($dining_title) ?></h2>
         <p class="text-text-muted text-lg mb-8">

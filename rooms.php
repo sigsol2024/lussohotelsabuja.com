@@ -88,23 +88,23 @@ $rooms = getRooms(['is_active' => 1]);
         }
         ?>
 
-      <article class="group relative flex flex-col <?= $reverse ? 'lg:flex-row-reverse' : 'lg:flex-row' ?> items-center gap-12 lg:gap-24">
-        <div class="w-full lg:w-3/5 relative">
+      <article class="group relative flex flex-col <?= $reverse ? 'lg:flex-row-reverse' : 'lg:flex-row' ?> items-stretch lg:items-center gap-12 lg:gap-24">
+        <div class="w-full lg:w-3/5 flex flex-col items-center gap-6 min-w-0<?= !empty($detailImage) ? ' md:pb-16 lg:pb-0' : '' ?>">
           <div class="relative w-full aspect-[4/3] overflow-hidden rounded-lg shadow-2xl">
-            <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 group-hover:scale-105"
                  data-alt="<?= e($title) ?>"
                  style="background-image: url('<?= e($mainImage) ?>');"></div>
           </div>
           <?php if (!empty($detailImage)): ?>
-          <div class="absolute -bottom-12 <?= $reverse ? '-left-6 lg:-left-12' : '-right-6 lg:-right-12' ?> w-40 md:w-64 aspect-square rounded-lg border-4 border-white shadow-xl overflow-hidden z-10 hidden md:block">
-            <div class="w-full h-full bg-cover bg-center hover:scale-110 transition-transform duration-500"
+          <div class="relative w-40 max-w-[min(100%,240px)] aspect-square shrink-0 rounded-lg border-4 border-white shadow-xl overflow-hidden z-10 md:absolute md:mt-0 md:w-64 md:max-w-none md:-bottom-12 <?= $reverse ? 'md:-left-6 lg:-left-12' : 'md:-right-6 lg:-right-12' ?>">
+            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat hover:scale-110 transition-transform duration-500"
                  data-alt="<?= e($title) ?> detail"
                  style="background-image: url('<?= e($detailImage) ?>');"></div>
           </div>
           <?php endif; ?>
         </div>
 
-        <div class="w-full lg:w-2/5 flex flex-col justify-center <?= $reverse ? 'lg:items-end lg:text-right' : '' ?>">
+        <div class="w-full lg:w-2/5 flex flex-col justify-center min-w-0 <?= $reverse ? 'lg:items-end lg:text-right' : '' ?>">
           <span class="text-primary text-xs font-bold tracking-[0.2em] uppercase mb-3">Starting at <?= e($currency) ?><?= e($price) ?></span>
           <h2 class="text-4xl md:text-5xl font-light text-text-main mb-6"><?= e($title) ?></h2>
           <p class="text-text-muted text-base leading-relaxed mb-8"><?= e($desc) ?></p>

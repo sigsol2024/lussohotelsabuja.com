@@ -44,6 +44,23 @@ function getPageSection($page, $sectionKey, $default = '') {
 }
 
 /**
+ * Homepage hero title: replace legacy boxed span (border/rounded) with text-stroke class.
+ * Stored DB content may still have the old markup after the design change.
+ */
+function lusso_normalize_home_hero_title_html(string $html): string {
+    $legacyClass = 'class="italic text-primary border border-white/90 rounded-lg px-3 py-1 inline-block shadow-sm"';
+    $strokeClass = 'class="italic text-primary lusso-hero-accent-text"';
+    $html = str_replace($legacyClass, $strokeClass, $html);
+    // Any other variant that still uses border-white/90 on the accent span
+    $replaced = preg_replace(
+        '/class="([^"]*\bitalic\b[^"]*\btext-primary\b)[^"]*\bborder-white\/90[^"]*"/',
+        'class="italic text-primary lusso-hero-accent-text"',
+        $html
+    );
+    return is_string($replaced) ? $replaced : $html;
+}
+
+/**
  * Get site setting
  */
 function getSiteSetting($key, $default = '') {

@@ -29,8 +29,8 @@ $rooms = getRooms(['is_active' => 1]);
 <!-- Hero Section -->
 <section class="relative min-h-[90vh] flex items-center justify-center pt-20 overflow-hidden">
   <div class="absolute inset-0 z-0">
-    <div class="absolute inset-x-0 top-0 h-40 md:h-56 bg-gradient-to-b from-white/18 via-white/6 to-transparent z-20 pointer-events-none"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-background-light z-10"></div>
+    <!-- Hero overlay: match About page pattern (no fading gradient) -->
+    <div class="absolute inset-0 z-10" style="background: rgba(107, 51, 39, 0.72);"></div>
     <div class="w-full h-full bg-cover bg-center bg-no-repeat bg-fixed scale-105"
          data-alt="Wide angle view of a dimly lit, ultra-luxury hotel bedroom with floor-to-ceiling windows"
          style="background-image: url('<?= e($heroBg) ?>');">

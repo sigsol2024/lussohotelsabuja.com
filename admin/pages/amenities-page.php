@@ -83,10 +83,21 @@ function amenitiesGetItemsFromDom() {
     var icon = (card.querySelector('.js-icon')?.value || '').trim();
     var title_html = (card.querySelector('.js-title-html')?.value || '').trim();
     var body = (card.querySelector('.js-body')?.value || '').trim();
-    var btn = (card.querySelector('.js-btn')?.value || '').trim();
-    var btn_href = (card.querySelector('.js-btn-href')?.value || '').trim();
+    var btn = 'View Gallery';
+    var btn_href = '';
+    var galleryRaw = (card.querySelector('.js-gallery')?.value || '').trim();
+    var gallery = [];
+    if (galleryRaw) {
+      try {
+        var parsed = JSON.parse(galleryRaw);
+        if (Array.isArray(parsed)) gallery = parsed;
+        else if (typeof parsed === 'string' && parsed) gallery = [parsed];
+      } catch (e) {
+        gallery = [galleryRaw];
+      }
+    }
     var layout = (card.querySelector('.js-layout')?.value || 'bottom').trim() || 'bottom';
-    out.push({ bg: bg, gradient: gradient, kicker: kicker, icon: icon, title_html: title_html, body: body, btn: btn, btn_href: btn_href, layout: layout });
+    out.push({ bg: bg, gradient: gradient, kicker: kicker, icon: icon, title_html: title_html, body: body, btn: btn, btn_href: btn_href, gallery: gallery, layout: layout });
   });
   return out;
 }
@@ -111,13 +122,18 @@ function amenitiesRender(items) {
     var icon = (it && it.icon) || 'star';
     var titleHtml = (it && it.title_html) || '';
     var body = (it && it.body) || '';
-    var btn = (it && it.btn) || '';
-    var btnHref = (it && it.btn_href) || '';
+    var btn = 'View Gallery';
+    var btnHref = '';
+    var gallery = (it && (it.gallery || it.gallery_images)) || [];
+    if (!Array.isArray(gallery)) gallery = [];
     var layout = (it && it.layout) || 'bottom';
 
     var inputId = 'amenity_section_' + idx + '_bg';
     var prevId = 'amenity_section_' + idx + '_bg_preview';
     var imgUrl = amenitiesNormalizeImgUrl(bg);
+
+    var galInputId = 'amenity_section_' + idx + '_gallery_images';
+    var galPrevId = 'amenity_section_' + idx + '_gallery_preview';
 
     var wrap = document.createElement('div');
     wrap.className = 'card js-amen-sec';
@@ -141,6 +157,16 @@ function amenitiesRender(items) {
           '<div id="' + amenitiesEscHtml(prevId) + '" class="image-preview" style="' + (imgUrl ? 'display:block;margin-top:10px;' : 'display:none;margin-top:10px;') + '">' +
             (imgUrl ? ('<img src="' + amenitiesEscHtml(imgUrl) + '" style="max-width:420px;max-height:240px;border-radius:6px;">') : '') +
           '</div>' +
+        '</div>' +
+        '<div class="form-group" style="margin-top:10px;">' +
+          '<label>Section gallery (shown in modal when button is clicked)</label>' +
+          '<div style="display:flex; gap: 10px; align-items:center; flex-wrap:wrap;">' +
+            '<button type="button" class="btn btn-outline js-gal-pick">Select images</button>' +
+            '<button type="button" class="btn btn-outline btn-sm js-gal-clear">Clear</button>' +
+          '</div>' +
+          '<input type="hidden" id="' + amenitiesEscHtml(galInputId) + '" class="js-gallery" value="' + amenitiesEscHtml(JSON.stringify(gallery || [])) + '">' +
+          '<div id="' + amenitiesEscHtml(galPrevId) + '" class="image-preview" style="display:block;margin-top:10px;"></div>' +
+          '<p class="form-help" style="margin-top:8px;">Tip: you can paste a JSON array of paths into Advanced JSON if needed.</p>' +
         '</div>' +
         '<div class="form-row">' +
           '<div class="form-group" style="flex:1;">' +
@@ -175,21 +201,46 @@ function amenitiesRender(items) {
           '<label>Body</label>' +
           '<textarea class="form-control js-body" rows="3">' + amenitiesEscHtml(body) + '</textarea>' +
         '</div>' +
-        '<div class="form-row">' +
-          '<div class="form-group" style="flex:1;">' +
-            '<label>Button label</label>' +
-            '<input type="text" class="form-control js-btn" value="' + amenitiesEscHtml(btn) + '" placeholder="Explore">' +
-          '</div>' +
-          '<div class="form-group" style="flex:1;">' +
-            '<label>Button link</label>' +
-            '<input type="text" class="form-control js-btn-href" value="' + amenitiesEscHtml(btnHref) + '" placeholder="/amenities">' +
-          '</div>' +
+        '<div class="form-group">' +
+          '<label>Button</label>' +
+          '<div class="form-help" style="margin-top:0;">Buttons on the public page always say <strong>View Gallery</strong> and open the section gallery modal.</div>' +
         '</div>' +
       '</div>';
 
     wrap.querySelector('.js-pick').addEventListener('click', function () {
       openMediaModal(inputId, prevId, false);
     });
+    // Gallery thumbnails
+    (function () {
+      var prev = wrap.querySelector('#' + CSS.escape(galPrevId));
+      function renderThumbs(list) {
+        if (!prev) return;
+        var items = Array.isArray(list) ? list : [];
+        prev.innerHTML = items.map(function (p) {
+          var u = amenitiesNormalizeImgUrl(p);
+          if (!u) return '';
+          return '<img src="' + amenitiesEscHtml(u) + '" style="max-width:120px;max-height:90px;display:inline-block;margin:5px;object-fit:cover;border-radius:6px;">';
+        }).join('') || '<span style="color: var(--text-muted); font-size: 12px;">No gallery images selected.</span>';
+      }
+      renderThumbs(gallery);
+      wrap.querySelector('.js-gal-pick').addEventListener('click', function () {
+        openMediaModal(galInputId, galPrevId, true);
+      });
+      wrap.querySelector('.js-gal-clear').addEventListener('click', function () {
+        var inp = wrap.querySelector('.js-gallery');
+        if (inp) inp.value = '[]';
+        renderThumbs([]);
+        amenitiesSyncHiddenJson();
+      });
+      wrap.addEventListener('input', function () {
+        var inp = wrap.querySelector('.js-gallery');
+        if (!inp) return;
+        var raw = (inp.value || '').trim();
+        var arr = [];
+        if (raw) { try { var v = JSON.parse(raw); if (Array.isArray(v)) arr = v; else if (typeof v === 'string' && v) arr = [v]; } catch (e) { arr = [raw]; } }
+        renderThumbs(arr);
+      });
+    })();
     wrap.querySelector('.js-remove').addEventListener('click', function () {
       wrap.remove();
       amenitiesSyncHiddenJson();
@@ -237,6 +288,39 @@ document.getElementById('amenitiesPageForm').addEventListener('submit', function
     .then(function () { showToast('Saved', 'success'); })
     .catch(function (err) { showToast(err.message || 'Save failed', 'error'); });
 });
+
+// Render multi-image previews when selecting gallery images (dynamic ids)
+(function () {
+  var prevInsert = window.insertSelectedMediaOverride;
+  window.insertSelectedMediaOverride = function () {
+    var selected = mediaModalState.allowMultiple ? mediaModalState.selectedMediaMultiple : (mediaModalState.selectedMedia ? [mediaModalState.selectedMedia] : []);
+    if (!selected.length) return false;
+    var tid = mediaModalState.targetInputId || '';
+
+    if (tid.indexOf('amenity_section_') === 0 && tid.indexOf('_gallery_images') !== -1) {
+      var paths = selected.map(function (s) { return s.path; });
+      var input = document.getElementById(tid);
+      if (input) input.value = JSON.stringify(paths);
+      var prev = mediaModalState.targetPreviewId ? document.getElementById(mediaModalState.targetPreviewId) : null;
+      if (prev) {
+        prev.style.display = 'block';
+        prev.innerHTML = paths.map(function (p) {
+          return '<img src="<?= SITE_URL ?>' + String(p).replace(/^\/+/, '') + '" style="max-width:120px;max-height:90px;display:inline-block;margin:5px;object-fit:cover;border-radius:6px;">';
+        }).join('');
+      }
+      closeMediaModal();
+      if (typeof showToast === 'function') showToast(paths.length + ' images selected', 'success');
+      // Sync into sections_json
+      if (typeof amenitiesSyncHiddenJson === 'function') amenitiesSyncHiddenJson();
+      return true;
+    }
+
+    if (typeof prevInsert === 'function') {
+      return prevInsert();
+    }
+    return false;
+  };
+})();
 
 document.addEventListener('DOMContentLoaded', function () {
   var raw = document.getElementById('sections_json')?.value || '[]';

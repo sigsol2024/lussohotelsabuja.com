@@ -64,6 +64,8 @@ function amenities_body_class($layout) {
     .amenity-section { scroll-snap-align: start; scroll-snap-stop: normal; }
     html { scroll-snap-type: y proximity; scroll-behavior: smooth; }
     .text-outline { text-shadow: 0px 0px 1px rgba(255,255,255,0.3); }
+    .lusso-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); display:none; z-index: 9999; }
+    .lusso-modal-backdrop.open { display: flex; }
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display antialiased overflow-x-hidden">
@@ -78,8 +80,13 @@ function amenities_body_class($layout) {
     $icon = (string)($sec['icon'] ?? 'star');
     $titleHtml = (string)($sec['title_html'] ?? '');
     $body = (string)($sec['body'] ?? '');
-    $btn = (string)($sec['btn'] ?? '');
     $btnHref = (string)($sec['btn_href'] ?? '#');
+    $gallery = $sec['gallery'] ?? ($sec['gallery_images'] ?? []);
+    if (!is_array($gallery)) { $gallery = []; }
+    $gallery = array_values(array_filter(array_map(static function ($p) {
+        return is_string($p) ? trim($p) : '';
+    }, $gallery), static function ($p) { return $p !== ''; }));
+    $galleryJsonAttr = htmlspecialchars(json_encode($gallery, JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
     $layout = (string)($sec['layout'] ?? 'bottom');
     $inner = amenities_inner_wrap_class($layout);
     $zPad = ($layout === 'top') ? 'p-8 md:p-20 pt-32 md:pt-40' : 'p-8 md:p-20';
@@ -103,26 +110,144 @@ function amenities_body_class($layout) {
         <p class="<?= e(amenities_body_class($layout)) ?>">
           <?= e($body) ?>
         </p>
-        <?php if ($layout === 'center'): ?>
-        <button class="inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded font-bold hover:bg-white/20 transition-all duration-300" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
-          <span class="text-sm tracking-[0.1em] uppercase"><?= e($btn) ?></span>
-          <span class="material-symbols-outlined text-lg">arrow_outward</span>
+        <?php
+          $btnIcon = ($layout === 'center') ? 'arrow_outward' : (($layout === 'top') ? 'water_drop' : 'arrow_forward');
+          $btnBaseClass = ($layout === 'center')
+            ? 'inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded font-bold hover:bg-white/20 transition-all duration-300'
+            : 'mt-4 inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded hover:bg-white/20 transition-all duration-300 group/btn';
+        ?>
+        <button class="<?= e($btnBaseClass) ?> js-amenity-gallery-btn"
+                type="button"
+                data-gallery="<?= $galleryJsonAttr ?>"
+                data-fallback-href="<?= e(lusso_href($btnHref)) ?>">
+          <span class="text-sm font-bold tracking-[0.1em] uppercase">View Gallery</span>
+          <span class="material-symbols-outlined text-lg <?= $layout === 'center' ? '' : 'group-hover/btn:translate-x-1 transition-transform' ?>"><?= e($btnIcon) ?></span>
         </button>
-        <?php elseif ($layout === 'top'): ?>
-        <button class="mt-4 inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded hover:bg-white/20 transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
-          <span class="text-sm font-bold tracking-[0.1em] uppercase"><?= e($btn) ?></span>
-          <span class="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">water_drop</span>
-        </button>
-        <?php else: ?>
-        <button class="mt-4 inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded hover:bg-white/20 transition-all duration-300 group/btn" type="button" onclick="location.href='<?= e(lusso_href($btnHref)) ?>'">
-          <span class="text-sm font-bold tracking-[0.1em] uppercase"><?= e($btn) ?></span>
-          <span class="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
-        </button>
-        <?php endif; ?>
       </div>
     </div>
   </section>
   <?php endforeach; ?>
 </main>
+
+<!-- Gallery modal (per section) -->
+<div id="amenitiesGalleryModal" class="lusso-modal-backdrop items-center justify-center p-4" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="w-full max-w-5xl bg-black/70 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
+      <div class="text-white/80 text-xs font-bold tracking-[0.25em] uppercase">
+        Gallery <span id="amenitiesGalleryCount" class="text-white/60"></span>
+      </div>
+      <button type="button" id="amenitiesGalleryClose" class="text-white/70 hover:text-white transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="relative w-full aspect-[16/10] bg-black">
+      <img id="amenitiesGalleryImg" src="" alt="Gallery image" class="absolute inset-0 w-full h-full object-cover"/>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none"></div>
+      <button type="button" id="amenitiesGalleryPrev" class="absolute left-3 top-1/2 -translate-y-1/2 size-12 rounded-full bg-white/10 border border-white/15 text-white hover:bg-white/20 backdrop-blur-sm transition-colors flex items-center justify-center">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+      <button type="button" id="amenitiesGalleryNext" class="absolute right-3 top-1/2 -translate-y-1/2 size-12 rounded-full bg-white/10 border border-white/15 text-white hover:bg-white/20 backdrop-blur-sm transition-colors flex items-center justify-center">
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+    </div>
+    <div class="px-5 py-4 bg-black/50 border-t border-white/10">
+      <div id="amenitiesGalleryThumbs" class="flex gap-3 overflow-x-auto pb-1"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var modal = document.getElementById('amenitiesGalleryModal');
+  var imgEl = document.getElementById('amenitiesGalleryImg');
+  var thumbsEl = document.getElementById('amenitiesGalleryThumbs');
+  var countEl = document.getElementById('amenitiesGalleryCount');
+  var closeBtn = document.getElementById('amenitiesGalleryClose');
+  var prevBtn = document.getElementById('amenitiesGalleryPrev');
+  var nextBtn = document.getElementById('amenitiesGalleryNext');
+
+  if (!modal || !imgEl || !thumbsEl || !closeBtn || !prevBtn || !nextBtn) return;
+
+  var images = [];
+  var idx = 0;
+
+  function normSrc(p) {
+    if (!p) return '';
+    if (String(p).indexOf('http') === 0) return String(p);
+    return '<?= rtrim((string)(defined('SITE_URL') ? SITE_URL : ''), '/') ?>/' + String(p).replace(/^\/+/, '');
+  }
+
+  function render() {
+    if (!images.length) {
+      imgEl.removeAttribute('src');
+      imgEl.style.display = 'none';
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+      countEl.textContent = '';
+      thumbsEl.innerHTML = '<div style="color: rgba(255,255,255,0.7); font-size: 14px; padding: 18px 4px;">No gallery images yet.</div>';
+      return;
+    }
+    imgEl.style.display = 'block';
+    prevBtn.style.display = '';
+    nextBtn.style.display = '';
+    idx = (idx + images.length) % images.length;
+    imgEl.src = normSrc(images[idx]);
+    countEl.textContent = (idx + 1) + ' / ' + images.length;
+    Array.prototype.forEach.call(thumbsEl.querySelectorAll('button[data-i]'), function (b) {
+      b.classList.toggle('ring-2', parseInt(b.getAttribute('data-i'), 10) === idx);
+      b.classList.toggle('ring-white/70', parseInt(b.getAttribute('data-i'), 10) === idx);
+    });
+  }
+
+  function open(gallery, fallbackHref) {
+    images = Array.isArray(gallery) ? gallery.filter(Boolean) : [];
+    idx = 0;
+    thumbsEl.innerHTML = '';
+    images.forEach(function (p, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.setAttribute('data-i', String(i));
+      btn.className = 'shrink-0 rounded-lg overflow-hidden border border-white/10 ring-offset-0';
+      btn.style.width = '84px';
+      btn.style.height = '56px';
+      btn.innerHTML = '<img src="' + normSrc(p).replace(/"/g, '&quot;') + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" />';
+      btn.addEventListener('click', function () { idx = i; render(); });
+      thumbsEl.appendChild(btn);
+    });
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    render();
+  }
+
+  function close() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.js-amenity-gallery-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var raw = btn.getAttribute('data-gallery') || '[]';
+      var fallbackHref = btn.getAttribute('data-fallback-href') || '';
+      var g;
+      try { g = JSON.parse(raw); } catch (e) { g = []; }
+      open(g, fallbackHref);
+    });
+  });
+
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+  prevBtn.addEventListener('click', function () { idx--; render(); });
+  nextBtn.addEventListener('click', function () { idx++; render(); });
+  document.addEventListener('keydown', function (e) {
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') { idx--; render(); }
+    if (e.key === 'ArrowRight') { idx++; render(); }
+  });
+})();
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

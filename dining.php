@@ -250,21 +250,31 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
 
 </div>
 
+<!-- Floating skip widget: visible only while menu section is in view -->
+<div id="diningMenuSkipWidget" class="fixed left-3 md:left-8 top-1/2 -translate-y-1/2 z-[9999] transition-opacity duration-300 opacity-0 pointer-events-none">
+  <div class="flex flex-col items-center gap-2">
+    <button id="diningMenuSkipBtn"
+            type="button"
+            class="size-12 rounded-full bg-black/20 hover:bg-black/30 text-white border border-white/25 backdrop-blur-sm shadow-lg transition-colors flex items-center justify-center"
+            aria-label="Skip menu section">
+      <span class="material-symbols-outlined text-2xl">arrow_downward</span>
+    </button>
+    <span class="text-[11px] font-bold uppercase tracking-widest text-white/80 bg-black/20 border border-white/15 backdrop-blur-sm rounded-full px-3 py-1 select-none">Skip</span>
+  </div>
+</div>
+
 <script>
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
   var widget = document.getElementById('diningMenuSkipWidget');
   var btn = document.getElementById('diningMenuSkipBtn');
   var menu = document.getElementById('diningMenu');
   var next = document.getElementById('diningReservation');
-  if (!btn || !menu || !next) return;
+  if (!widget || !btn || !menu || !next) return;
 
   btn.addEventListener('click', function () {
-    var next = document.getElementById('diningReservation');
-    if (!next) return;
     next.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  if (!widget) return;
   if (!('IntersectionObserver' in window)) {
     widget.classList.remove('opacity-0', 'pointer-events-none');
     widget.classList.add('opacity-100');
@@ -283,20 +293,7 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
     });
   }, { root: null, threshold: 0.15, rootMargin: '-10% 0px -10% 0px' });
   io.observe(menu);
-})();
+});
 </script>
-
-<!-- Floating skip widget: visible only while menu section is in view -->
-<div id="diningMenuSkipWidget" class="fixed left-3 md:left-8 top-1/2 -translate-y-1/2 z-50 transition-opacity duration-300 opacity-0 pointer-events-none">
-  <div class="flex flex-col items-center gap-2">
-    <button id="diningMenuSkipBtn"
-            type="button"
-            class="size-12 rounded-full bg-black/20 hover:bg-black/30 text-white border border-white/25 backdrop-blur-sm shadow-lg transition-colors flex items-center justify-center"
-            aria-label="Skip menu section">
-      <span class="material-symbols-outlined text-2xl">arrow_downward</span>
-    </button>
-    <span class="text-[11px] font-bold uppercase tracking-widest text-white/80 bg-black/20 border border-white/15 backdrop-blur-sm rounded-full px-3 py-1 select-none">Skip</span>
-  </div>
-</div>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

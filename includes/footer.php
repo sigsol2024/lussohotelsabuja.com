@@ -35,9 +35,9 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
 <!-- Footer -->
 <footer class="bg-primary text-background-light pt-20 pb-10">
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 mb-16">
-      <!-- Brand -->
-      <div class="col-span-1 md:col-span-1 min-w-0">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16 mb-16">
+      <!-- Brand (logo + socials) -->
+      <div class="min-w-0">
         <div class="lusso-brand-logo lusso-brand-logo--footer flex items-center mb-8 md:mb-10 min-h-[5rem] md:min-h-[7.5rem] py-2 pe-4 md:py-3 md:pe-6">
           <?php if ($useFooterLogo): ?>
           <img src="<?= e($siteLogoLightUrl) ?>" alt="<?= e($siteName) ?>" class="h-[104px] w-auto md:h-[120px] lg:h-[144px] max-w-[min(100%,32rem)] object-contain object-left" decoding="async"/>
@@ -46,9 +46,6 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
           <span class="font-serif text-xl font-bold tracking-tight text-background-light"><?= e($siteName) ?></span>
           <?php endif; ?>
         </div>
-        <p class="text-background-light/70 text-sm leading-relaxed mb-6">
-          <?= e($footerTagline) ?>
-        </p>
         <?php if (!empty($socialMediaList)): ?>
         <div class="flex gap-4">
           <?php foreach ($socialMediaList as $social): ?>
@@ -63,6 +60,13 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
           <?php endforeach; ?>
         </div>
         <?php endif; ?>
+      </div>
+
+      <!-- Brand description (2nd column) -->
+      <div class="min-w-0">
+        <p class="text-background-light/70 text-sm leading-relaxed">
+          <?= e($footerTagline) ?>
+        </p>
       </div>
 
       <!-- Links: only routes that have a real page at site root -->
@@ -113,6 +117,7 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
     <div class="border-t border-background-light/15 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-background-light/50">
       <p><?= e($footerCopyright) ?></p>
       <div class="flex gap-6">
+        <a class="hover:text-champagne transition-colors" href="https://signature-solutions.com/" target="_blank" rel="noopener noreferrer">Designed By Signature Solutions</a>
         <?php if (lusso_is_valid_site_nav_href((string)$privacyHref)): ?>
         <a class="hover:text-champagne transition-colors" href="<?= e(lusso_href($privacyHref)) ?>">Privacy Policy</a>
         <?php endif; ?>

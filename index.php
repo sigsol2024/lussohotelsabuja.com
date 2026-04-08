@@ -258,6 +258,31 @@ $featuredRooms = getFeaturedRoomsForHome(5);
 <body class="bg-background-light dark:bg-background-dark text-text-main font-display antialiased overflow-x-hidden selection:bg-primary/30">
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
+<style>
+  /* In-viewport reveal animations (lightweight, no dependencies) */
+  @media (prefers-reduced-motion: reduce) {
+    [data-lusso-inview] { opacity: 1 !important; transform: none !important; transition: none !important; animation: none !important; }
+  }
+  [data-lusso-inview] { opacity: 0; transform: translate3d(0, 0, 0); }
+  [data-lusso-inview].lusso-inview--on { opacity: 1; }
+
+  /* Slide up slowly */
+  [data-lusso-inview="up-slow"] { transform: translate3d(0, 28px, 0); }
+  [data-lusso-inview="up-slow"].lusso-inview--on {
+    transform: translate3d(0, 0, 0);
+    transition: transform var(--lusso-duration, 1400ms) ease-out, opacity 900ms ease-out;
+    transition-delay: var(--lusso-delay, 0ms);
+  }
+
+  /* Fade in from left */
+  [data-lusso-inview="left-fade"] { transform: translate3d(-28px, 0, 0); }
+  [data-lusso-inview="left-fade"].lusso-inview--on {
+    transform: translate3d(0, 0, 0);
+    transition: transform var(--lusso-duration, 700ms) cubic-bezier(.2,.9,.2,1), opacity 700ms ease-out;
+    transition-delay: var(--lusso-delay, 0ms);
+  }
+</style>
+
 <section class="relative z-0">
   <!-- Cinematic Hero Section -->
   <header class="relative w-full h-screen min-h-[600px] overflow-hidden group" id="lusso-home-hero">
@@ -366,7 +391,8 @@ $featuredRooms = getFeaturedRoomsForHome(5);
           <div class="absolute inset-0 bg-cover bg-center bg-no-repeat hover:scale-105 transition-transform duration-700" data-alt="Editorial"
                style="background-image: url('<?= e($hp_main_img) ?>');"></div>
         </div>
-        <div class="relative lg:absolute w-full max-w-[280px] aspect-[4/5] mx-auto -mt-24 sm:-mt-28 lg:mt-0 lg:max-w-none lg:w-48 lg:h-64 lg:aspect-auto lg:mx-0 left-auto lg:left-[-40px] bottom-auto lg:bottom-[-40px] rounded-lg overflow-hidden shadow-xl z-20 border-4 border-white">
+        <div class="relative lg:absolute w-full max-w-[280px] aspect-[4/5] mx-auto -mt-24 sm:-mt-28 lg:mt-0 lg:max-w-none lg:w-48 lg:h-64 lg:aspect-auto lg:mx-0 left-auto lg:left-[-40px] bottom-auto lg:bottom-[-40px] rounded-lg overflow-hidden shadow-xl z-20 border-4 border-white"
+             data-lusso-inview="up-slow" style="--lusso-duration: 2200ms; --lusso-delay: 80ms;">
           <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('<?= e($hp_secondary_img) ?>');"></div>
         </div>
       </div>
@@ -426,8 +452,14 @@ $featuredRooms = getFeaturedRoomsForHome(5);
               continue;
           }
           $aimg = $ac['image'] !== '' ? lusso_media_src($ac['image']) : '';
+          static $amenityCardIndex = 0;
+          $amenityCardIndex++;
+          // First card completes fastest, next cards slightly slower.
+          $dur = $amenityCardIndex === 1 ? 650 : ($amenityCardIndex === 2 ? 850 : 1050);
+          $delay = $amenityCardIndex === 1 ? 0 : ($amenityCardIndex === 2 ? 120 : 240);
           ?>
-      <article class="flex flex-col rounded-xl overflow-hidden border border-white/10 bg-white/[0.04] shadow-lg shadow-black/20">
+      <article class="flex flex-col rounded-xl overflow-hidden border border-white/10 bg-white/[0.04] shadow-lg shadow-black/20"
+               data-lusso-inview="left-fade" style="--lusso-duration: <?= (int)$dur ?>ms; --lusso-delay: <?= (int)$delay ?>ms;">
         <div class="aspect-[4/3] bg-white/5 bg-cover bg-center" data-alt="<?= e($ac['title']) ?>"
              <?php if ($aimg !== ''): ?>style="background-image: url('<?= e($aimg) ?>');"<?php endif; ?>></div>
         <div class="p-6 md:p-7 flex-1 flex flex-col">
@@ -538,12 +570,39 @@ $featuredRooms = getFeaturedRoomsForHome(5);
   var sc = document.getElementById('homeRoomsScroller');
   var prev = document.getElementById('homeRoomsPrev');
   var next = document.getElementById('homeRoomsNext');
-  if (!sc || !prev || !next) return;
+  if (!sc) return;
+  if (!prev || !next) return;
   var step = function (dir) {
     sc.scrollBy({ left: dir * Math.min(420, sc.clientWidth * 0.85), behavior: 'smooth' });
   };
   prev.addEventListener('click', function () { step(-1); });
   next.addEventListener('click', function () { step(1); });
+})();
+</script>
+
+<script>
+(function () {
+  function onReady(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  onReady(function () {
+    var els = Array.prototype.slice.call(document.querySelectorAll('[data-lusso-inview]'));
+    if (!els.length) return;
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('lusso-inview--on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('lusso-inview--on');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { root: null, threshold: 0.18, rootMargin: '0px 0px -10% 0px' });
+    els.forEach(function (el) { io.observe(el); });
+  });
 })();
 </script>
 

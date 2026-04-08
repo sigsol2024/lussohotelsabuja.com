@@ -131,9 +131,17 @@ $masonryRaw = trim($sections['masonry_json'] ?? '') !== '' ? $sections['masonry_
       <input type="text" id="menu_quote" name="menu_quote" value="<?= sanitize($sections['menu_quote'] ?? '"Simplicity is the ultimate sophistication."') ?>">
     </div>
     <div class="form-group">
-      <label>Menu rows JSON (name, desc, price)</label>
-      <textarea id="menu_json" name="menu_json" rows="12" style="font-family:monospace;font-size:12px;"><?= htmlspecialchars($menuRaw, ENT_QUOTES, 'UTF-8') ?></textarea>
+      <label for="menu_iframe_url">Menu iframe URL</label>
+      <input type="text" id="menu_iframe_url" name="menu_iframe_url" value="<?= sanitize($sections['menu_iframe_url'] ?? 'https://our-menu.online/restaurant/the-lusso-restaurant') ?>">
+      <p class="form-help">Paste the menu URL you want embedded on the public dining page.</p>
     </div>
+    <details style="margin-top:14px;">
+      <summary style="cursor:pointer; color: var(--text-muted);">Advanced (legacy JSON menu)</summary>
+      <div class="form-group" style="margin-top:10px;">
+        <label>Menu rows JSON (name, desc, price)</label>
+        <textarea id="menu_json" name="menu_json" rows="12" style="font-family:monospace;font-size:12px;"><?= htmlspecialchars($menuRaw, ENT_QUOTES, 'UTF-8') ?></textarea>
+      </div>
+    </details>
   </div></div>
 
   <div class="card"><div class="card-header"><h2>Reservation CTA</h2></div><div style="padding:20px;">
@@ -158,13 +166,6 @@ $masonryRaw = trim($sections['masonry_json'] ?? '') !== '' ? $sections['masonry_
     <div class="form-row">
       <div class="form-group"><label for="cta_btn1">Button 1</label><input type="text" id="cta_btn1" name="cta_btn1" value="<?= sanitize($sections['cta_btn1'] ?? 'Make a Reservation') ?>"></div>
       <div class="form-group"><label for="cta_btn2">Button 2</label><input type="text" id="cta_btn2" name="cta_btn2" value="<?= sanitize($sections['cta_btn2'] ?? 'Private Dining') ?>"></div>
-    </div>
-  </div></div>
-
-  <div class="card"><div class="card-header"><h2>Sticky booking chip</h2></div><div style="padding:20px;">
-    <div class="form-row">
-      <div class="form-group"><label for="sticky_kicker">Kicker</label><input type="text" id="sticky_kicker" name="sticky_kicker" value="<?= sanitize($sections['sticky_kicker'] ?? 'Book Now') ?>"></div>
-      <div class="form-group"><label for="sticky_subtitle">Subtitle</label><input type="text" id="sticky_subtitle" name="sticky_subtitle" value="<?= sanitize($sections['sticky_subtitle'] ?? 'Limited Availability') ?>"></div>
     </div>
   </div></div>
 

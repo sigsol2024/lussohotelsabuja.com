@@ -28,6 +28,7 @@ if (!is_array($masonry) || count($masonry) < 5) {
 $menu_kicker = getPageSection('dining', 'menu_kicker', 'Taste of Excellence');
 $menu_heading = getPageSection('dining', 'menu_heading', 'Curated Selections');
 $menu_quote = getPageSection('dining', 'menu_quote', '"Simplicity is the ultimate sophistication."');
+$menu_iframe_url = getPageSection('dining', 'menu_iframe_url', 'https://our-menu.online/restaurant/the-lusso-restaurant');
 $menuItems = json_decode(getPageSection('dining', 'menu_json', ''), true);
 if (!is_array($menuItems) || count($menuItems) === 0) {
     $menuItems = $cmsDefaults['dining_menu'];
@@ -38,9 +39,6 @@ $cta_title = getPageSection('dining', 'cta_title', 'Secure Your Table at the Cen
 $cta_body = getPageSection('dining', 'cta_body', 'We recommend booking at least 48 hours in advance for weekend dinner service.');
 $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
 $cta_btn2 = getPageSection('dining', 'cta_btn2', 'Private Dining');
-
-$sticky_kicker = getPageSection('dining', 'sticky_kicker', 'Book Now');
-$sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availability');
 ?>
 <!DOCTYPE html>
 <html class="light" lang="en">
@@ -65,13 +63,6 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
     .animate-fade-in {
       animation: dining-fade-in 1s ease-out both;
     }
-    @keyframes dining-bounce-slow {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
-    .animate-bounce-slow {
-      animation: dining-bounce-slow 3s ease-in-out infinite;
-    }
   </style>
 </head>
 <body class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark font-display text-text-main overflow-x-hidden selection:bg-primary/20 selection:text-primary">
@@ -84,12 +75,12 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
 <section class="relative w-full h-[85vh] overflow-hidden flex items-end pb-20 md:pb-32 px-6 md:px-16">
   <div class="absolute inset-0 z-0 w-full h-full bg-cover bg-center" data-alt="Dining hero"
        style="background-image: url('<?= e($hero_bg) ?>');">
-    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent"></div>
   </div>
   <div class="relative z-10 w-full max-w-[1440px] mx-auto flex flex-col md:flex-row items-end justify-between gap-8">
     <div class="max-w-3xl">
-      <span class="inline-block text-primary text-sm font-bold tracking-[0.2em] uppercase mb-4 animate-fade-in"><?= e($hero_kicker) ?></span>
-      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium leading-[1.1] mb-6">
+      <span class="inline-block text-white/90 text-sm font-bold tracking-[0.2em] uppercase mb-4 animate-fade-in"><?= e($hero_kicker) ?></span>
+      <h1 class="font-serif text-5xl md:text-6xl lg:text-8xl text-white font-medium leading-[1.1] mb-6">
         <?= $hero_title_html ?>
       </h1>
       <p class="text-white/80 text-lg md:text-xl font-light max-w-lg leading-relaxed">
@@ -97,8 +88,8 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
       </p>
     </div>
     <div class="hidden md:flex flex-col items-end gap-4 text-white/90">
-      <div class="flex items-center gap-2 text-sm font-medium tracking-wide">
-        <span class="material-symbols-outlined text-primary">schedule</span>
+      <div class="flex items-center gap-2 text-sm font-medium tracking-wide bg-white/10 backdrop-blur-sm border border-white/30 rounded px-3 py-1 shadow-sm">
+        <span class="material-symbols-outlined text-white/90">schedule</span>
         <span><?= e($hero_hours) ?></span>
       </div>
       <div class="w-px h-12 bg-white/20 my-2"></div>
@@ -144,8 +135,8 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
 </section>
 
 <!-- Cinematic Masonry Gallery -->
-<section class="py-20 px-6 md:px-10 max-w-[1600px] mx-auto">
-  <div class="flex flex-col md:flex-row items-end justify-between mb-12 px-6">
+<section class="py-20 px-6 md:px-10 max-w-[1840px] mx-auto">
+  <div class="flex flex-col md:flex-row items-end justify-between mb-12">
     <h3 class="font-serif text-3xl md:text-4xl text-text-main dark:text-white"><?= e($visual_title) ?></h3>
     <a class="group flex items-center gap-2 text-sm font-bold tracking-wider uppercase mt-4 md:mt-0 text-text-main" href="<?= e(lusso_href((string)$visual_link_href)) ?>">
       See Full Gallery
@@ -204,23 +195,31 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
       <h2 class="font-serif text-4xl md:text-6xl text-text-main dark:text-white mb-6"><?= e($menu_heading) ?></h2>
       <p class="text-text-muted dark:text-white/60 max-w-lg mx-auto italic font-serif text-lg"><?= e($menu_quote) ?></p>
     </div>
-    <div class="space-y-12 md:space-y-16">
-      <?php foreach ($menuItems as $row): ?>
-      <div class="group flex flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center justify-between border-b border-sand-darker dark:border-white/10 pb-12">
-        <div class="flex-1">
-          <h4 class="font-serif text-2xl md:text-3xl text-text-main dark:text-white mb-2 group-hover:text-primary transition-colors"><?= e((string)($row['name'] ?? '')) ?></h4>
-          <p class="text-text-muted dark:text-white/60 font-light leading-relaxed max-w-md"><?= e((string)($row['desc'] ?? '')) ?></p>
-        </div>
-        <div class="text-lg font-medium text-primary dark:text-champagne"><?= e((string)($row['price'] ?? '')) ?></div>
+    <?php
+      $menu_iframe_url = trim((string)$menu_iframe_url);
+      $menu_is_http = ($menu_iframe_url !== '' && (str_starts_with($menu_iframe_url, 'http://') || str_starts_with($menu_iframe_url, 'https://')));
+    ?>
+    <?php if ($menu_is_http): ?>
+      <div class="rounded-xl overflow-hidden border border-gray-100 dark:border-white/10 shadow-xl bg-white dark:bg-surface-dark">
+        <iframe
+          src="<?= e($menu_iframe_url) ?>"
+          title="Menu"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+          style="width:100%; height: 900px; border: 0;"
+        ></iframe>
       </div>
-      <?php endforeach; ?>
-    </div>
-    <div class="mt-16 text-center">
-      <button class="inline-flex items-center justify-center gap-3 px-8 py-3 bg-primary text-white font-bold tracking-wide rounded-lg hover:bg-primary-light transition-colors shadow-md shadow-primary/20" type="button">
-        <span>View Full Menu</span>
-        <span class="material-symbols-outlined text-sm">open_in_new</span>
-      </button>
-    </div>
+      <div class="mt-10 text-center">
+        <a class="inline-flex items-center justify-center gap-3 px-8 py-3 bg-primary text-white font-bold tracking-wide rounded-lg hover:bg-primary-light transition-colors shadow-md shadow-primary/20"
+           href="<?= e($menu_iframe_url) ?>" target="_blank" rel="noopener noreferrer">
+          <span>Open menu</span>
+          <span class="material-symbols-outlined text-sm">open_in_new</span>
+        </a>
+      </div>
+    <?php else: ?>
+      <p class="text-text-muted dark:text-white/70 text-center">Menu embed URL is not configured yet.</p>
+    <?php endif; ?>
   </div>
 </section>
 
@@ -245,19 +244,6 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
     </div>
   </div>
 </section>
-
-<!-- Sticky Reservation Bar (Bottom Right) -->
-<div class="fixed bottom-6 right-6 z-40 hidden md:block animate-bounce-slow">
-  <button class="flex items-center gap-3 bg-white dark:bg-surface-dark text-text-main dark:text-white pl-5 pr-2 py-2 rounded-full shadow-2xl border border-primary/15 hover:scale-105 transition-transform duration-300 group" type="button">
-    <div class="flex flex-col items-start mr-2">
-      <span class="text-[10px] uppercase font-bold text-primary tracking-widest"><?= e($sticky_kicker) ?></span>
-      <span class="font-serif text-sm italic"><?= e($sticky_subtitle) ?></span>
-    </div>
-    <div class="size-10 bg-primary rounded-full flex items-center justify-center text-white">
-      <span class="material-symbols-outlined text-xl group-hover:rotate-45 transition-transform duration-300">calendar_today</span>
-    </div>
-  </button>
-</div>
 
 </div>
 

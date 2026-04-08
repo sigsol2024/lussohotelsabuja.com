@@ -140,7 +140,8 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
 </section>
 
 <!-- Cinematic Masonry Gallery -->
-<section class="py-20 px-4 sm:px-6 md:px-10 lg:px-16 max-w-[1960px] mx-auto">
+<section class="py-20 px-2 sm:px-6 md:px-10 lg:px-16 2xl:px-24 max-w-none w-full">
+  <div class="max-w-[2200px] mx-auto w-full">
   <div class="flex flex-col md:flex-row items-end justify-between mb-12">
     <h3 class="font-serif text-3xl md:text-4xl text-text-main dark:text-white"><?= e($visual_title) ?></h3>
     <a class="group flex items-center gap-2 text-sm font-bold tracking-wider uppercase mt-4 md:mt-0 text-text-main" href="<?= e(lusso_href((string)$visual_link_href)) ?>">
@@ -148,7 +149,7 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
       <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
     </a>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 auto-rows-[300px]">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 md:gap-6 auto-rows-[240px] sm:auto-rows-[260px] md:auto-rows-[320px] lg:auto-rows-[380px] xl:auto-rows-[420px]">
     <?php
     $m0 = $masonry[0] ?? ['src' => '', 'tag' => '', 'caption' => ''];
     $m1 = $masonry[1] ?? $m0;
@@ -156,7 +157,7 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
     $m3 = $masonry[3] ?? $m0;
     $m4 = $masonry[4] ?? $m0;
     ?>
-    <div class="md:col-span-8 row-span-1 md:row-span-2 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
+    <div class="md:col-span-8 row-span-1 md:row-span-2 relative group overflow-hidden rounded-lg min-h-[240px] md:min-h-[320px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m0['src'] ?? '')) ?>');"></div>
       <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500"></div>
       <?php if (!empty($m0['tag']) || !empty($m0['caption'])): ?>
@@ -166,7 +167,7 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
       </div>
       <?php endif; ?>
     </div>
-    <div class="md:col-span-4 row-span-1 md:row-span-2 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
+    <div class="md:col-span-4 row-span-1 md:row-span-2 relative group overflow-hidden rounded-lg min-h-[240px] md:min-h-[320px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m1['src'] ?? '')) ?>');"></div>
       <?php if (!empty($m1['tag']) || !empty($m1['caption'])): ?>
       <div class="absolute bottom-6 left-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -175,15 +176,16 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
       </div>
       <?php endif; ?>
     </div>
-    <div class="md:col-span-4 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
+    <div class="md:col-span-4 relative group overflow-hidden rounded-lg min-h-[240px] md:min-h-[320px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m2['src'] ?? '')) ?>');"></div>
     </div>
-    <div class="md:col-span-4 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
+    <div class="md:col-span-4 relative group overflow-hidden rounded-lg min-h-[240px] md:min-h-[320px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m3['src'] ?? '')) ?>');"></div>
     </div>
-    <div class="md:col-span-4 relative group overflow-hidden rounded-lg min-h-[300px] h-full">
+    <div class="md:col-span-4 relative group overflow-hidden rounded-lg min-h-[240px] md:min-h-[320px] h-full">
       <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" style="background-image: url('<?= e((string)($m4['src'] ?? '')) ?>');"></div>
     </div>
+  </div>
   </div>
 </section>
 

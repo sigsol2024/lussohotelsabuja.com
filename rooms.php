@@ -37,7 +37,7 @@ $rooms = getRooms(['is_active' => 1]);
     </div>
   </div>
   <div class="relative z-20 container mx-auto px-6 text-center max-w-4xl mt-12">
-    <h2 class="text-primary text-sm md:text-base uppercase tracking-[0.3em] font-bold mb-4">Accommodations</h2>
+    <h2 class="text-white/90 text-sm md:text-base uppercase tracking-[0.3em] font-bold mb-4">Accommodations</h2>
     <h1 class="text-white text-5xl md:text-7xl font-light leading-tight mb-8 drop-shadow-lg">
       <?= $heroTitle ?>
     </h1>

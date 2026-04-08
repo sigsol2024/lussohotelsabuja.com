@@ -196,6 +196,17 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
       <span class="material-symbols-outlined text-primary text-3xl">restaurant_menu</span>
     </div>
   </div>
+  <!-- Skip widget: floats above iframe without affecting layout -->
+  <div class="pointer-events-none sticky top-24 z-30 h-0">
+    <div class="pointer-events-auto absolute left-4 md:left-10">
+      <button id="diningMenuSkipBtn"
+              type="button"
+              class="size-12 rounded-full bg-black/20 hover:bg-black/30 text-white border border-white/25 backdrop-blur-sm shadow-lg transition-colors flex items-center justify-center"
+              aria-label="Skip menu section">
+        <span class="material-symbols-outlined text-2xl">arrow_downward</span>
+      </button>
+    </div>
+  </div>
   <div class="max-w-[1000px] mx-auto">
     <div class="text-center mb-16 md:mb-24">
       <span class="text-xs font-bold uppercase tracking-[0.3em] text-primary mb-4 block"><?= e($menu_kicker) ?></span>
@@ -230,7 +241,7 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
 </section>
 
 <!-- CTA / Reservation Section -->
-<section class="py-24 px-6 md:px-16 flex justify-center items-center bg-sand-darker/30 dark:bg-black/20">
+<section id="diningReservation" class="py-24 px-6 md:px-16 flex justify-center items-center bg-sand-darker/30 dark:bg-black/20">
   <div class="relative w-full max-w-[1200px] overflow-hidden rounded-2xl bg-surface-ink text-white">
     <div class="absolute inset-0 opacity-40 mix-blend-overlay bg-cover bg-center" style="background-image: url('<?= e($cta_bg) ?>');"></div>
     <div class="relative z-10 px-6 py-20 md:py-24 md:px-20 text-center flex flex-col items-center gap-8">
@@ -249,5 +260,17 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
 </section>
 
 </div>
+
+<script>
+(function () {
+  var btn = document.getElementById('diningMenuSkipBtn');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var next = document.getElementById('diningReservation');
+    if (!next) return;
+    next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+})();
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

@@ -49,6 +49,57 @@ try {
                 jsonResponse(['success' => false, 'message' => 'Invalid JSON'], 400);
             }
 
+            if (!empty($data['duplicate_from_id'])) {
+                $srcId = (int)$data['duplicate_from_id'];
+                if ($srcId < 1) {
+                    jsonResponse(['success' => false, 'message' => 'Invalid room ID'], 400);
+                }
+                $srcStmt = $pdo->prepare('SELECT * FROM rooms WHERE id = ?');
+                $srcStmt->execute([$srcId]);
+                $src = $srcStmt->fetch(PDO::FETCH_ASSOC);
+                if (!$src) {
+                    jsonResponse(['success' => false, 'message' => 'Room not found'], 404);
+                }
+                $suffix = ' -copy';
+                $baseTitle = (string)$src['title'];
+                $newTitle = $baseTitle . $suffix;
+                if (function_exists('mb_strlen') && mb_strlen($newTitle) > 255) {
+                    $newTitle = mb_substr($baseTitle, 0, max(0, 255 - mb_strlen($suffix))) . $suffix;
+                } elseif (strlen($newTitle) > 255) {
+                    $newTitle = substr($baseTitle, 0, 255 - strlen($suffix)) . $suffix;
+                }
+                $slugBase = generateSlug((string)$src['slug'] . '-copy');
+                $candidate = $slugBase !== '' ? $slugBase : 'room-copy';
+                $n = 2;
+                while (true) {
+                    $dupChk = $pdo->prepare('SELECT id FROM rooms WHERE slug = ?');
+                    $dupChk->execute([$candidate]);
+                    if (!$dupChk->fetch()) {
+                        break;
+                    }
+                    $candidate = $slugBase . '-' . $n;
+                    $n++;
+                    if (strlen($candidate) > 255) {
+                        $candidate = generateSlug($slugBase . '-' . time());
+                        break;
+                    }
+                }
+                unset($src['id'], $src['created_at'], $src['updated_at']);
+                $src['title'] = sanitize($newTitle);
+                $src['slug'] = $candidate;
+                $src['is_active'] = 0;
+                $src['is_featured'] = 0;
+                $maxOrder = (int)$pdo->query('SELECT COALESCE(MAX(display_order), 0) FROM rooms')->fetchColumn();
+                $src['display_order'] = $maxOrder + 1;
+                $cols = array_keys($src);
+                $placeholders = implode(',', array_fill(0, count($cols), '?'));
+                $sql = 'INSERT INTO rooms (`' . implode('`,`', $cols) . '`) VALUES (' . $placeholders . ')';
+                $ins = $pdo->prepare($sql);
+                $ins->execute(array_values($src));
+                $newId = (int)$pdo->lastInsertId();
+                jsonResponse(['success' => true, 'message' => 'Duplicated as draft (title & slug end with -copy). Edit and set Active to publish.', 'room_id' => $newId]);
+            }
+
             $title = sanitize($data['title'] ?? '');
             $slug = generateSlug($data['slug'] ?? $title);
             $price = (float)($data['price'] ?? 0);

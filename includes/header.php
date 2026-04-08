@@ -62,7 +62,7 @@ $showNavCta = lusso_is_valid_site_nav_href($ctaHref);
   <div class="max-w-[1440px] mx-auto px-6 lg:px-12 min-h-[5rem] flex items-center justify-between gap-4">
     <a class="lusso-brand-logo lusso-brand-logo--header flex items-center shrink-0 rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 py-3 ps-1 pe-3 md:py-4 md:ps-2 md:pe-5 lg:pe-8 -ms-1 md:-ms-2" href="<?= e(lusso_url('index')) ?>" aria-label="<?= e($siteName) ?>">
       <?php if ($useHeaderLogo): ?>
-      <img src="<?= e($siteLogoDarkUrl) ?>" alt="<?= e($siteName) ?>" class="h-11 w-auto md:h-14 lg:h-16 max-w-[min(100%,18rem)] object-contain object-left" decoding="async"/>
+      <img src="<?= e($siteLogoDarkUrl) ?>" alt="<?= e($siteName) ?>" class="h-11 w-auto md:h-12 lg:h-14 max-w-[min(100%,16rem)] object-contain object-left" decoding="async"/>
       <?php else: ?>
       <span class="material-symbols-outlined text-primary text-3xl">diamond</span>
       <span class="font-serif text-2xl font-bold tracking-tight text-text-main"><?= e($siteName) ?></span>

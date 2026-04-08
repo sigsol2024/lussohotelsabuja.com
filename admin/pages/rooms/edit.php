@@ -75,6 +75,13 @@ $roomPublicUrlBase = rtrim((string)(defined('SITE_URL') ? SITE_URL : ''), '/');
       <a href="<?= ADMIN_URL ?>pages/rooms/list.php" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to rooms</a>
     </div>
     <div class="card-body card-body--stack">
+      <?php if ($id && empty($room['is_active'])): ?>
+      <div class="card card--nested" style="margin-bottom: 1.25rem; border-color: var(--warning, #b8860b); background: rgba(184, 134, 11, 0.08);">
+        <div class="card-body" style="padding: 14px 16px;">
+          <strong>Draft</strong> — This room is not visible on the public site. Update the title and slug if needed, then check <strong>Active</strong> and save to publish.
+        </div>
+      </div>
+      <?php endif; ?>
       <div class="form-row">
         <div class="form-group">
           <label for="title">Title</label>

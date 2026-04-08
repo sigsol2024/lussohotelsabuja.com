@@ -42,7 +42,7 @@ function hsec($sectionsArray, $key, $default = '') {
       </div>
       <div class="form-group">
         <label for="hero_subtitle">Subtitle</label>
-        <textarea id="hero_subtitle" name="hero_subtitle" rows="2"><?= hsec($sectionsArray, 'hero_subtitle') ?></textarea>
+        <textarea id="hero_subtitle" name="hero_subtitle" rows="2"><?= hsec($sectionsArray, 'hero_subtitle', 'The Lusso Hotels & Suites delivers an unparalleled guest experience.') ?></textarea>
       </div>
       <div class="form-group">
         <label>Hero Background</label>

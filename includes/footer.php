@@ -35,9 +35,9 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
 <!-- Footer -->
 <footer class="bg-primary text-background-light pt-20 pb-10">
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 mb-16">
       <!-- Brand -->
-      <div class="col-span-1 md:col-span-1">
+      <div class="col-span-1 md:col-span-1 min-w-0">
         <div class="lusso-brand-logo lusso-brand-logo--footer flex items-center mb-8 md:mb-10 min-h-[5rem] md:min-h-[7.5rem] py-2 pe-4 md:py-3 md:pe-6">
           <?php if ($useFooterLogo): ?>
           <img src="<?= e($siteLogoLightUrl) ?>" alt="<?= e($siteName) ?>" class="h-[104px] w-auto md:h-[120px] lg:h-[144px] max-w-[min(100%,32rem)] object-contain object-left" decoding="async"/>
@@ -66,7 +66,7 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
       </div>
 
       <!-- Links: only routes that have a real page at site root -->
-      <div>
+      <div class="min-w-0 md:max-w-md">
         <h4 class="font-serif text-lg mb-6 text-champagne">Explore</h4>
         <ul class="space-y-3 text-sm text-background-light/80">
           <?php
@@ -90,7 +90,7 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
       </div>
 
       <!-- Contact -->
-      <div>
+      <div class="min-w-0 md:max-w-lg">
         <h4 class="font-serif text-lg mb-6 text-champagne">Contact</h4>
         <ul class="space-y-3 text-sm text-background-light/80">
           <li class="flex items-start gap-3">
@@ -106,16 +106,6 @@ $termsHref = getSiteSetting('footer_terms_href', '#');
             <span><?= e($footerEmail) ?></span>
           </li>
         </ul>
-      </div>
-
-      <!-- Newsletter (placeholder form) -->
-      <div>
-        <h4 class="font-serif text-lg mb-6 text-champagne">Newsletter</h4>
-        <p class="text-background-light/65 text-sm mb-4">Subscribe for exclusive offers.</p>
-        <div class="flex border-b border-background-light/25 pb-2">
-          <input class="bg-transparent border-none text-background-light placeholder-background-light/45 focus:ring-0 w-full p-0 text-sm" placeholder="Your email address" type="email"/>
-          <button class="text-champagne uppercase text-xs font-bold tracking-widest hover:text-white transition-colors" type="button">Join</button>
-        </div>
       </div>
     </div>
 

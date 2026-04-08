@@ -36,9 +36,10 @@ $navSuitesHref = lusso_href(getSiteSetting('nav_suites_href', '/rooms'));
 $navDiningHref = lusso_href(getSiteSetting('nav_dining_href', '/dining'));
 $navExperienceHref = lusso_href(getSiteSetting('nav_experience_href', '/amenities'));
 $navEventsHref = lusso_href(getSiteSetting('nav_events_href', '/gallery'));
+$navContactHref = lusso_href('/contact');
 
-$ctaLabel = getSiteSetting('nav_cta_label', 'Book Your Stay');
-$ctaHref = lusso_href(getSiteSetting('nav_cta_href', '/contact'));
+$ctaLabel = getSiteSetting('nav_cta_label', 'Check Availability');
+$ctaHref = lusso_href(getSiteSetting('nav_cta_href', '/rooms'));
 
 $headerNavLinks = [
     ['Home', $navHomeHref],
@@ -47,6 +48,7 @@ $headerNavLinks = [
     [$navDiningLabel, $navDiningHref],
     [$navExperienceLabel, $navExperienceHref],
     [$navEventsLabel, $navEventsHref],
+    ['Contact Us', $navContactHref],
 ];
 $headerNavLinks = array_values(array_filter($headerNavLinks, static function ($row) {
     return lusso_is_valid_site_nav_href((string)$row[1]);
@@ -74,7 +76,7 @@ $showNavCta = lusso_is_valid_site_nav_href($ctaHref);
     </div>
     <div class="flex items-center gap-4">
       <?php if ($showNavCta): ?>
-      <a class="hidden md:flex bg-primary text-white hover:bg-primary-light transition-all px-6 py-2.5 rounded-full text-sm font-bold tracking-wide" href="<?= e(lusso_href($ctaHref)) ?>">
+      <a class="hidden md:inline-flex items-center justify-center shrink min-w-0 max-w-[10.5rem] sm:max-w-none bg-primary text-white hover:bg-primary-light transition-all px-3 py-2 sm:px-6 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide text-center leading-tight" href="<?= e(lusso_href($ctaHref)) ?>">
         <?= e($ctaLabel) ?>
       </a>
       <?php endif; ?>

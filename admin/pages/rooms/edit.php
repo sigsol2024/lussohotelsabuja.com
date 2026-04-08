@@ -60,6 +60,9 @@ $gtkCheckOut = (string)($gtk['check_out'] ?? '');
 $gtkFloorplanUrl = (string)($gtk['floorplan_url'] ?? '');
 $gtkFloorplanLabel = (string)($gtk['floorplan_label'] ?? '');
 $gtkTourUrl = (string)($gtk['tour_url'] ?? '');
+
+require_once dirname(__DIR__, 3) . '/includes/url.php';
+$roomPublicUrlBase = rtrim((string)(defined('SITE_URL') ? SITE_URL : ''), '/');
 ?>
 
 <form id="roomForm">
@@ -75,11 +78,12 @@ $gtkTourUrl = (string)($gtk['tour_url'] ?? '');
       <div class="form-row">
         <div class="form-group">
           <label for="title">Title</label>
-          <input id="title" name="title" type="text" value="<?= sanitize($room['title']) ?>">
+          <input id="title" name="title" type="text" value="<?= sanitize($room['title']) ?>" autocomplete="off">
         </div>
         <div class="form-group">
-          <label for="slug">Slug</label>
-          <input id="slug" name="slug" type="text" value="<?= sanitize($room['slug']) ?>">
+          <label for="slug">Slug (URL segment)</label>
+          <input id="slug" name="slug" type="text" value="<?= sanitize($room['slug']) ?>" autocomplete="off">
+          <p class="form-help" id="slugPreview">Public URL updates as you type.</p>
         </div>
       </div>
 
@@ -136,11 +140,6 @@ $gtkTourUrl = (string)($gtk['tour_url'] ?? '');
         <textarea id="description" name="description" rows="8"><?= sanitize($room['description']) ?></textarea>
       </div>
 
-      <div class="form-group">
-        <label for="included_items">Included privileges (one per line)</label>
-        <textarea id="included_items" name="included_items" rows="5"><?php foreach (($room['included_items'] ?? []) as $line) { echo sanitize(is_string($line) ? $line : '') . "\n"; } ?></textarea>
-      </div>
-
       <div class="card card--nested">
         <div class="card-header"><h3>Guest info &amp; links</h3></div>
         <div class="card-body card-body--stack">
@@ -192,22 +191,100 @@ $gtkTourUrl = (string)($gtk['tour_url'] ?? '');
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="features">Features (one per line)</label>
-          <textarea id="features" name="features" rows="4"><?php foreach (($room['features'] ?? []) as $f) { echo sanitize($f) . "\n"; } ?></textarea>
-        </div>
-        <div class="form-group">
-          <label for="amenities">Amenities — one per line, or JSON objects with icon, title, description (Material icon names)</label>
-          <textarea id="amenities" name="amenities" rows="6"><?php
-            foreach (($room['amenities'] ?? []) as $a) {
-              if (is_array($a)) {
-                echo sanitize(json_encode($a)) . "\n";
-              } else {
-                echo sanitize((string)$a) . "\n";
-              }
+      <div class="card card--nested" style="margin-top: 1rem;">
+        <div class="card-header"><h3>Listing highlights</h3></div>
+        <div class="card-body card-body--stack">
+          <p class="form-help">Short labels used on the rooms listing (size, bed, view, etc.).</p>
+          <div id="features-container">
+            <?php
+            $featList = $room['features'] ?? [];
+            if (!is_array($featList)) {
+                $featList = [];
             }
-          ?></textarea>
+            foreach ($featList as $f) {
+                $ft = is_array($f) ? (string)($f['title'] ?? $f['name'] ?? '') : (string)$f;
+                if ($ft === '') {
+                    continue;
+                }
+                ?>
+            <div class="form-row lusso-repeat-row" style="align-items: flex-end; gap: 8px;">
+              <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                <input type="text" class="form-control js-feature-input" value="<?= sanitize($ft) ?>" placeholder="e.g. King bed, City view">
+              </div>
+              <button type="button" class="btn btn-outline btn-sm" onclick="lussoRemoveRepeatRow(this)">Remove</button>
+            </div>
+            <?php } ?>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="lussoAddFeature()">Add feature</button>
+        </div>
+      </div>
+
+      <div class="card card--nested">
+        <div class="card-header"><h3>Refined amenities (detail page)</h3></div>
+        <div class="card-body card-body--stack">
+          <p class="form-help">Material Symbols icon name, title, and optional description (shown as cards on the room page).</p>
+          <div id="amenities-container">
+            <?php
+            $amList = $room['amenities'] ?? [];
+            if (!is_array($amList)) {
+                $amList = [];
+            }
+            foreach ($amList as $a) {
+                $icon = 'check_circle';
+                $amTitle = '';
+                $amDesc = '';
+                if (is_array($a)) {
+                    $icon = (string)($a['icon'] ?? 'check_circle');
+                    $amTitle = (string)($a['title'] ?? $a['name'] ?? '');
+                    $amDesc = (string)($a['description'] ?? $a['desc'] ?? '');
+                } else {
+                    $amTitle = trim((string)$a);
+                }
+                if ($amTitle === '') {
+                    continue;
+                }
+                ?>
+            <div class="card js-amenity-card" style="margin-bottom: 12px; padding: 12px;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Icon</label>
+                  <input type="text" class="form-control js-amenity-icon" value="<?= sanitize($icon) ?>" placeholder="wifi">
+                </div>
+                <div class="form-group">
+                  <label>Title</label>
+                  <input type="text" class="form-control js-amenity-title" value="<?= sanitize($amTitle) ?>" placeholder="High-speed Wi‑Fi">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Description (optional)</label>
+                <input type="text" class="form-control js-amenity-desc" value="<?= sanitize($amDesc) ?>" placeholder="Included">
+              </div>
+              <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('.js-amenity-card').remove()">Remove amenity</button>
+            </div>
+            <?php } ?>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="lussoAddAmenity()">Add amenity</button>
+        </div>
+      </div>
+
+      <div class="card card--nested">
+        <div class="card-header"><h3>Included privileges</h3></div>
+        <div class="card-body card-body--stack">
+          <div id="included-container">
+            <?php foreach (($room['included_items'] ?? []) as $line) {
+                $line = is_string($line) ? $line : '';
+                if ($line === '') {
+                    continue;
+                } ?>
+            <div class="form-row lusso-repeat-row" style="align-items: flex-end; gap: 8px;">
+              <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                <input type="text" class="form-control js-included-input" value="<?= sanitize($line) ?>" placeholder="Airport transfer">
+              </div>
+              <button type="button" class="btn btn-outline btn-sm" onclick="lussoRemoveRepeatRow(this)">Remove</button>
+            </div>
+            <?php } ?>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="lussoAddIncluded()">Add included item</button>
         </div>
       </div>
 
@@ -229,6 +306,129 @@ $gtkTourUrl = (string)($gtk['tour_url'] ?? '');
 </form>
 
 <script>
+(function () {
+  var siteBase = <?= json_encode($roomPublicUrlBase) ?>;
+  var pathTemplate = <?= json_encode(lusso_url('room-details', ['slug' => '__SLUG__'])) ?>;
+
+  function generateSlugClient(text) {
+    if (!text) return '';
+    return String(text).toLowerCase().trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  function updateSlugPreview() {
+    var slugEl = document.getElementById('slug');
+    var prev = document.getElementById('slugPreview');
+    if (!slugEl || !prev) return;
+    var s = slugEl.value.trim();
+    if (!s) {
+      prev.textContent = 'Slug appears in the room URL. It is generated from the title until you edit it manually.';
+      return;
+    }
+    var path = pathTemplate.replace('__SLUG__', encodeURIComponent(s));
+    var full = siteBase ? (siteBase + path) : path;
+    prev.textContent = 'Public URL: ' + full;
+  }
+
+  var titleInput = document.getElementById('title');
+  var slugInput = document.getElementById('slug');
+  var initialTitle = titleInput ? titleInput.value : '';
+  var initialSlug = slugInput ? slugInput.value : '';
+  var slugManual = false;
+  if (slugInput && initialSlug !== '' && generateSlugClient(initialTitle) !== initialSlug) {
+    slugManual = true;
+  }
+
+  if (titleInput && slugInput) {
+    titleInput.addEventListener('input', function () {
+      if (!slugManual) {
+        slugInput.value = generateSlugClient(this.value);
+      }
+      updateSlugPreview();
+    });
+    slugInput.addEventListener('input', function () {
+      slugManual = true;
+      updateSlugPreview();
+    });
+    slugInput.addEventListener('focus', function () {
+      slugManual = true;
+    });
+  }
+  updateSlugPreview();
+})();
+
+function lussoRemoveRepeatRow(btn) {
+  var row = btn.closest('.lusso-repeat-row');
+  if (row) row.remove();
+}
+
+function lussoAddFeature() {
+  var c = document.getElementById('features-container');
+  if (!c) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'form-row lusso-repeat-row';
+  wrap.style.cssText = 'align-items:flex-end;gap:8px;';
+  wrap.innerHTML = '<div class="form-group" style="flex:1;margin-bottom:0;"><input type="text" class="form-control js-feature-input" value="" placeholder="e.g. King bed"></div>' +
+    '<button type="button" class="btn btn-outline btn-sm" onclick="lussoRemoveRepeatRow(this)">Remove</button>';
+  c.appendChild(wrap);
+}
+
+function lussoAddAmenity() {
+  var c = document.getElementById('amenities-container');
+  if (!c) return;
+  var card = document.createElement('div');
+  card.className = 'card js-amenity-card';
+  card.style.cssText = 'margin-bottom:12px;padding:12px;';
+  card.innerHTML = '<div class="form-row"><div class="form-group"><label>Icon</label><input type="text" class="form-control js-amenity-icon" value="check_circle" placeholder="wifi"></div>' +
+    '<div class="form-group"><label>Title</label><input type="text" class="form-control js-amenity-title" value="" placeholder="Title"></div></div>' +
+    '<div class="form-group"><label>Description (optional)</label><input type="text" class="form-control js-amenity-desc" value="" placeholder="Included"></div>' +
+    '<button type="button" class="btn btn-outline btn-sm" onclick="this.closest(\'.js-amenity-card\').remove()">Remove amenity</button>';
+  c.appendChild(card);
+}
+
+function lussoAddIncluded() {
+  var c = document.getElementById('included-container');
+  if (!c) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'form-row lusso-repeat-row';
+  wrap.style.cssText = 'align-items:flex-end;gap:8px;';
+  wrap.innerHTML = '<div class="form-group" style="flex:1;margin-bottom:0;"><input type="text" class="form-control js-included-input" value="" placeholder="Included item"></div>' +
+    '<button type="button" class="btn btn-outline btn-sm" onclick="lussoRemoveRepeatRow(this)">Remove</button>';
+  c.appendChild(wrap);
+}
+
+function lussoCollectFeatures() {
+  var out = [];
+  document.querySelectorAll('#features-container .js-feature-input').forEach(function (inp) {
+    var v = (inp.value || '').trim();
+    if (v) out.push(v);
+  });
+  return out;
+}
+
+function lussoCollectAmenities() {
+  var out = [];
+  document.querySelectorAll('#amenities-container .js-amenity-card').forEach(function (card) {
+    var icon = (card.querySelector('.js-amenity-icon') && card.querySelector('.js-amenity-icon').value || '').trim() || 'check_circle';
+    var title = (card.querySelector('.js-amenity-title') && card.querySelector('.js-amenity-title').value || '').trim();
+    var desc = (card.querySelector('.js-amenity-desc') && card.querySelector('.js-amenity-desc').value || '').trim();
+    if (!title) return;
+    out.push({ icon: icon, title: title, description: desc });
+  });
+  return out;
+}
+
+function lussoCollectIncluded() {
+  var out = [];
+  document.querySelectorAll('#included-container .js-included-input').forEach(function (inp) {
+    var v = (inp.value || '').trim();
+    if (v) out.push(v);
+  });
+  return out;
+}
+
 window.insertSelectedMediaOverride = function() {
   const selected = mediaModalState.allowMultiple ? mediaModalState.selectedMediaMultiple : (mediaModalState.selectedMedia ? [mediaModalState.selectedMedia] : []);
   if (!selected.length) return false;
@@ -256,16 +456,6 @@ window.insertSelectedMediaOverride = function() {
   return false;
 };
 
-function parseAmenitiesLines(text) {
-  const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-  return lines.map(line => {
-    if (line.startsWith('{')) {
-      try { return JSON.parse(line); } catch (e) { return line; }
-    }
-    return line;
-  });
-}
-
 document.getElementById('roomForm').addEventListener('submit', function(e){
   e.preventDefault();
   const csrfToken = document.querySelector('meta[name=\"csrf-token\"]')?.getAttribute('content') || '';
@@ -284,9 +474,9 @@ document.getElementById('roomForm').addEventListener('submit', function(e){
     description: document.getElementById('description').value,
     main_image: document.getElementById('main_image').value,
     gallery_images: (() => { try { return JSON.parse(document.getElementById('gallery_images').value || '[]'); } catch (err) { return []; } })(),
-    features: document.getElementById('features').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean),
-    amenities: parseAmenitiesLines(document.getElementById('amenities').value),
-    included_items: document.getElementById('included_items').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean),
+    features: lussoCollectFeatures(),
+    amenities: lussoCollectAmenities(),
+    included_items: lussoCollectIncluded(),
     good_to_know: {
       check_in: document.getElementById('gtk_check_in').value,
       check_out: document.getElementById('gtk_check_out').value,
@@ -309,7 +499,11 @@ document.getElementById('roomForm').addEventListener('submit', function(e){
   }).then(r => r.json()).then(data => {
     if (data.success) {
       showToast('Saved', 'success');
-      if (!isEdit) setTimeout(() => window.location.href = '<?= ADMIN_URL ?>pages/rooms/list.php', 600);
+      if (!isEdit && data.room_id) {
+        setTimeout(function () {
+          window.location.href = '<?= ADMIN_URL ?>pages/rooms/edit.php?id=' + encodeURIComponent(data.room_id);
+        }, 400);
+      }
     } else {
       showToast(data.message || 'Save failed', 'error');
     }

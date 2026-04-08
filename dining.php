@@ -234,11 +234,11 @@ $sticky_subtitle = getPageSection('dining', 'sticky_subtitle', 'Limited Availabi
       </div>
       <h2 class="font-serif text-4xl md:text-6xl max-w-3xl leading-tight"><?= e($cta_title) ?></h2>
       <p class="text-white/70 max-w-lg text-lg"><?= e($cta_body) ?></p>
-      <div class="flex flex-col sm:flex-row gap-4 w-full justify-center mt-4">
-        <button class="min-w-[200px] px-8 py-4 bg-transparent border border-champagne/60 text-champagne hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 font-bold tracking-wide rounded-lg backdrop-blur-sm shadow-[0_0_24px_rgba(65,29,19,0.25)] hover:shadow-[0_0_36px_rgba(65,29,19,0.45)]" type="button">
+      <div class="flex flex-row flex-nowrap gap-2 sm:gap-4 w-full justify-center mt-4 min-w-0 max-w-2xl mx-auto px-1">
+        <button class="flex-1 min-w-0 px-3 sm:px-8 py-3 sm:py-4 text-xs sm:text-base bg-transparent border border-champagne/60 text-champagne hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 font-bold tracking-wide rounded-lg backdrop-blur-sm shadow-[0_0_24px_rgba(65,29,19,0.25)] hover:shadow-[0_0_36px_rgba(65,29,19,0.45)] text-center leading-tight" type="button">
           <?= e($cta_btn1) ?>
         </button>
-        <button class="min-w-[200px] px-8 py-4 bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all duration-300 font-medium tracking-wide rounded-lg backdrop-blur-sm" type="button">
+        <button class="flex-1 min-w-0 px-3 sm:px-8 py-3 sm:py-4 text-xs sm:text-base bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all duration-300 font-medium tracking-wide rounded-lg backdrop-blur-sm text-center leading-tight" type="button">
           <?= e($cta_btn2) ?>
         </button>
       </div>

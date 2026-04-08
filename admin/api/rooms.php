@@ -80,10 +80,17 @@ try {
             $isFeatured = isset($data['is_featured']) ? (int)$data['is_featured'] : 0;
             $displayOrder = (int)($data['display_order'] ?? 0);
 
+            $checkStmt = $pdo->prepare("SELECT id FROM rooms WHERE slug = ?");
+            $checkStmt->execute([$slug]);
+            if ($checkStmt->fetch()) {
+                $slug = $slug . '-' . time();
+            }
+
             $stmt = $pdo->prepare("INSERT INTO rooms (title,slug,price,room_type,short_description,description,main_image,gallery_images,features,amenities,included_items,good_to_know,urgency_message,size,max_guests,location,book_url,is_active,is_featured,display_order)
                                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $stmt->execute([$title, $slug, $price, $roomType, $short, $desc, $mainImage, $galleryImages, $features, $amenities, $includedItems, $goodToKnowJson, $urgencyMessage, $size, $maxGuests, $location, $bookUrl, $isActive, $isFeatured, $displayOrder]);
-            jsonResponse(['success' => true, 'message' => 'Room created']);
+            $newId = (int)$pdo->lastInsertId();
+            jsonResponse(['success' => true, 'message' => 'Room created', 'room_id' => $newId]);
             break;
 
         case 'PUT':
@@ -101,6 +108,11 @@ try {
 
             $title = sanitize($data['title'] ?? '');
             $slug = generateSlug($data['slug'] ?? $title);
+            $dupStmt = $pdo->prepare("SELECT id FROM rooms WHERE slug = ? AND id != ?");
+            $dupStmt->execute([$slug, $id]);
+            if ($dupStmt->fetch()) {
+                $slug = $slug . '-' . time();
+            }
             $price = (float)($data['price'] ?? 0);
             $roomType = sanitize($data['room_type'] ?? '');
             $short = sanitize($data['short_description'] ?? '');

@@ -5,7 +5,7 @@ $cmsDefaults = require __DIR__ . '/includes/cms-defaults.php';
 $pageTitle = getPageSection('about', 'page_title', 'The Lusso Legacy - About Us');
 
 $hero_established = getPageSection('about', 'hero_established', 'Established 2024');
-$hero_title_html = getPageSection('about', 'hero_title_html', 'The Lusso <br/><span class="font-bold italic text-primary/90">Legacy</span>');
+$hero_title_html = getPageSection('about', 'hero_title_html', 'The Lusso <br/><span class="font-bold italic text-primary/90 lusso-hero-accent-text">Legacy</span>');
 $hero_subtitle = getPageSection('about', 'hero_subtitle', 'Redefining luxury hospitality in the heart of Abuja through architectural excellence and timeless Nigerian warmth.');
 $hero_bg = getPageSection('about', 'hero_bg', 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKUqHq-GN4lZRDb3VpJoBQf0wCp1L0HT1ffMFvon2Fpx5JFUEIVencwF0zLiODNpnveRzU99J5BKJy0pzhV-qqantGLstOLFb5JPlyGtStyFoC0Udyi7ds1hHqs3bQea5IP5yTl64R0lpZUOwrFHM8IU1hGWk8IxE92fhLliSnZOPp9qURFWlXFpaKeyn4pfcHGu8C-Cy6RL5CGYSU1gY2VZcN4xsr9MTU9pn5C9k765bD6huMgag92SUZDmWZnTRfI9TroGluz6U');
 
@@ -13,7 +13,6 @@ $story_title_html = getPageSection('about', 'story_title_html', 'Defining Abuja 
 $story_p1 = getPageSection('about', 'story_p1', 'We believe that true luxury lies not just in opulence, but in the meticulous attention to detail and the warmth of genuine hospitality. Our philosophy is rooted in creating sanctuary-like spaces where every interaction is a curated experience.');
 $story_p2 = getPageSection('about', 'story_p2', 'Lusso Hotels stands as a beacon of sophistication, merging contemporary design with the rich cultural heritage of Nigeria.');
 $story_image = getPageSection('about', 'story_image', 'https://lh3.googleusercontent.com/aida-public/AB6AXuC4lqSBAhhqs4N0scumYaXQVT9ZEKAqsT_RPiR2q01XspmWMfxYxiD7UuiobDr5yZBBKrDx4Hofa_5b3JtjrNNfAQitapKQnelBzcfd0ifQMU_E2voX7irqZkMDtTEY5c-8MtVvKBkg7E2f_0kPteIGEmhNqGdu__3OIeyxumRk3L-Z5ROyKmXnp5aLY7vvpaGzgbcsWSJ3hKRUGQ9WSJAEN3py7TcPvohXQWjbd98ECZq53hLEZ2iMDwWRyaY0IVPkaLFyRqVk768');
-$story_quote = getPageSection('about', 'story_quote', '"A sanctuary where time slows down and memories are crafted."');
 
 $values_kicker = getPageSection('about', 'values_kicker', 'Our Core Values');
 $values_title = getPageSection('about', 'values_title', 'Artistry in Service');
@@ -63,7 +62,7 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
 
 <section class="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
   <div class="absolute inset-0 z-0">
-    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background-light dark:to-background-dark z-10"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/70 z-10"></div>
     <div class="w-full h-full bg-cover bg-center bg-no-repeat scale-105 animate-[pulse_10s_ease-in-out_infinite]" style='background-image: url("<?= e($hero_bg) ?>");'>
     </div>
   </div>
@@ -93,9 +92,6 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
       <div class="w-full lg:w-1/2 relative min-w-0">
         <div class="aspect-[4/5] rounded-lg overflow-hidden relative shadow-2xl w-full">
           <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style='background-image: url("<?= e($story_image) ?>");'></div>
-          <div class="absolute bottom-8 -left-8 md:-left-12 bg-white dark:bg-[#2c2618] p-6 md:p-8 rounded-lg shadow-xl max-w-xs border-l-4 border-primary hidden md:block">
-            <p class="text-sm font-serif italic text-gray-500 dark:text-gray-400"><?= e($story_quote) ?></p>
-          </div>
         </div>
       </div>
     </div>
@@ -108,13 +104,13 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
       <span class="text-primary text-xs font-bold tracking-widest uppercase mb-3 block"><?= e($values_kicker) ?></span>
       <h3 class="text-3xl md:text-4xl font-bold text-text-main dark:text-white"><?= e($values_title) ?></h3>
     </div>
-    <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch lg:items-center">
-      <div class="lg:col-span-8 relative z-10 min-w-0">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+      <div class="relative z-10 min-w-0">
         <div class="relative aspect-[16/9] w-full rounded-lg overflow-hidden shadow-2xl">
           <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 hover:scale-105" style='background-image: url("<?= e($values_image) ?>");'></div>
         </div>
       </div>
-      <div class="lg:col-span-5 lg:-ml-24 lg:mt-24 relative z-20">
+      <div class="relative z-20 min-w-0">
         <div class="bg-white dark:bg-surface-dark p-10 md:p-14 rounded-lg shadow-2xl border border-gray-100 dark:border-white/5">
           <span class="material-symbols-outlined text-primary text-4xl mb-6"><?= e($values_card_icon) ?></span>
           <h4 class="text-2xl font-bold mb-4 text-text-main dark:text-white"><?= e($values_card_title) ?></h4>
@@ -221,9 +217,9 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
       <span class="material-symbols-outlined text-champagne text-5xl">diamond</span>
       <h2 class="text-4xl md:text-5xl font-light leading-tight"><?= e($cta_title) ?></h2>
       <p class="text-gray-400 text-lg leading-relaxed"><?= e($cta_body) ?></p>
-      <div class="flex flex-col sm:flex-row gap-4 w-full justify-center pt-4">
-        <a href="<?= e(lusso_href((string)$cta_btn1_href)) ?>" class="h-14 px-10 bg-primary text-white font-bold text-base rounded-lg hover:bg-primary-light transition-all duration-300 min-w-[200px] inline-flex items-center justify-center shadow-lg shadow-primary/30"><?= e($cta_btn1) ?></a>
-        <a href="<?= e(lusso_href((string)$cta_btn2_href)) ?>" class="h-14 px-10 bg-transparent border border-white/20 text-white font-bold text-base rounded-lg hover:bg-white/10 transition-all duration-300 min-w-[200px] inline-flex items-center justify-center"><?= e($cta_btn2) ?></a>
+      <div class="flex flex-row flex-nowrap gap-2 sm:gap-4 w-full max-w-xl mx-auto justify-center pt-4 min-w-0">
+        <a href="<?= e(lusso_href((string)$cta_btn1_href)) ?>" class="flex-1 min-w-0 h-12 sm:h-14 px-4 sm:px-10 bg-primary text-white font-bold text-sm sm:text-base rounded-lg hover:bg-primary-light transition-all duration-300 inline-flex items-center justify-center text-center leading-tight shadow-lg shadow-primary/30"><?= e($cta_btn1) ?></a>
+        <a href="<?= e(lusso_href((string)$cta_btn2_href)) ?>" class="flex-1 min-w-0 h-12 sm:h-14 px-4 sm:px-10 bg-transparent border border-white/20 text-white font-bold text-sm sm:text-base rounded-lg hover:bg-white/10 transition-all duration-300 inline-flex items-center justify-center text-center leading-tight"><?= e($cta_btn2) ?></a>
       </div>
     </div>
   </div>

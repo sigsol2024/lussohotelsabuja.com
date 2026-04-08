@@ -7,7 +7,7 @@ $hero_kicker = getPageSection('index', 'hero_kicker', 'Welcome to Abuja');
 $hero_title = lusso_normalize_home_hero_title_html(
     (string) getPageSection('index', 'hero_title', 'Refined Luxury in <br/><span class="italic text-primary lusso-hero-accent-text">Absolute Silence</span>')
 );
-$hero_subtitle = getPageSection('index', 'hero_subtitle', 'Experience the sanctuary of Lusso. Where every detail creates a symphony of comfort.');
+$hero_subtitle = getPageSection('index', 'hero_subtitle', 'The Lusso Hotels & Suites delivers an unparalleled guest experience.');
 $hero_cta_text = getPageSection('index', 'hero_cta_text', 'Discover Suites');
 $hero_cta_href = getPageSection('index', 'hero_cta_href', '/rooms');
 $hero_bg = getPageSection('index', 'hero_bg', "https://lh3.googleusercontent.com/aida-public/AB6AXuA09AOzJGi3HFlO4iws6G405bZGiytnUaZEFTya_spJrXDa5fTKSrBScsDkxZAQCuS6ae2mJpC0laUldei8amf2jOsK9UIg9NX305aHkrG5uIMWhPQ-1e4r8CAydwyR5KzlbYjN4mWRnao2gNBHBrofxEv7u5nEs6wpDuCE4GwvUSepjITkua6sUOfXNKlnd3aW_eBFeHSCedk94uypJTs6palB8AtN0hFG3qGsOckYndru2W3fVdobc9Goi1Jn_x4wNASClu7QbTw");
@@ -94,7 +94,7 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       <h2 class="text-white/90 text-sm md:text-base font-medium uppercase tracking-[0.2em] mb-4 animate-[fadeIn_1s_ease-out]">
         <?= e($hero_kicker) ?>
       </h2>
-      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium leading-tight mb-8 max-w-4xl text-cinematic animate-[fadeIn_1s_ease-out_0.2s] drop-shadow-md">
+      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium leading-tight mb-8 max-w-4xl text-cinematic animate-[fadeIn_1s_ease-out_0.2s] drop-shadow-md [&_.lusso-hero-accent-text]:animate-none">
         <?= $hero_title ?>
       </h1>
       <p class="text-white/90 text-lg md:text-xl font-light max-w-xl mb-10 animate-[fadeIn_1s_ease-out_0.4s] drop-shadow-sm">
@@ -108,6 +108,31 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       </div>
     </div>
   </header>
+  <script>
+  (function () {
+    var root = document.getElementById('lusso-home-hero');
+    if (!root) return;
+    var accent = root.querySelector('.lusso-hero-accent-text');
+    if (accent) {
+      var full = (accent.textContent || '').trim();
+      if (full.length > 0) {
+        accent.textContent = '';
+        accent.setAttribute('aria-busy', 'true');
+        var i = 0;
+        function tick() {
+          if (i <= full.length) {
+            accent.textContent = full.slice(0, i);
+            i++;
+            window.setTimeout(tick, i < 3 ? 120 : 55);
+          } else {
+            accent.removeAttribute('aria-busy');
+          }
+        }
+        window.setTimeout(tick, 500);
+      }
+    }
+  })();
+  </script>
   <?php if (count($hero_slide_paths) > 1): ?>
   <script>
   (function () {
@@ -301,9 +326,9 @@ $featuredRooms = getFeaturedRoomsForHome(12);
         <p class="text-text-muted text-lg mb-8">
           <?= $dining_body_html ?>
         </p>
-        <div class="flex gap-4">
-          <a class="bg-primary text-white hover:bg-primary-light px-8 py-3 rounded-md text-sm font-bold tracking-wide transition-colors shadow-md shadow-primary/20" href="<?= e(lusso_href((string)$dining_cta1_href)) ?>"><?= e($dining_cta1) ?></a>
-          <a class="bg-transparent border border-text-muted/30 text-text-main hover:border-text-main px-8 py-3 rounded-md text-sm font-bold tracking-wide transition-colors" href="<?= e(lusso_href((string)$dining_cta2_href)) ?>"><?= e($dining_cta2) ?></a>
+        <div class="flex flex-row flex-nowrap gap-2 sm:gap-4 w-full min-w-0">
+          <a class="flex-1 min-w-0 inline-flex items-center justify-center text-center px-3 py-2.5 sm:px-8 sm:py-3 rounded-md text-xs sm:text-sm font-bold tracking-wide transition-colors shadow-md shadow-primary/20 bg-primary text-white hover:bg-primary-light" href="<?= e(lusso_href((string)$dining_cta1_href)) ?>"><?= e($dining_cta1) ?></a>
+          <a class="flex-1 min-w-0 inline-flex items-center justify-center text-center px-3 py-2.5 sm:px-8 sm:py-3 rounded-md text-xs sm:text-sm font-bold tracking-wide transition-colors bg-transparent border border-text-muted/30 text-text-main hover:border-text-main" href="<?= e(lusso_href((string)$dining_cta2_href)) ?>"><?= e($dining_cta2) ?></a>
         </div>
       </div>
     </div>

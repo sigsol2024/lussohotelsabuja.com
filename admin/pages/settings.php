@@ -116,6 +116,25 @@ $csrfToken = generateCSRFToken();
             </div>
         </div>
     </div>
+
+    <!-- Header CTA (desktop nav button) -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Header — primary button</h2>
+        </div>
+        <div class="card-body card-body--stack">
+            <div class="form-group">
+                <label for="nav_cta_label">Button label</label>
+                <input type="text" id="nav_cta_label" name="nav_cta_label" value="<?= sanitize($settings['nav_cta_label'] ?? 'Check Availability') ?>" placeholder="Check Availability">
+                <p class="form-help">Shown on the right side of the desktop header (e.g. Check Availability).</p>
+            </div>
+            <div class="form-group">
+                <label for="nav_cta_href">Button URL</label>
+                <input type="text" id="nav_cta_href" name="nav_cta_href" value="<?= sanitize($settings['nav_cta_href'] ?? '/rooms') ?>" placeholder="/rooms or https://booking.example.com/...">
+                <p class="form-help">Internal path (e.g. <code>/rooms</code>) or full booking engine URL. This replaces the old fixed “contact” link for that button.</p>
+            </div>
+        </div>
+    </div>
     
     <!-- Footer Settings -->
     <div class="card">

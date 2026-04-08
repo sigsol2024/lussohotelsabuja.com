@@ -34,7 +34,7 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
     </div>
     <div class="form-group">
       <label for="hero_title_html">Hero title (HTML)</label>
-      <textarea id="hero_title_html" name="hero_title_html" rows="3"><?= htmlspecialchars($sections['hero_title_html'] ?? 'The Lusso <br/><span class="font-bold italic text-primary/90">Legacy</span>', ENT_QUOTES, 'UTF-8') ?></textarea>
+      <textarea id="hero_title_html" name="hero_title_html" rows="3"><?= htmlspecialchars($sections['hero_title_html'] ?? 'The Lusso <br/><span class="font-bold italic text-primary/90 lusso-hero-accent-text">Legacy</span>', ENT_QUOTES, 'UTF-8') ?></textarea>
     </div>
     <div class="form-group">
       <label for="hero_subtitle">Hero subtitle</label>

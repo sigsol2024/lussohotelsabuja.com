@@ -27,8 +27,8 @@ $siteSettings = [
     'nav_dining_href' => '/dining',
     'nav_experience_href' => '/amenities',
     'nav_events_href' => '/gallery',
-    'nav_cta_label' => 'Book Your Stay',
-    'nav_cta_href' => '/contact',
+    'nav_cta_label' => 'Check Availability',
+    'nav_cta_href' => '/rooms',
     'footer_privacy_href' => '#',
     'footer_terms_href' => '#',
     'social_media_json' => '[]',
@@ -56,7 +56,7 @@ $pageSections = [
     // --- Homepage (index) ---
     ['index', 'hero_kicker', 'text', 'Welcome to Abuja'],
     ['index', 'hero_title', 'html', 'Refined Luxury in <br/><span class="italic text-primary lusso-hero-accent-text">Absolute Silence</span>'],
-    ['index', 'hero_subtitle', 'text', 'Experience the sanctuary of Lusso. Where every detail creates a symphony of comfort.'],
+    ['index', 'hero_subtitle', 'text', 'The Lusso Hotels & Suites delivers an unparalleled guest experience.'],
     ['index', 'hero_cta_text', 'text', 'Discover Suites'],
     ['index', 'hero_cta_href', 'text', '/rooms'],
     ['index', 'hero_bg', 'image', 'https://lh3.googleusercontent.com/aida-public/AB6AXuA09AOzJGi3HFlO4iws6G405bZGiytnUaZEFTya_spJrXDa5fTKSrBScsDkxZAQCuS6ae2mJpC0laUldei8amf2jOsK9UIg9NX305aHkrG5uIMWhPQ-1e4r8CAydwyR5KzlbYjN4mWRnao2gNBHBrofxEv7u5nEs6wpDuCE4GwvUSepjITkua6sUOfXNKlnd3aW_eBFeHSCedk94uypJTs6palB8AtN0hFG3qGsOckYndru2W3fVdobc9Goi1Jn_x4wNASClu7QbTw'],
@@ -91,7 +91,7 @@ $pageSections = [
     // --- About ---
     ['about', 'page_title', 'text', 'The Lusso Legacy - About Us'],
     ['about', 'hero_established', 'text', 'Established 2024'],
-    ['about', 'hero_title_html', 'html', 'The Lusso <br/><span class="font-bold italic text-primary/90">Legacy</span>'],
+    ['about', 'hero_title_html', 'html', 'The Lusso <br/><span class="font-bold italic text-primary/90 lusso-hero-accent-text">Legacy</span>'],
     ['about', 'hero_subtitle', 'text', 'Redefining luxury hospitality in the heart of Abuja through architectural excellence and timeless Nigerian warmth.'],
     ['about', 'hero_bg', 'image', 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKUqHq-GN4lZRDb3VpJoBQf0wCp1L0HT1ffMFvon2Fpx5JFUEIVencwF0zLiODNpnveRzU99J5BKJy0pzhV-qqantGLstOLFb5JPlyGtStyFoC0Udyi7ds1hHqs3bQea5IP5yTl64R0lpZUOwrFHM8IU1hGWk8IxE92fhLliSnZOPp9qURFWlXFpaKeyn4pfcHGu8C-Cy6RL5CGYSU1gY2VZcN4xsr9MTU9pn5C9k765bD6huMgag92SUZDmWZnTRfI9TroGluz6U'],
     ['about', 'story_title_html', 'html', 'Defining Abuja <br/><span class="font-semibold text-primary">Luxury</span>'],

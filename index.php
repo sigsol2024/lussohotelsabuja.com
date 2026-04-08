@@ -197,7 +197,7 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       <h2 class="text-white/90 text-sm md:text-base font-medium uppercase tracking-[0.2em] mb-4 animate-[fadeIn_1s_ease-out]">
         <?= e($hero_kicker) ?>
       </h2>
-      <h1 class="font-serif text-[1.65rem] leading-snug sm:text-4xl sm:leading-tight md:text-7xl lg:text-8xl text-white font-medium mb-5 sm:mb-6 md:mb-8 max-w-4xl px-1 sm:px-0 text-cinematic animate-[fadeIn_1s_ease-out_0.2s] drop-shadow-md [&_.lusso-hero-accent-text]:animate-none">
+      <h1 class="font-serif text-[1.45rem] leading-snug sm:text-4xl sm:leading-tight md:text-7xl lg:text-8xl text-white font-medium mb-5 sm:mb-6 md:mb-8 max-w-4xl px-1 sm:px-0 text-cinematic animate-[fadeIn_1s_ease-out_0.2s] drop-shadow-md [&_.lusso-hero-accent-text]:animate-none">
         <?= $hero_title ?>
       </h1>
       <p class="text-white/90 text-lg md:text-xl font-light max-w-xl mb-10 animate-[fadeIn_1s_ease-out_0.4s] drop-shadow-sm">

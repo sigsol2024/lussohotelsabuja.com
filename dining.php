@@ -190,21 +190,10 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
 </section>
 
 <!-- Menu Highlight Section -->
-<section class="py-24 md:py-32 px-6 md:px-16 bg-white dark:bg-surface-dark transition-colors relative">
+<section id="diningMenu" class="py-24 md:py-32 px-6 md:px-16 bg-white dark:bg-surface-dark transition-colors relative">
   <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
     <div class="size-24 rounded-full border border-primary/30 flex items-center justify-center bg-white dark:bg-surface-dark">
       <span class="material-symbols-outlined text-primary text-3xl">restaurant_menu</span>
-    </div>
-  </div>
-  <!-- Skip widget: floats above iframe without affecting layout -->
-  <div class="pointer-events-none sticky top-24 z-30 h-0">
-    <div class="pointer-events-auto absolute left-4 md:left-10">
-      <button id="diningMenuSkipBtn"
-              type="button"
-              class="size-12 rounded-full bg-black/20 hover:bg-black/30 text-white border border-white/25 backdrop-blur-sm shadow-lg transition-colors flex items-center justify-center"
-              aria-label="Skip menu section">
-        <span class="material-symbols-outlined text-2xl">arrow_downward</span>
-      </button>
     </div>
   </div>
   <div class="max-w-[1000px] mx-auto">
@@ -263,14 +252,51 @@ $cta_btn1 = getPageSection('dining', 'cta_btn1', 'Make a Reservation');
 
 <script>
 (function () {
+  var widget = document.getElementById('diningMenuSkipWidget');
   var btn = document.getElementById('diningMenuSkipBtn');
-  if (!btn) return;
+  var menu = document.getElementById('diningMenu');
+  var next = document.getElementById('diningReservation');
+  if (!btn || !menu || !next) return;
+
   btn.addEventListener('click', function () {
     var next = document.getElementById('diningReservation');
     if (!next) return;
     next.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
+
+  if (!widget) return;
+  if (!('IntersectionObserver' in window)) {
+    widget.classList.remove('opacity-0', 'pointer-events-none');
+    widget.classList.add('opacity-100');
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.target !== menu) return;
+      if (entry.isIntersecting) {
+        widget.classList.remove('opacity-0', 'pointer-events-none');
+        widget.classList.add('opacity-100');
+      } else {
+        widget.classList.add('opacity-0', 'pointer-events-none');
+        widget.classList.remove('opacity-100');
+      }
+    });
+  }, { root: null, threshold: 0.15, rootMargin: '-10% 0px -10% 0px' });
+  io.observe(menu);
 })();
 </script>
+
+<!-- Floating skip widget: visible only while menu section is in view -->
+<div id="diningMenuSkipWidget" class="fixed left-3 md:left-8 top-1/2 -translate-y-1/2 z-50 transition-opacity duration-300 opacity-0 pointer-events-none">
+  <div class="flex flex-col items-center gap-2">
+    <button id="diningMenuSkipBtn"
+            type="button"
+            class="size-12 rounded-full bg-black/20 hover:bg-black/30 text-white border border-white/25 backdrop-blur-sm shadow-lg transition-colors flex items-center justify-center"
+            aria-label="Skip menu section">
+      <span class="material-symbols-outlined text-2xl">arrow_downward</span>
+    </button>
+    <span class="text-[11px] font-bold uppercase tracking-widest text-white/80 bg-black/20 border border-white/15 backdrop-blur-sm rounded-full px-3 py-1 select-none">Skip</span>
+  </div>
+</div>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

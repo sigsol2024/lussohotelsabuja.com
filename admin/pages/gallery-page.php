@@ -21,6 +21,24 @@ $itemsRaw = $sections['items_json'] ?? '';
 if (trim($itemsRaw) === '') {
     $itemsRaw = $itemsDefault;
 }
+// Force new format only: JSON array of image paths.
+// If old object-array is found (e.g. [{src: "..."}]), normalize it to ["...","..."] so the admin UI stays clean.
+$decodedItems = json_decode($itemsRaw, true);
+if (is_array($decodedItems) && count($decodedItems) > 0) {
+    if (is_array($decodedItems[0]) && isset($decodedItems[0]['src'])) {
+        $decodedItems = array_values(array_filter(array_map(static function ($o) {
+            $src = is_array($o) ? (string)($o['src'] ?? '') : '';
+            $src = trim($src);
+            return $src !== '' ? $src : null;
+        }, $decodedItems)));
+        $itemsRaw = json_encode($decodedItems, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    } elseif (!is_string($decodedItems[0])) {
+        // Unknown / invalid structure: reset to defaults (new format).
+        $itemsRaw = $itemsDefault;
+    }
+} elseif (!is_array($decodedItems)) {
+    $itemsRaw = $itemsDefault;
+}
 ?>
 
 <form id="galleryPageForm">
@@ -60,22 +78,15 @@ if (trim($itemsRaw) === '') {
   <div class="card">
     <div class="card-header"><h2>Gallery grid</h2></div>
     <div style="padding:20px;">
-      <p class="form-help" style="margin-top:0;">Visual editor. Add/remove/reorder images (saved as JSON behind the scenes).</p>
+      <p class="form-help" style="margin-top:0;">Simple picker. Select multiple images at once, remove individual images, or clear all (saved as JSON array of image paths).</p>
       <div class="form-group">
         <textarea id="items_json" name="items_json" style="display:none;"><?= htmlspecialchars($itemsRaw, ENT_QUOTES, 'UTF-8') ?></textarea>
-        <div id="galleryItemsEditor"></div>
-        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-          <button type="button" class="btn btn-outline btn-sm" id="galleryAddItemBtn">Add image</button>
-          <button type="button" class="btn btn-outline btn-sm" id="galleryAddFromLibraryBtn"><i class="fas fa-images"></i> Add from library</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <button type="button" class="btn btn-outline btn-sm" id="galleryPickBtn"><i class="fas fa-images"></i> Select images</button>
+          <button type="button" class="btn btn-outline btn-sm" id="galleryClearBtn">Clear all</button>
+          <span class="text-muted" id="galleryCount" style="font-size: 12px;"></span>
         </div>
-
-        <details style="margin-top:14px;">
-          <summary style="cursor:pointer; color: var(--text-muted);">Advanced JSON (optional)</summary>
-          <textarea id="items_json_advanced" rows="18" style="margin-top:10px;font-family:monospace;font-size:12px;"></textarea>
-          <div style="margin-top:10px;">
-            <button type="button" class="btn btn-outline btn-sm" id="galleryApplyJsonBtn">Apply JSON</button>
-          </div>
-        </details>
+        <div id="galleryPreview" class="image-preview" style="display:block; margin-top:12px;"></div>
       </div>
     </div>
   </div>
@@ -98,140 +109,48 @@ function galleryNormalizeImgUrl(val) {
   if (v.indexOf('http') === 0) return v;
   return '<?= SITE_URL ?>' + v.replace(/^\/+/, '');
 }
-
-function galleryGetItemsFromDom() {
-  var out = [];
-  document.querySelectorAll('#galleryItemsEditor .js-gal-item').forEach(function (card) {
-    var src = (card.querySelector('.js-src')?.value || '').trim();
-    var alt = (card.querySelector('.js-alt')?.value || '').trim();
-    var category = (card.querySelector('.js-category')?.value || '').trim();
-    var title = (card.querySelector('.js-title')?.value || '').trim();
-    var ratio = (card.querySelector('.js-ratio')?.value || '3/4').trim() || '3/4';
-    if (!src && !alt && !category && !title) return;
-    out.push({ src: src, alt: alt, category: category, title: title, ratio: ratio });
-  });
-  return out;
+function galleryGetPaths() {
+  var raw = document.getElementById('items_json')?.value || '[]';
+  var v = gallerySafeParseJson(raw, []);
+  if (Array.isArray(v)) return v.map(function (p) { return String(p || '').trim(); }).filter(Boolean);
+  return [];
 }
-
-function gallerySyncHiddenJson() {
-  var items = galleryGetItemsFromDom();
+function gallerySetPaths(paths) {
   var hidden = document.getElementById('items_json');
-  if (hidden) hidden.value = JSON.stringify(items);
-  var adv = document.getElementById('items_json_advanced');
-  if (adv) adv.value = JSON.stringify(items, null, 2);
+  if (hidden) hidden.value = JSON.stringify(paths || []);
+  renderPreview();
 }
-
-function galleryRender(items) {
-  var host = document.getElementById('galleryItemsEditor');
+function renderPreview() {
+  var paths = galleryGetPaths();
+  var host = document.getElementById('galleryPreview');
+  var count = document.getElementById('galleryCount');
+  if (count) count.textContent = paths.length ? (paths.length + ' images selected') : 'No images selected yet.';
   if (!host) return;
-  host.innerHTML = '';
-
-  (items || []).forEach(function (it, idx) {
-    var src = (it && it.src) || '';
-    var alt = (it && it.alt) || '';
-    var category = (it && it.category) || '';
-    var title = (it && it.title) || '';
-    var ratio = (it && it.ratio) || '3/4';
-
-    var srcInputId = 'gallery_item_' + idx + '_src';
-    var prevId = 'gallery_item_' + idx + '_preview';
-    var imgUrl = galleryNormalizeImgUrl(src);
-
-    var wrap = document.createElement('div');
-    wrap.className = 'card js-gal-item';
-    wrap.style.cssText = 'margin-bottom: 14px;';
-    wrap.innerHTML =
-      '<div class="card-header card-header--split" style="display:flex; justify-content:space-between; align-items:center; gap: 10px;">' +
-        '<h3 style="margin:0;">Image ' + (idx + 1) + '</h3>' +
-        '<div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">' +
-          '<button type="button" class="btn btn-outline btn-sm js-up">Up</button>' +
-          '<button type="button" class="btn btn-outline btn-sm js-down">Down</button>' +
-          '<button type="button" class="btn btn-outline btn-sm js-remove">Remove</button>' +
-        '</div>' +
-      '</div>' +
-      '<div class="card-body card-body--stack" style="padding: 14px 16px;">' +
-        '<div class="form-group">' +
-          '<label>Image</label>' +
-          '<div style="display:flex; gap: 10px; align-items:center; flex-wrap:wrap;">' +
-            '<button type="button" class="btn btn-outline js-pick">Select from media</button>' +
-            '<input type="text" id="' + galleryEscHtml(srcInputId) + '" class="form-control js-src" value="' + galleryEscHtml(src) + '" placeholder="/assets/uploads/... or https://...">' +
-          '</div>' +
-          '<div id="' + galleryEscHtml(prevId) + '" class="image-preview" style="' + (imgUrl ? 'display:block;margin-top:10px;' : 'display:none;margin-top:10px;') + '">' +
-            (imgUrl ? ('<img src="' + galleryEscHtml(imgUrl) + '" style="max-width:420px;max-height:240px;border-radius:6px;">') : '') +
-          '</div>' +
-        '</div>' +
-        '<div class="form-row">' +
-          '<div class="form-group" style="flex:1;">' +
-            '<label>Title</label>' +
-            '<input type="text" class="form-control js-title" value="' + galleryEscHtml(title) + '">' +
-          '</div>' +
-          '<div class="form-group" style="flex:1;">' +
-            '<label>Category</label>' +
-            '<input type="text" class="form-control js-category" value="' + galleryEscHtml(category) + '" placeholder="Architecture">' +
-          '</div>' +
-        '</div>' +
-        '<div class="form-row">' +
-          '<div class="form-group" style="flex:2;">' +
-            '<label>Alt text</label>' +
-            '<input type="text" class="form-control js-alt" value="' + galleryEscHtml(alt) + '" placeholder="Describe the image">' +
-          '</div>' +
-          '<div class="form-group" style="flex:1;">' +
-            '<label>Ratio</label>' +
-            '<select class="form-control js-ratio">' +
-              '<option value="3/4"' + (ratio === '3/4' ? ' selected' : '') + '>3/4</option>' +
-              '<option value="video"' + (ratio === 'video' ? ' selected' : '') + '>video</option>' +
-              '<option value="2/3"' + (ratio === '2/3' ? ' selected' : '') + '>2/3</option>' +
-              '<option value="square"' + (ratio === 'square' ? ' selected' : '') + '>square</option>' +
-              '<option value="16/10"' + (ratio === '16/10' ? ' selected' : '') + '>16/10</option>' +
-              '<option value="3/5"' + (ratio === '3/5' ? ' selected' : '') + '>3/5</option>' +
-              '<option value="4/5"' + (ratio === '4/5' ? ' selected' : '') + '>4/5</option>' +
-            '</select>' +
-          '</div>' +
-        '</div>' +
+  if (!paths.length) {
+    host.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; padding: 8px 0;">No images selected.</div>';
+    return;
+  }
+  host.innerHTML = paths.map(function (p, i) {
+    var u = galleryNormalizeImgUrl(p);
+    return '' +
+      '<div style="display:inline-block; position:relative; margin:6px;">' +
+        '<img src="' + galleryEscHtml(u) + '" style="width:140px;height:105px;object-fit:cover;border-radius:8px;display:block;border:1px solid rgba(0,0,0,0.08);">' +
+        '<button type="button" data-i="' + i + '" class="btn btn-outline btn-sm js-remove-one" style="position:absolute; top:6px; right:6px; padding:4px 6px; line-height:1;">×</button>' +
       '</div>';
-
-    wrap.querySelector('.js-pick').addEventListener('click', function () {
-      openMediaModal(srcInputId, prevId, false);
+  }).join('');
+  host.querySelectorAll('.js-remove-one').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var idx = parseInt(btn.getAttribute('data-i') || '0', 10);
+      var cur = galleryGetPaths();
+      cur.splice(idx, 1);
+      gallerySetPaths(cur);
     });
-    wrap.querySelector('.js-remove').addEventListener('click', function () {
-      wrap.remove();
-      gallerySyncHiddenJson();
-      galleryRender(galleryGetItemsFromDom());
-      gallerySyncHiddenJson();
-    });
-    wrap.querySelector('.js-up').addEventListener('click', function () {
-      var all = galleryGetItemsFromDom();
-      if (idx <= 0) return;
-      var t = all[idx - 1]; all[idx - 1] = all[idx]; all[idx] = t;
-      galleryRender(all); gallerySyncHiddenJson();
-    });
-    wrap.querySelector('.js-down').addEventListener('click', function () {
-      var all = galleryGetItemsFromDom();
-      if (idx >= all.length - 1) return;
-      var t = all[idx + 1]; all[idx + 1] = all[idx]; all[idx] = t;
-      galleryRender(all); gallerySyncHiddenJson();
-    });
-    wrap.addEventListener('input', function () {
-      // Live preview when pasting URL/path
-      var v = (wrap.querySelector('.js-src')?.value || '').trim();
-      var p = document.getElementById(prevId);
-      if (p) {
-        var u = galleryNormalizeImgUrl(v);
-        if (!u) { p.style.display = 'none'; p.innerHTML = ''; }
-        else { p.style.display = 'block'; p.innerHTML = '<img src="' + galleryEscHtml(u) + '" style="max-width:420px;max-height:240px;border-radius:6px;">'; }
-      }
-      gallerySyncHiddenJson();
-    });
-    wrap.addEventListener('change', function () { gallerySyncHiddenJson(); });
-    host.appendChild(wrap);
   });
 }
 
-// Media picker overrides (hero background + gallery item images + multi-add)
 window.insertSelectedMediaOverride = function () {
   var tid = mediaModalState.targetInputId || '';
-  var allowMultiple = !!mediaModalState.allowMultiple;
-  var selected = allowMultiple ? mediaModalState.selectedMediaMultiple : (mediaModalState.selectedMedia ? [mediaModalState.selectedMedia] : []);
+  var selected = mediaModalState.allowMultiple ? mediaModalState.selectedMediaMultiple : (mediaModalState.selectedMedia ? [mediaModalState.selectedMedia] : []);
   if (!selected.length) return false;
 
   // Hero BG
@@ -245,32 +164,12 @@ window.insertSelectedMediaOverride = function () {
     return true;
   }
 
-  // Add multiple images at once
-  if (tid === 'gallery_items_pick') {
-    var cur = galleryGetItemsFromDom();
-    selected.forEach(function (s) {
-      cur.push({ src: s.path, alt: s.original_name || '', category: '', title: '', ratio: '3/4' });
-    });
-    galleryRender(cur);
-    gallerySyncHiddenJson();
+  // Gallery multi-pick
+  if (tid === 'items_json_pick') {
+    var paths = selected.map(function (s) { return s.path; });
+    gallerySetPaths(paths);
     closeMediaModal();
-    if (typeof showToast === 'function') showToast(selected.length + ' images added', 'success');
-    return true;
-  }
-
-  // Per-item src update
-  if (tid.indexOf('gallery_item_') === 0 && tid.indexOf('_src') !== -1) {
-    var one = selected[0];
-    var input = document.getElementById(tid);
-    if (input) input.value = one.path;
-    var prev = mediaModalState.targetPreviewId ? document.getElementById(mediaModalState.targetPreviewId) : null;
-    if (prev) {
-      prev.style.display = 'block';
-      prev.innerHTML = '<img src="<?= SITE_URL ?>' + one.path.replace(/^\/+/, '') + '" style="max-width:420px;max-height:240px;border-radius:6px;">';
-    }
-    closeMediaModal();
-    gallerySyncHiddenJson();
-    if (typeof showToast === 'function') showToast('Image selected', 'success');
+    if (typeof showToast === 'function') showToast(paths.length + ' images selected', 'success');
     return true;
   }
 
@@ -278,37 +177,14 @@ window.insertSelectedMediaOverride = function () {
 };
 
 document.addEventListener('DOMContentLoaded', function () {
-  var raw = document.getElementById('items_json')?.value || '[]';
-  var items = gallerySafeParseJson(raw, []);
-  if (!Array.isArray(items)) items = [];
-  if (items.length === 0) items = [{ src: '', alt: '', category: '', title: '', ratio: '3/4' }];
-  galleryRender(items);
-  gallerySyncHiddenJson();
-
-  var addBtn = document.getElementById('galleryAddItemBtn');
-  if (addBtn) addBtn.addEventListener('click', function () {
-    var cur = galleryGetItemsFromDom();
-    cur.push({ src: '', alt: '', category: '', title: '', ratio: '3/4' });
-    galleryRender(cur);
-    gallerySyncHiddenJson();
+  renderPreview();
+  var pickBtn = document.getElementById('galleryPickBtn');
+  var clearBtn = document.getElementById('galleryClearBtn');
+  if (pickBtn) pickBtn.addEventListener('click', function () {
+    openMediaModal('items_json_pick', 'galleryPreview', true);
   });
-
-  var addLibBtn = document.getElementById('galleryAddFromLibraryBtn');
-  if (addLibBtn) addLibBtn.addEventListener('click', function () {
-    openMediaModal('gallery_items_pick', null, true);
-  });
-
-  var applyBtn = document.getElementById('galleryApplyJsonBtn');
-  if (applyBtn) applyBtn.addEventListener('click', function () {
-    var t = document.getElementById('items_json_advanced')?.value || '';
-    var v = gallerySafeParseJson(t, null);
-    if (!Array.isArray(v)) {
-      showToast('Gallery JSON must be an array', 'error');
-      return;
-    }
-    galleryRender(v);
-    gallerySyncHiddenJson();
-    showToast('Gallery applied', 'success');
+  if (clearBtn) clearBtn.addEventListener('click', function () {
+    gallerySetPaths([]);
   });
 });
 

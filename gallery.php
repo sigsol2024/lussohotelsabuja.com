@@ -10,9 +10,25 @@ $hero_bg = getPageSection('gallery', 'hero_bg', 'https://lh3.googleusercontent.c
 
 $itemsRaw = getPageSection('gallery', 'items_json', '');
 $galleryItems = json_decode($itemsRaw, true);
-if (!is_array($galleryItems) || count($galleryItems) === 0) {
+// New format only: ["path1","path2",...]
+// If old object-based JSON exists, we intentionally ignore it (admin will normalize it on edit).
+$isValidPathArray =
+    is_array($galleryItems) &&
+    (count($galleryItems) === 0 || (isset($galleryItems[0]) && is_string($galleryItems[0])));
+if (!$isValidPathArray) {
     $galleryItems = $cmsDefaults['gallery_items'];
 }
+$galleryItems = array_values(array_filter(array_map(static function ($src) {
+    $src = is_string($src) ? trim($src) : '';
+    if ($src === '') return null;
+    return [
+        'src' => $src,
+        'alt' => '',
+        'category' => '',
+        'title' => '',
+        'ratio' => '3/4',
+    ];
+}, (array)$galleryItems)));
 
 function gallery_ratio_class($ratio) {
     $r = (string)$ratio;
@@ -85,10 +101,16 @@ function gallery_ratio_class($ratio) {
         <div class="<?= e($ac) ?> relative w-full bg-gray-200">
           <img alt="<?= e($alt) ?>" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="<?= e($src) ?>" loading="lazy" decoding="async"/>
         </div>
+        <?php if ($cat !== '' || $tit !== ''): ?>
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 md:p-8">
+          <?php if ($cat !== ''): ?>
           <span class="text-primary text-[10px] font-bold tracking-[0.2em] uppercase translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75"><?= e($cat) ?></span>
+          <?php endif; ?>
+          <?php if ($tit !== ''): ?>
           <h3 class="text-white text-xl md:text-2xl font-light translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100 mt-2"><?= e($tit) ?></h3>
+          <?php endif; ?>
         </div>
+        <?php endif; ?>
       </div>
       <?php endforeach; ?>
     </div>

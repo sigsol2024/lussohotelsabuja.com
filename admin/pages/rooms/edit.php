@@ -439,7 +439,7 @@ window.insertSelectedMediaOverride = function() {
     document.getElementById('main_image').value = first.path;
     const preview = document.getElementById('main_image_preview');
     preview.style.display = 'block';
-    preview.innerHTML = '<img src=\"<?= SITE_URL ?>' + first.path.replace(/^\\//,'') + '\" style=\"max-width:300px;max-height:200px;\">';
+    preview.innerHTML = '<img src=\"<?= SITE_URL ?>' + first.path.replace(/^\/+/,'') + '\" style=\"max-width:300px;max-height:200px;\">';
     closeMediaModal();
     return true;
   }
@@ -449,7 +449,7 @@ window.insertSelectedMediaOverride = function() {
     document.getElementById('gallery_images').value = JSON.stringify(paths);
     const preview = document.getElementById('gallery_images_preview');
     preview.style.display = 'block';
-    preview.innerHTML = paths.map(p => '<img src=\"<?= SITE_URL ?>' + p.replace(/^\\//,'') + '\" style=\"max-width:120px;max-height:120px;display:inline-block;margin:5px;object-fit:cover;\">').join('');
+    preview.innerHTML = paths.map(p => '<img src=\"<?= SITE_URL ?>' + p.replace(/^\/+/,'') + '\" style=\"max-width:120px;max-height:120px;display:inline-block;margin:5px;object-fit:cover;\">').join('');
     closeMediaModal();
     return true;
   }

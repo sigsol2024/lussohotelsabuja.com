@@ -279,7 +279,7 @@ function hsec($sectionsArray, $key, $default = '') {
     var base = '<?= rtrim(SITE_URL, '/') ?>/';
     var html = '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;">';
     arr.forEach(function (path, idx) {
-      var p = (path || '').replace(/^\\//, '');
+      var p = (path || '').replace(/^\/+/, '');
       html += '<div style="position:relative;border:1px solid var(--border-color);border-radius:6px;padding:4px;background:var(--surface-elevated);">';
       html += '<img src="' + base + p + '" alt="" style="width:100px;height:70px;object-fit:cover;display:block;border-radius:4px;">';
       html += '<button type="button" class="btn btn-sm btn-outline" style="margin-top:6px;width:100%;" data-slide-idx="' + idx + '">Remove</button></div>';
@@ -322,7 +322,7 @@ function hsec($sectionsArray, $key, $default = '') {
     if (input) input.value = selected.path;
     if (preview) {
       preview.style.display = 'block';
-      preview.innerHTML = '<img src="<?= SITE_URL ?>' + selected.path.replace(/^\\//, '') + '" style="max-width:500px;max-height:300px;">';
+      preview.innerHTML = '<img src="<?= SITE_URL ?>' + selected.path.replace(/^\/+/, '') + '" style="max-width:500px;max-height:300px;">';
     }
     closeMediaModal();
     if (typeof showToast === 'function') showToast('Image selected', 'success');

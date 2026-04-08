@@ -26,6 +26,18 @@ if ($heroBgSlidesJson === '' && !empty($sectionsArray['hero_bg'])) {
 function hsec($sectionsArray, $key, $default = '') {
     return sanitize($sectionsArray[$key] ?? $default);
 }
+
+/** Prefer new section_key; fall back to legacy key (e.g. home_news_* → home_amenity_grid_*). */
+function home_editor_val($sectionsArray, $primaryKey, $legacyKey = '') {
+    $v = $sectionsArray[$primaryKey] ?? null;
+    if ($v !== null && trim((string)$v) !== '') {
+        return sanitize($v);
+    }
+    if ($legacyKey !== '' && isset($sectionsArray[$legacyKey])) {
+        return sanitize($sectionsArray[$legacyKey]);
+    }
+    return '';
+}
 ?>
 
 <form id="homepageForm">
@@ -186,6 +198,59 @@ function hsec($sectionsArray, $key, $default = '') {
   </div>
 
   <div class="card">
+    <div class="card-header"><h2>Amenities highlight (3 cards)</h2></div>
+    <div style="padding:20px;">
+      <p class="form-help" style="margin-top:0;">Dark band on the homepage showcasing hotel amenities (pool, dining, wellness, etc.). Uses background <code>#282828</code> and white text. Legacy keys <code>home_news_*</code> are still read if the fields below are empty.</p>
+      <div class="form-group">
+        <label for="home_amenity_grid_kicker">Kicker</label>
+        <input id="home_amenity_grid_kicker" name="home_amenity_grid_kicker" type="text" value="<?= home_editor_val($sectionsArray, 'home_amenity_grid_kicker', 'home_news_kicker') ?>" placeholder="e.g. Amenities">
+      </div>
+      <div class="form-group">
+        <label for="home_amenity_grid_title">Section title</label>
+        <input id="home_amenity_grid_title" name="home_amenity_grid_title" type="text" value="<?= home_editor_val($sectionsArray, 'home_amenity_grid_title', 'home_news_title') ?>" placeholder="e.g. Spaces crafted for your stay">
+      </div>
+      <div class="form-group">
+        <label for="home_amenity_grid_intro">Section description</label>
+        <textarea id="home_amenity_grid_intro" name="home_amenity_grid_intro" rows="3" placeholder="Short intro under the title"><?= htmlspecialchars($sectionsArray['home_amenity_grid_intro'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+      </div>
+      <?php for ($ai = 1; $ai <= 3; $ai++):
+          $imgKey = 'home_amenity_grid_' . $ai . '_image';
+          $legImg = 'home_news_' . $ai . '_image';
+          $imgVal = home_editor_val($sectionsArray, $imgKey, $legImg);
+          $titleVal = home_editor_val($sectionsArray, 'home_amenity_grid_' . $ai . '_title', 'home_news_' . $ai . '_title');
+          $descVal = $sectionsArray['home_amenity_grid_' . $ai . '_description'] ?? '';
+          if (trim((string)$descVal) === '' && isset($sectionsArray['home_news_' . $ai . '_description'])) {
+              $descVal = $sectionsArray['home_news_' . $ai . '_description'];
+          }
+          ?>
+      <div class="card card--nested" style="margin-top:16px;">
+        <div class="card-header"><h3>Card <?= (int)$ai ?></h3></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Image</label>
+            <button type="button" class="btn btn-outline" onclick="openMediaModal('<?= $imgKey ?>','<?= $imgKey ?>_preview')">Select</button>
+            <input type="hidden" id="<?= $imgKey ?>" name="<?= $imgKey ?>" value="<?= htmlspecialchars($imgVal, ENT_QUOTES, 'UTF-8') ?>">
+            <div id="<?= $imgKey ?>_preview" class="image-preview" style="<?= $imgVal !== '' ? 'display:block;' : 'display:none;' ?>">
+              <?php if ($imgVal !== ''): ?>
+                <img src="<?= SITE_URL . ltrim($imgVal, '/') ?>" style="max-width:400px;max-height:220px;" alt="">
+              <?php endif; ?>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="home_amenity_grid_<?= $ai ?>_title">Title</label>
+            <input id="home_amenity_grid_<?= $ai ?>_title" name="home_amenity_grid_<?= $ai ?>_title" type="text" value="<?= htmlspecialchars($titleVal, ENT_QUOTES, 'UTF-8') ?>">
+          </div>
+          <div class="form-group">
+            <label for="home_amenity_grid_<?= $ai ?>_description">Description</label>
+            <textarea id="home_amenity_grid_<?= $ai ?>_description" name="home_amenity_grid_<?= $ai ?>_description" rows="3"><?= htmlspecialchars((string)$descVal, ENT_QUOTES, 'UTF-8') ?></textarea>
+          </div>
+        </div>
+      </div>
+      <?php endfor; ?>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-header"><h2>Featured rooms strip</h2></div>
     <div style="padding:20px;">
       <p class="form-help">Cards are loaded from <strong>Rooms</strong> where <strong>Featured</strong> is checked. If none are featured, active rooms are shown instead.</p>
@@ -264,7 +329,10 @@ function hsec($sectionsArray, $key, $default = '') {
     home_philosophy_main_img: 'home_philosophy_main_preview',
     home_philosophy_secondary_img: 'home_philosophy_secondary_preview',
     home_arch_image: 'home_arch_preview',
-    home_dining_image: 'home_dining_preview'
+    home_dining_image: 'home_dining_preview',
+    home_amenity_grid_1_image: 'home_amenity_grid_1_image_preview',
+    home_amenity_grid_2_image: 'home_amenity_grid_2_image_preview',
+    home_amenity_grid_3_image: 'home_amenity_grid_3_image_preview'
   };
   function renderHeroSlidesStrip() {
     var input = document.getElementById('hero_bg_slides');
@@ -345,7 +413,7 @@ function hsec($sectionsArray, $key, $default = '') {
 document.getElementById('homepageForm').addEventListener('submit', function (e) {
   e.preventDefault();
   var form = this;
-  var typeOverrides = { hero_title: 'html', hero_bg_slides: 'json' };
+  var typeOverrides = { hero_title: 'html', hero_bg_slides: 'json', home_dining_body_html: 'html' };
   savePageForm(form, 'index', typeOverrides)
     .then(function () { showToast('Saved', 'success'); })
     .catch(function (err) { showToast(err.message || 'Save failed', 'error'); });

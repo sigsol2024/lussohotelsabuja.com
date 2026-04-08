@@ -549,7 +549,7 @@ button.is-saving {
 
 /* —— Media library page —— */
 .media-library-card {
-  overflow: hidden;
+  overflow: visible;
 }
 .media-library-card__head {
   align-items: flex-start;
@@ -694,14 +694,22 @@ button.is-saving {
   margin: 0 0 16px;
   font-size: 15px;
 }
+/* Grid: explicit columns (matches BlueOrange inline grid pattern; avoids single-column collapse) */
+#mediaViewGrid.media-grid,
 .media-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
   gap: 20px;
   padding: 20px 0 8px;
+  width: 100%;
+  align-items: start;
+  box-sizing: border-box;
 }
 .media-card {
   position: relative;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   overflow: hidden;
@@ -797,12 +805,6 @@ button.is-saving {
   border-radius: 6px;
   border: 1px solid var(--border-color);
   vertical-align: middle;
-}
-.media-table__path {
-  font-size: 11px;
-  word-break: break-all;
-  display: inline-block;
-  max-width: 280px;
 }
 .media-pagination {
   display: flex;

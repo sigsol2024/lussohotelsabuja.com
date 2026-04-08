@@ -55,6 +55,24 @@ function lusso_media_public_url($filePath) {
     return rtrim(SITE_URL, '/') . '/' . ltrim((string)$filePath, '/');
 }
 
+/** Short label for tables/cards (first N chars + ellipsis). */
+function lusso_media_label_short($name, $maxLen = 10) {
+    $s = (string)($name ?? '');
+    if ($s === '') {
+        return '';
+    }
+    if (function_exists('mb_strlen') && function_exists('mb_substr')) {
+        if (mb_strlen($s, 'UTF-8') > $maxLen) {
+            return mb_substr($s, 0, $maxLen, 'UTF-8') . '…';
+        }
+        return $s;
+    }
+    if (strlen($s) > $maxLen) {
+        return substr($s, 0, $maxLen) . '…';
+    }
+    return $s;
+}
+
 ?>
 
 <div class="card media-library-card">
@@ -128,7 +146,7 @@ function lusso_media_public_url($filePath) {
         $url = lusso_media_public_url($row['file_path'] ?? '');
         $id = (int)($row['id'] ?? 0);
         ?>
-        <article class="media-card" data-id="<?= $id ?>">
+        <div class="media-card" data-id="<?= $id ?>">
           <label class="media-card__select">
             <input type="checkbox" class="js-media-pick" name="media_pick[]" value="<?= $id ?>" data-url="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>">
             <span class="sr-only">Select</span>
@@ -137,7 +155,7 @@ function lusso_media_public_url($filePath) {
             <img src="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>" alt="" loading="lazy" width="280" height="280">
           </a>
           <div class="media-card__body">
-            <p class="media-card__name" title="<?= sanitize($row['original_name'] ?? '') ?>"><?= sanitize($row['original_name'] ?? '') ?></p>
+            <p class="media-card__name" title="<?= sanitize($row['original_name'] ?? '') ?>"><?= sanitize(lusso_media_label_short($row['original_name'] ?? '', 10)) ?></p>
             <p class="media-card__meta"><?= sanitize(formatFileSize((int)($row['file_size'] ?? 0))) ?></p>
             <div class="media-card__actions">
               <button type="button" class="btn btn-sm btn-outline js-media-copy" data-url="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>" title="Copy URL">
@@ -148,7 +166,7 @@ function lusso_media_public_url($filePath) {
               </button>
             </div>
           </div>
-        </article>
+        </div>
       <?php endforeach; ?>
     </div>
 
@@ -160,7 +178,6 @@ function lusso_media_public_url($filePath) {
               <th class="media-table__check"><span class="sr-only">Select</span></th>
               <th style="width:88px;">Preview</th>
               <th>Name</th>
-              <th>Path</th>
               <th>Size</th>
               <th>Uploaded</th>
               <th>By</th>
@@ -181,8 +198,7 @@ function lusso_media_public_url($filePath) {
                     <img src="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>" alt="" loading="lazy" width="64" height="64">
                   </a>
                 </td>
-                <td><?= sanitize($row['original_name'] ?? '') ?></td>
-                <td><code class="media-table__path"><?= sanitize($row['file_path'] ?? '') ?></code></td>
+                <td title="<?= sanitize($row['original_name'] ?? '') ?>"><?= sanitize(lusso_media_label_short($row['original_name'] ?? '', 10)) ?></td>
                 <td><?= sanitize(formatFileSize((int)($row['file_size'] ?? 0))) ?></td>
                 <td class="text-muted" style="white-space:nowrap;font-size:13px;"><?= sanitize($row['uploaded_at'] ?? '') ?></td>
                 <td class="text-muted" style="font-size:13px;"><?= sanitize($row['uploaded_by_name'] ?? '—') ?></td>

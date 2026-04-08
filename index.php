@@ -61,6 +61,45 @@ $dining_cta1_href = getPageSection('index', 'home_dining_cta1_href', '/dining');
 $dining_cta2 = getPageSection('index', 'home_dining_cta2', 'View Menu');
 $dining_cta2_href = getPageSection('index', 'home_dining_cta2_href', '/dining');
 
+// Homepage “amenities highlight” — three image cards (not news). New keys: home_amenity_grid_* ; legacy home_news_* still read if new keys empty.
+$amenity_grid_kicker = trim((string)getPageSection('index', 'home_amenity_grid_kicker', ''));
+if ($amenity_grid_kicker === '') {
+    $amenity_grid_kicker = trim((string)getPageSection('index', 'home_news_kicker', ''));
+}
+$amenity_grid_title = trim((string)getPageSection('index', 'home_amenity_grid_title', ''));
+if ($amenity_grid_title === '') {
+    $amenity_grid_title = trim((string)getPageSection('index', 'home_news_title', ''));
+}
+$amenity_grid_intro = trim((string)getPageSection('index', 'home_amenity_grid_intro', ''));
+$home_amenity_grid_cards = [];
+for ($ni = 1; $ni <= 3; $ni++) {
+    $img = trim((string)getPageSection('index', 'home_amenity_grid_' . $ni . '_image', ''));
+    $ttl = trim((string)getPageSection('index', 'home_amenity_grid_' . $ni . '_title', ''));
+    $desc = trim((string)getPageSection('index', 'home_amenity_grid_' . $ni . '_description', ''));
+    if ($img === '') {
+        $img = trim((string)getPageSection('index', 'home_news_' . $ni . '_image', ''));
+    }
+    if ($ttl === '') {
+        $ttl = trim((string)getPageSection('index', 'home_news_' . $ni . '_title', ''));
+    }
+    if ($desc === '') {
+        $desc = trim((string)getPageSection('index', 'home_news_' . $ni . '_description', ''));
+    }
+    $home_amenity_grid_cards[] = [
+        'image' => $img,
+        'title' => $ttl,
+        'description' => $desc,
+    ];
+}
+$hasAmenityGridCard = false;
+foreach ($home_amenity_grid_cards as $gc) {
+    if ($gc['image'] !== '' || $gc['title'] !== '' || $gc['description'] !== '') {
+        $hasAmenityGridCard = true;
+        break;
+    }
+}
+$showAmenityGridSection = ($amenity_grid_kicker !== '' || $amenity_grid_title !== '' || $amenity_grid_intro !== '' || $hasAmenityGridCard);
+
 $currency = getSiteSetting('currency_symbol', '$');
 $featuredRooms = getFeaturedRoomsForHome(12);
 ?>
@@ -74,7 +113,14 @@ $featuredRooms = getFeaturedRoomsForHome(12);
   <?php if (!empty($hasBookingBridge)): ?>
   <style>
     /* StayEazi / booking embed — normalize layout inside #booking-lusso (see BlueOrange pattern) */
-    #booking-lusso { width: 100% !important; }
+    #booking-lusso {
+      width: 100% !important;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(0, 0, 0, 0.07);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.07);
+    }
     #booking-lusso * { box-sizing: border-box; }
     #booking-lusso #booking-widget,
     #booking-lusso #booking-blueorange #booking-widget {
@@ -212,18 +258,16 @@ $featuredRooms = getFeaturedRoomsForHome(12);
 </section>
 
 <?php if ($hasBookingBridge): ?>
-<!-- Booking bridge: own stacking layer so the next section does not paint over the widget -->
-<div class="lusso-booking-bridge relative z-[60] w-full max-w-6xl mx-auto px-6 lg:px-12 -mt-16 sm:-mt-20 md:-mt-28 mb-10 md:mb-14">
-  <div class="rounded-xl bg-white/95 backdrop-blur-md border border-black/[0.08] shadow-elevation p-4 md:p-6 overflow-x-auto">
-    <div id="booking-lusso" class="w-full">
-      <?= $booking_widget_html ?>
-    </div>
+<!-- Booking bridge: sits below hero (no negative margin) so it does not cover the hero CTA -->
+<div class="lusso-booking-bridge relative z-[60] w-full max-w-6xl mx-auto px-6 lg:px-12 mt-4 md:mt-6 mb-10 md:mb-12">
+  <div id="booking-lusso" class="w-full overflow-x-auto py-1">
+    <?= $booking_widget_html ?>
   </div>
 </div>
 <?php endif; ?>
 
 <!-- Asymmetrical Editorial Section: The Lusso Standard -->
-<section class="relative z-10 w-full <?= $hasBookingBridge ? 'pt-12 md:pt-16 pb-24 md:pb-32' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
+<section class="relative z-10 w-full <?= $hasBookingBridge ? 'pt-8 md:pt-12 pb-24 md:pb-32' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
   <div class="absolute inset-0 opacity-[0.04] pointer-events-none" style="background-image: radial-gradient(#363636 1px, transparent 1px); background-size: 32px 32px;"></div>
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
     <div class="flex flex-col lg:flex-row items-stretch lg:items-start gap-12 lg:gap-0 mb-32 relative">
@@ -282,6 +326,49 @@ $featuredRooms = getFeaturedRoomsForHome(12);
     </div>
   </div>
 </section>
+
+<?php if ($showAmenityGridSection): ?>
+<!-- Amenities highlight: three cards, dark band (#282828) -->
+<section class="py-16 md:py-24 border-t border-white/5" style="background-color:#282828;">
+  <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
+    <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+      <?php if ($amenity_grid_kicker !== ''): ?>
+      <span class="text-white/65 text-xs md:text-sm font-bold uppercase tracking-[0.2em]"><?= e($amenity_grid_kicker) ?></span>
+      <?php endif; ?>
+      <?php if ($amenity_grid_title !== ''): ?>
+      <h2 class="font-serif text-3xl md:text-5xl text-white mt-3 md:mt-4 mb-5 leading-tight"><?= e($amenity_grid_title) ?></h2>
+      <?php endif; ?>
+      <div class="w-14 h-1 rounded-full mx-auto mb-6" style="background:linear-gradient(90deg, transparent, #c9a227, transparent);"></div>
+      <?php if ($amenity_grid_intro !== ''): ?>
+      <p class="text-white/75 text-base md:text-lg leading-relaxed"><?= e($amenity_grid_intro) ?></p>
+      <?php endif; ?>
+    </div>
+    <?php if ($hasAmenityGridCard): ?>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+      <?php foreach ($home_amenity_grid_cards as $ac):
+          if (trim($ac['image'] . $ac['title'] . $ac['description']) === '') {
+              continue;
+          }
+          $aimg = $ac['image'] !== '' ? lusso_media_src($ac['image']) : '';
+          ?>
+      <article class="flex flex-col rounded-xl overflow-hidden border border-white/10 bg-white/[0.04] shadow-lg shadow-black/20">
+        <div class="aspect-[4/3] bg-white/5 bg-cover bg-center" data-alt="<?= e($ac['title']) ?>"
+             <?php if ($aimg !== ''): ?>style="background-image: url('<?= e($aimg) ?>');"<?php endif; ?>></div>
+        <div class="p-6 md:p-7 flex-1 flex flex-col">
+          <?php if ($ac['title'] !== ''): ?>
+          <h3 class="font-serif text-xl md:text-2xl text-white mb-3 leading-snug"><?= e($ac['title']) ?></h3>
+          <?php endif; ?>
+          <?php if ($ac['description'] !== ''): ?>
+          <p class="text-white/70 text-sm md:text-base leading-relaxed flex-1"><?= e($ac['description']) ?></p>
+          <?php endif; ?>
+        </div>
+      </article>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+  </div>
+</section>
+<?php endif; ?>
 
 <!-- Featured rooms (CMS: mark rooms Featured in admin) -->
 <section class="py-24 bg-white relative">

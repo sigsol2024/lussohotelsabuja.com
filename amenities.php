@@ -61,8 +61,8 @@ function amenities_body_class($layout) {
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #221d10; }
     ::-webkit-scrollbar-thumb { background: #411d13; border-radius: 4px; }
-    .amenity-section { scroll-snap-align: start; }
-    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+    .amenity-section { scroll-snap-align: start; scroll-snap-stop: normal; }
+    html { scroll-snap-type: y proximity; scroll-behavior: smooth; }
     .text-outline { text-shadow: 0px 0px 1px rgba(255,255,255,0.3); }
   </style>
 </head>
@@ -122,17 +122,6 @@ function amenities_body_class($layout) {
     </div>
   </section>
   <?php endforeach; ?>
-
-  <footer class="bg-background-dark text-white/40 py-8 px-10 text-center text-xs tracking-widest uppercase border-t border-white/5">
-    <div class="flex flex-col md:flex-row justify-between items-center max-w-[1920px] mx-auto gap-4">
-      <p>© <?= date('Y') ?> Lusso Hotels Abuja. All Rights Reserved.</p>
-      <div class="flex gap-6">
-        <a class="hover:text-primary transition-colors" href="#">Privacy</a>
-        <a class="hover:text-primary transition-colors" href="#">Terms</a>
-        <a class="hover:text-primary transition-colors" href="#">Press</a>
-      </div>
-    </div>
-  </footer>
 </main>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

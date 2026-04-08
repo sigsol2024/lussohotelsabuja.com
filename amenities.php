@@ -66,9 +66,10 @@ function amenities_body_class($layout) {
     .text-outline { text-shadow: 0px 0px 1px rgba(255,255,255,0.3); }
     .lusso-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); display:none; z-index: 9999; }
     .lusso-modal-backdrop.open { display: flex; }
-    /* Prevent modal from exceeding viewport height */
-    .lusso-amenities-modal-panel { max-height: 90vh; }
-    .lusso-amenities-modal-body { min-height: 0; }
+    /* Prevent modal from exceeding viewport height.
+       Use an explicit height so the main image area doesn't collapse (absolute children don't size parents). */
+    .lusso-amenities-modal-panel { height: 90vh; max-height: 90vh; }
+    .lusso-amenities-modal-body { min-height: 280px; }
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display antialiased overflow-x-hidden">

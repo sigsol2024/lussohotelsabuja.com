@@ -112,15 +112,19 @@ $featuredRooms = getFeaturedRoomsForHome(12);
   <?php require_once __DIR__ . '/includes/head-header.php'; ?>
   <?php if (!empty($hasBookingBridge)): ?>
   <style>
-    /* StayEazi / booking embed — normalize layout inside #booking-lusso (see BlueOrange pattern) */
-    #booking-lusso {
+    /* Booking embed — NO extra wrapper from us.
+       We style either the provider wrapper (#booking-lusso) if present,
+       or the provider widget/form ids directly (BlueOrange pattern). */
+    #booking-lusso,
+    #booking-widget,
+    #booking-blueorange #booking-widget,
+    #booking-form,
+    #booking-blueorange #booking-form {
       position: relative;
       z-index: 60;
       max-width: 72rem; /* ~max-w-6xl */
       margin-left: auto;
       margin-right: auto;
-      padding-left: 1.5rem; /* ~px-6 */
-      padding-right: 1.5rem;
       margin-top: 0.5rem;
       margin-bottom: 2rem;
       width: 100% !important;
@@ -132,12 +136,26 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       overflow-x: auto;
     }
     @media (min-width: 1024px) {
-      #booking-lusso { padding-left: 3rem; padding-right: 3rem; } /* ~lg:px-12 */
+      #booking-lusso,
+      #booking-widget,
+      #booking-blueorange #booking-widget,
+      #booking-form,
+      #booking-blueorange #booking-form {
+        padding-left: 3rem; padding-right: 3rem; /* ~lg:px-12 */
+      }
     }
     @media (min-width: 768px) {
-      #booking-lusso { margin-top: 0.75rem; margin-bottom: 2.5rem; }
+      #booking-lusso,
+      #booking-widget,
+      #booking-blueorange #booking-widget,
+      #booking-form,
+      #booking-blueorange #booking-form {
+        margin-top: 0.75rem; margin-bottom: 2.5rem;
+      }
     }
-    #booking-lusso * { box-sizing: border-box; }
+    #booking-lusso *,
+    #booking-widget *,
+    #booking-form * { box-sizing: border-box; }
     #booking-lusso #booking-widget,
     #booking-lusso #booking-blueorange #booking-widget {
       margin: 0 !important; padding: 0 !important; border: 0 !important;
@@ -150,8 +168,19 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       align-items: flex-end !important; justify-content: space-between !important;
       padding: 0 !important; margin: 0 !important; width: 100% !important;
     }
+    /* If the provider does NOT include #booking-lusso, but does include these ids */
+    #booking-form,
+    #booking-blueorange #booking-form {
+      display: flex !important; flex-wrap: wrap !important; gap: 10px !important;
+      align-items: flex-end !important; justify-content: space-between !important;
+    }
     #booking-lusso #booking-form > div,
     #booking-lusso #booking-blueorange #booking-form > div {
+      width: auto !important; min-width: 140px !important;
+      flex: 1 1 160px !important; margin: 0 !important;
+    }
+    #booking-form > div,
+    #booking-blueorange #booking-form > div {
       width: auto !important; min-width: 140px !important;
       flex: 1 1 160px !important; margin: 0 !important;
     }
@@ -161,8 +190,22 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       letter-spacing: 0.06em !important; text-transform: uppercase !important;
       margin-bottom: 6px !important; color: #363636 !important;
     }
+    #booking-form label,
+    #booking-blueorange #booking-form label {
+      font-size: 11px !important; font-weight: 700 !important;
+      letter-spacing: 0.06em !important; text-transform: uppercase !important;
+      margin-bottom: 6px !important; color: #363636 !important;
+    }
     #booking-lusso #booking-form input,
     #booking-lusso #booking-blueorange #booking-form input {
+      width: 100% !important; min-height: 44px !important;
+      padding: 10px 12px !important; border: 1px solid #d8d0bc !important;
+      border-radius: 10px !important; background: #fff !important; color: #363636 !important;
+    }
+    #booking-form input,
+    #booking-blueorange #booking-form input,
+    #booking-form select,
+    #booking-blueorange #booking-form select {
       width: 100% !important; min-height: 44px !important;
       padding: 10px 12px !important; border: 1px solid #d8d0bc !important;
       border-radius: 10px !important; background: #fff !important; color: #363636 !important;
@@ -174,17 +217,34 @@ $featuredRooms = getFeaturedRoomsForHome(12);
       background: #411d13 !important; color: #fff !important;
       font-weight: 700 !important; cursor: pointer !important;
     }
+    #booking-form button,
+    #booking-blueorange #booking-form button {
+      width: 100% !important; min-height: 44px !important; margin-top: 0 !important;
+      border: 0 !important; border-radius: 10px !important;
+      background: #411d13 !important; color: #fff !important;
+      font-weight: 700 !important; cursor: pointer !important;
+    }
     #booking-lusso #booking-form button:hover,
     #booking-lusso #booking-blueorange #booking-form button:hover {
       background: #5a2a1f !important;
     }
+    #booking-form button:hover,
+    #booking-blueorange #booking-form button:hover { background: #5a2a1f !important; }
     @media (max-width: 1024px) {
       #booking-lusso #booking-form,
       #booking-lusso #booking-blueorange #booking-form {
         flex-direction: column !important; align-items: stretch !important;
       }
+      #booking-form,
+      #booking-blueorange #booking-form {
+        flex-direction: column !important; align-items: stretch !important;
+      }
       #booking-lusso #booking-form > div,
       #booking-lusso #booking-blueorange #booking-form > div {
+        min-width: 100% !important; flex: 1 1 100% !important;
+      }
+      #booking-form > div,
+      #booking-blueorange #booking-form > div {
         min-width: 100% !important; flex: 1 1 100% !important;
       }
     }
@@ -274,10 +334,8 @@ $featuredRooms = getFeaturedRoomsForHome(12);
 </section>
 
 <?php if ($hasBookingBridge): ?>
-<!-- Booking bridge: single container (#booking-lusso) — sits below hero -->
-<div id="booking-lusso">
-  <?= $booking_widget_html ?>
-</div>
+<!-- Booking bridge: render provider HTML as-is (no wrapper) -->
+<?= $booking_widget_html ?>
 <?php endif; ?>
 
 <!-- Asymmetrical Editorial Section: The Lusso Standard -->

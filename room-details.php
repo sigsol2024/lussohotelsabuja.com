@@ -55,7 +55,6 @@ if ($conceptQuote !== '' && !preg_match('/^["«]/u', $conceptQuote)) {
 
 $size = trim((string)($room['size'] ?? ''));
 $maxGuests = (int)($room['max_guests'] ?? 0);
-$location = trim((string)($room['location'] ?? ''));
 
 $featuresRaw = $room['features'] ?? [];
 $features = [];
@@ -84,23 +83,17 @@ foreach ($features as $f) {
     }
 }
 
+$featureChips = array_values(array_filter(array_map(static function ($s) {
+    return is_string($s) ? trim($s) : '';
+}, $features), static fn ($x) => $x !== ''));
+$featureChips = array_values(array_unique($featureChips));
+
 $includedItems = is_array($room['included_items'] ?? null) ? $room['included_items'] : [];
 $includedItems = array_values(array_filter(array_map(function ($i) {
     return is_string($i) ? trim($i) : '';
 }, $includedItems), fn ($x) => $x !== ''));
 
-$gtk = $room['good_to_know'] ?? [];
-if (!is_array($gtk)) {
-    $gtk = [];
-}
-$checkIn = trim((string)($gtk['check_in'] ?? ''));
-$checkOut = trim((string)($gtk['check_out'] ?? ''));
-$floorplanUrl = trim((string)($gtk['floorplan_url'] ?? ''));
-$floorplanLabel = trim((string)($gtk['floorplan_label'] ?? ''));
-if ($floorplanLabel === '') {
-    $floorplanLabel = 'Floorplan';
-}
-$tourUrl = trim(htmlspecialchars_decode((string)($gtk['tour_url'] ?? ''), ENT_QUOTES));
+// Legacy guest info (good_to_know) removed from public page.
 
 $amenitiesRaw = is_array($room['amenities'] ?? null) ? $room['amenities'] : [];
 $amenityCards = [];
@@ -118,11 +111,6 @@ foreach ($amenitiesRaw as $a) {
             'desc' => trim((string)($a['description'] ?? $a['desc'] ?? 'Included')),
         ];
     }
-}
-
-$amenitiesIntro = trim((string)($room['urgency_message'] ?? ''));
-if ($amenitiesIntro === '') {
-    $amenitiesIntro = 'Every detail is selected to provide the utmost in comfort, technology, and privacy.';
 }
 
 $bookUrl = htmlspecialchars_decode((string)($room['book_url'] ?? ''), ENT_QUOTES);
@@ -182,13 +170,6 @@ $occupancyLabel = $maxGuests > 0
           <span class="material-symbols-outlined text-lg">arrow_forward</span>
         </a>
         <?php endif; ?>
-        <?php if ($tourUrl !== ''): ?>
-        <a class="h-12 px-8 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 rounded-lg text-sm font-bold tracking-wide transition-all flex items-center gap-2"
-           href="<?= e($tourUrl) ?>" target="_blank" rel="noopener noreferrer">
-          <span class="material-symbols-outlined text-lg">play_circle</span>
-          <span>Watch Tour</span>
-        </a>
-        <?php endif; ?>
       </div>
     </div>
     <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 animate-bounce text-white/70">
@@ -214,11 +195,6 @@ $occupancyLabel = $maxGuests > 0
           <div class="w-full min-h-[300px] h-full bg-cover bg-center"
                data-alt="<?= e($title) ?>"
                style="background-image: url('<?= e($stickyImage) ?>');"></div>
-          <?php if ($floorplanLabel !== ''): ?>
-          <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur px-4 py-2 rounded">
-            <p class="text-xs font-bold tracking-wider uppercase text-text-main"><?= e($floorplanLabel) ?></p>
-          </div>
-          <?php endif; ?>
         </div>
       </div>
 
@@ -231,6 +207,14 @@ $occupancyLabel = $maxGuests > 0
           <h3 class="text-4xl font-medium text-text-main">The Space</h3>
           <?php if ($spacePara !== ''): ?>
           <p class="text-lg leading-relaxed text-[#5a5445]"><?= nl2br(e($spacePara)) ?></p>
+          <?php endif; ?>
+
+          <?php if (!empty($featureChips)): ?>
+          <div class="mt-6 flex flex-wrap gap-2">
+            <?php foreach (array_slice($featureChips, 0, 10) as $chip): ?>
+              <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-[#e5e5e5] bg-white/70"><?= e($chip) ?></span>
+            <?php endforeach; ?>
+          </div>
           <?php endif; ?>
           <ul class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4 border-t border-[#e5e5e5] pt-6">
             <li class="flex flex-col gap-1">
@@ -250,12 +234,6 @@ $occupancyLabel = $maxGuests > 0
               <span class="font-bold text-text-main"><?= e($bed !== '' ? $bed : '—') ?></span>
             </li>
           </ul>
-          <?php if ($floorplanUrl !== ''): ?>
-          <a class="mt-4 w-fit text-sm font-bold border-b-2 border-primary pb-1 hover:text-primary transition-colors flex items-center gap-2"
-             href="<?= e($floorplanUrl) ?>" target="_blank" rel="noopener noreferrer">
-            View Floorplan <span class="material-symbols-outlined text-base">open_in_new</span>
-          </a>
-          <?php endif; ?>
         </div>
 
         <?php if ($mobileDividerImage !== ''): ?>
@@ -304,9 +282,6 @@ $occupancyLabel = $maxGuests > 0
           <span class="text-primary text-xs font-bold tracking-[0.2em] uppercase block mb-3">Curated Comforts</span>
           <h3 class="text-4xl md:text-5xl font-light">Refined Amenities</h3>
         </div>
-        <p class="text-white/60 max-w-md text-sm leading-relaxed">
-          <?= e($amenitiesIntro) ?>
-        </p>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
         <?php foreach (array_slice($amenityCards, 0, 12) as $card): ?>
@@ -368,22 +343,6 @@ $occupancyLabel = $maxGuests > 0
         <span class="text-sm text-text-muted">/ Night</span>
       </div>
     </div>
-    <?php if ($checkIn !== '' || $checkOut !== ''): ?>
-    <div class="hidden md:flex flex-1 max-w-md mx-8 items-center justify-between bg-background-light rounded-lg px-4 py-2 border border-sand-darker cursor-default">
-      <div class="flex items-center gap-3">
-        <span class="material-symbols-outlined text-text-muted">calendar_month</span>
-        <div class="flex flex-col">
-          <span class="text-[10px] text-text-muted uppercase font-bold tracking-wide">Check In</span>
-          <span class="text-sm font-semibold text-text-main"><?= e($checkIn !== '' ? $checkIn : '—') ?></span>
-        </div>
-      </div>
-      <div class="w-[1px] h-8 bg-sand-darker"></div>
-      <div class="flex flex-col text-right">
-        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wide">Check Out</span>
-        <span class="text-sm font-semibold text-text-main"><?= e($checkOut !== '' ? $checkOut : '—') ?></span>
-      </div>
-    </div>
-    <?php endif; ?>
     <a class="h-12 px-6 md:px-10 shrink-0 bg-primary hover:bg-primary-light text-white rounded-lg text-sm md:text-base font-bold tracking-wide transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
        href="<?= e($bookUrl) ?>">
       <span>Reserve</span>

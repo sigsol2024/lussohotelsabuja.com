@@ -358,7 +358,17 @@ function insertSelectedMedia() {
 
   const first = selected[0];
   const input = document.getElementById(mediaModalState.targetInputId);
-  if (input) input.value = mediaModalState.allowMultiple && selected.length > 1 ? JSON.stringify(selected.map(s => s.path)) : first.path;
+  if (input) {
+    input.value = mediaModalState.allowMultiple && selected.length > 1
+      ? JSON.stringify(selected.map(s => s.path))
+      : first.path;
+    // IMPORTANT: many page editors sync hidden JSON on input/change events.
+    // When we set values programmatically, dispatch events so those editors persist selections.
+    try {
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    } catch (e) {}
+  }
 
   const preview = mediaModalState.targetPreviewId ? document.getElementById(mediaModalState.targetPreviewId) : null;
   if (preview) {

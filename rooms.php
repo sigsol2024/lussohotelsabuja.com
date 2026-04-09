@@ -80,6 +80,9 @@ $rooms = getRooms(['is_active' => 1]);
             if (is_array($f) && !empty($f['title'])) $features[] = (string)$f['title'];
           }
         }
+        $features = array_values(array_unique(array_values(array_filter(array_map(static function ($s) {
+          return is_string($s) ? trim($s) : '';
+        }, $features), static fn ($x) => $x !== ''))));
         foreach ($features as $f) {
           $lf = strtolower($f);
           if (!$bed && (str_contains($lf, 'bed') || str_contains($lf, 'king'))) $bed = $f;
@@ -120,6 +123,14 @@ $rooms = getRooms(['is_active' => 1]);
               <span class="text-sm font-medium uppercase tracking-wider text-text-main"><?= e($wifi) ?></span>
             </div>
           </div>
+
+          <?php if (!empty($features)): ?>
+          <div class="flex flex-wrap gap-2 mb-8 <?= $reverse ? 'justify-end' : '' ?>">
+            <?php foreach (array_slice($features, 0, 6) as $chip): ?>
+              <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-primary/20 text-text-main bg-white/60"><?= e($chip) ?></span>
+            <?php endforeach; ?>
+          </div>
+          <?php endif; ?>
 
           <a class="inline-flex items-center justify-center px-8 py-3 border border-primary/50 text-primary font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-primary hover:text-white transition-all duration-300 w-fit"
              href="<?= e(lusso_url('room-details', ['slug' => $slug])) ?>">

@@ -61,12 +61,6 @@ if ($id) {
   } catch (PDOException $e) {}
 }
 
-$gtk = is_array($room['good_to_know'] ?? null) ? $room['good_to_know'] : [];
-$gtkCheckIn = (string)($gtk['check_in'] ?? '');
-$gtkCheckOut = (string)($gtk['check_out'] ?? '');
-$gtkFloorplanUrl = (string)($gtk['floorplan_url'] ?? '');
-$gtkFloorplanLabel = (string)($gtk['floorplan_label'] ?? '');
-$gtkTourUrl = (string)($gtk['tour_url'] ?? '');
 
 require_once dirname(__DIR__, 3) . '/includes/url.php';
 $roomPublicUrlBase = rtrim((string)(defined('SITE_URL') ? SITE_URL : ''), '/');
@@ -106,10 +100,6 @@ $roomPublicUrlBase = rtrim((string)(defined('SITE_URL') ? SITE_URL : ''), '/');
           <label for="room_type">Room type (hero accent, e.g. Suite)</label>
           <input id="room_type" name="room_type" type="text" value="<?= sanitize($room['room_type'] ?? '') ?>" placeholder="Suite">
         </div>
-        <div class="form-group">
-          <label for="urgency_message">Amenities intro copy (optional)</label>
-          <input id="urgency_message" name="urgency_message" type="text" value="<?= sanitize($room['urgency_message'] ?? '') ?>" placeholder="Shown beside Refined Amenities heading">
-        </div>
       </div>
 
       <div class="form-row">
@@ -134,15 +124,9 @@ $roomPublicUrlBase = rtrim((string)(defined('SITE_URL') ? SITE_URL : ''), '/');
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="location">Location text</label>
-          <input id="location" name="location" type="text" value="<?= sanitize($room['location']) ?>">
-        </div>
-        <div class="form-group">
-          <label for="book_url">Book URL</label>
-          <input id="book_url" name="book_url" type="text" value="<?= sanitize($room['book_url']) ?>">
-        </div>
+      <div class="form-group">
+        <label for="book_url">Book URL</label>
+        <input id="book_url" name="book_url" type="text" value="<?= sanitize($room['book_url']) ?>">
       </div>
 
       <div class="form-group">
@@ -152,36 +136,6 @@ $roomPublicUrlBase = rtrim((string)(defined('SITE_URL') ? SITE_URL : ''), '/');
       <div class="form-group">
         <label for="description">Description (first block = “The Space”, second block after blank line = “The Experience”)</label>
         <textarea id="description" name="description" rows="8"><?= sanitize($room['description']) ?></textarea>
-      </div>
-
-      <div class="card card--nested">
-        <div class="card-header"><h3>Guest info &amp; links</h3></div>
-        <div class="card-body card-body--stack">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="gtk_check_in">Check-in hint (booking bar)</label>
-              <input id="gtk_check_in" type="text" value="<?= sanitize($gtkCheckIn) ?>" placeholder="Oct 24, 2023">
-            </div>
-            <div class="form-group">
-              <label for="gtk_check_out">Check-out hint</label>
-              <input id="gtk_check_out" type="text" value="<?= sanitize($gtkCheckOut) ?>" placeholder="Oct 28, 2023">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="gtk_floorplan_url">Floorplan URL (optional)</label>
-              <input id="gtk_floorplan_url" type="text" value="<?= sanitize($gtkFloorplanUrl) ?>">
-            </div>
-            <div class="form-group">
-              <label for="gtk_floorplan_label">Floorplan label on image</label>
-              <input id="gtk_floorplan_label" type="text" value="<?= sanitize($gtkFloorplanLabel) ?>" placeholder="Presidential Floorplan">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="gtk_tour_url">Virtual tour / video URL (optional)</label>
-            <input id="gtk_tour_url" type="text" value="<?= sanitize($gtkTourUrl) ?>" placeholder="https://…">
-          </div>
-        </div>
       </div>
 
       <div class="form-row">
@@ -221,7 +175,7 @@ $roomPublicUrlBase = rtrim((string)(defined('SITE_URL') ? SITE_URL : ''), '/');
       <div class="card card--nested" style="margin-top: 1rem;">
         <div class="card-header"><h3>Listing highlights</h3></div>
         <div class="card-body card-body--stack">
-          <p class="form-help">Short labels used on the rooms listing (size, bed, view, etc.).</p>
+          <p class="form-help">Short labels shown as highlights on the Rooms listing and Room details pages (e.g. King bed, City view, 45 SQM).</p>
           <div id="features-container">
             <?php
             $featList = $room['features'] ?? [];
@@ -604,12 +558,10 @@ document.getElementById('roomForm').addEventListener('submit', function(e){
     title: document.getElementById('title').value,
     slug: document.getElementById('slug').value,
     room_type: document.getElementById('room_type').value,
-    urgency_message: document.getElementById('urgency_message').value,
     price: document.getElementById('price').value,
     display_order: document.getElementById('display_order').value,
     size: document.getElementById('size').value,
     max_guests: document.getElementById('max_guests').value,
-    location: document.getElementById('location').value,
     book_url: document.getElementById('book_url').value,
     short_description: document.getElementById('short_description').value,
     description: document.getElementById('description').value,
@@ -618,13 +570,7 @@ document.getElementById('roomForm').addEventListener('submit', function(e){
     features: lussoCollectFeatures(),
     amenities: lussoCollectAmenities(),
     included_items: lussoCollectIncluded(),
-    good_to_know: {
-      check_in: document.getElementById('gtk_check_in').value,
-      check_out: document.getElementById('gtk_check_out').value,
-      floorplan_url: document.getElementById('gtk_floorplan_url').value,
-      floorplan_label: document.getElementById('gtk_floorplan_label').value,
-      tour_url: document.getElementById('gtk_tour_url').value
-    },
+    good_to_know: {},
     is_active: document.getElementById('is_active').checked ? 1 : 0,
     is_featured: document.getElementById('is_featured').checked ? 1 : 0
   };

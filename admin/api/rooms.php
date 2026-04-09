@@ -113,9 +113,7 @@ try {
             $includedItems = json_encode($data['included_items'] ?? []);
             $goodToKnowRaw = $data['good_to_know'] ?? [];
             $goodToKnow = is_array($goodToKnowRaw) ? $goodToKnowRaw : [];
-            $goodToKnow = array_intersect_key($goodToKnow, array_flip([
-                'check_in', 'check_out', 'pets', 'floorplan_url', 'floorplan_label', 'tour_url',
-            ]));
+            $goodToKnow = array_intersect_key($goodToKnow, array_flip([]));
             foreach ($goodToKnow as $k => $v) {
                 if (is_string($v)) {
                     $goodToKnow[$k] = trim($v);
@@ -179,9 +177,7 @@ try {
             $includedItems = json_encode($data['included_items'] ?? []);
             $goodToKnowRaw = $data['good_to_know'] ?? [];
             $goodToKnow = is_array($goodToKnowRaw) ? $goodToKnowRaw : [];
-            $goodToKnow = array_intersect_key($goodToKnow, array_flip([
-                'check_in', 'check_out', 'pets', 'floorplan_url', 'floorplan_label', 'tour_url',
-            ]));
+            $goodToKnow = array_intersect_key($goodToKnow, array_flip([]));
             foreach ($goodToKnow as $k => $v) {
                 if (is_string($v)) {
                     $goodToKnow[$k] = trim($v);

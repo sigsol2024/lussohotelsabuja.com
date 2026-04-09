@@ -123,9 +123,9 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
   </div>
 </section>
 
-<section class="py-24 lg:py-32 relative bg-texture-pattern bg-fixed">
+<section class="py-[25px] relative bg-texture-pattern bg-fixed">
   <div class="container mx-auto px-6 lg:px-12 relative">
-    <div class="text-center mb-20">
+    <div class="text-center py-0 mb-7">
       <span class="text-primary text-xs font-bold tracking-widest uppercase mb-3 block"><?= e($values_kicker) ?></span>
       <h3 class="text-3xl md:text-4xl font-bold text-text-main dark:text-white"><?= e($values_title) ?></h3>
     </div>
@@ -225,7 +225,7 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
 </section>
 <?php endif; ?>
 
-<section class="w-full h-[400px] md:h-[600px] relative bg-fixed bg-center bg-cover" style='background-image: url("<?= e($parallax_bg) ?>");'>
+<section class="w-full h-[400px] md:h-[601px] relative bg-fixed bg-center bg-cover" style='background-image: url("<?= e($parallax_bg) ?>");'>
   <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
     <h2 class="text-white text-3xl md:text-5xl font-light italic tracking-tight"><?= e($parallax_quote) ?></h2>
   </div>

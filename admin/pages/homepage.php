@@ -78,6 +78,11 @@ function home_editor_val($sectionsArray, $primaryKey, $legacyKey = '') {
         </div>
         <div id="hero_slides_strip" class="image-preview" style="display:block;margin-top:10px;"></div>
       </div>
+      <div class="form-group">
+        <label for="hero_youtube_url">Hero YouTube video URL (optional)</label>
+        <input id="hero_youtube_url" name="hero_youtube_url" type="text" value="<?= hsec($sectionsArray, 'hero_youtube_url', '') ?>" placeholder="https://www.youtube.com/watch?v=VIDEO_ID or https://youtu.be/VIDEO_ID">
+        <p class="form-help">If set, the YouTube video plays as the hero background. If empty, the hero uses the slide gallery above; if that is empty, it falls back to <strong>Hero Background</strong>.</p>
+      </div>
       <div class="form-row">
         <div class="form-group">
           <label for="hero_cta_text">CTA Text</label>

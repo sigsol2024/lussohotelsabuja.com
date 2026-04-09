@@ -61,6 +61,7 @@ $pageSections = [
     ['index', 'hero_cta_href', 'text', '/rooms'],
     ['index', 'hero_bg', 'image', 'https://lh3.googleusercontent.com/aida-public/AB6AXuA09AOzJGi3HFlO4iws6G405bZGiytnUaZEFTya_spJrXDa5fTKSrBScsDkxZAQCuS6ae2mJpC0laUldei8amf2jOsK9UIg9NX305aHkrG5uIMWhPQ-1e4r8CAydwyR5KzlbYjN4mWRnao2gNBHBrofxEv7u5nEs6wpDuCE4GwvUSepjITkua6sUOfXNKlnd3aW_eBFeHSCedk94uypJTs6palB8AtN0hFG3qGsOckYndru2W3fVdobc9Goi1Jn_x4wNASClu7QbTw'],
     ['index', 'hero_bg_slides', 'json', '[]'],
+    ['index', 'hero_youtube_url', 'text', ''],
     ['index', 'home_philosophy_kicker', 'text', 'Our Philosophy'],
     ['index', 'home_philosophy_title_html', 'html', 'The Lusso <br/> Standard'],
     ['index', 'home_philosophy_body', 'text', 'A sanctuary where modern elegance meets timeless hospitality. Every detail is curated for the discerning traveler, offering an escape into a world of refined comfort and understated opulence.'],

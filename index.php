@@ -28,6 +28,16 @@ if (count($hero_slide_paths) === 0) {
     $hero_slide_paths = [$hero_bg];
 }
 
+$hero_youtube_url = getPageSection('index', 'hero_youtube_url', '');
+$youtubeVideoId = '';
+if (trim((string)$hero_youtube_url) !== '') {
+    // watch?v=, youtu.be/, embed/, shorts/
+    if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', (string)$hero_youtube_url, $m)) {
+        $youtubeVideoId = $m[1];
+    }
+}
+$hasHeroYoutube = ($youtubeVideoId !== '');
+
 // Booking / calendar embed (paste HTML from admin homepage editor — bridges hero → next section)
 $booking_widget_html = getPageSection('index', 'booking_widget_html', '');
 $hasBookingBridge = trim((string)$booking_widget_html) !== '';
@@ -259,6 +269,18 @@ $featuredRooms = getFeaturedRoomsForHome(5);
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
 <style>
+  /* Homepage hero YouTube background (cover-fit like a background image) */
+  #lusso-hero-youtube {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 100vw !important;
+    height: 56.25vw !important; /* 16:9 */
+    min-width: 177.77vh !important;
+    min-height: 100vh !important;
+    transform: translate(-50%, -50%) !important;
+    pointer-events: none !important;
+  }
   /* In-viewport reveal animations (lightweight, no dependencies) */
   @media (prefers-reduced-motion: reduce) {
     [data-lusso-inview] { opacity: 1 !important; transform: none !important; transition: none !important; animation: none !important; }
@@ -287,14 +309,29 @@ $featuredRooms = getFeaturedRoomsForHome(5);
   <!-- Cinematic Hero Section -->
   <header class="relative w-full h-screen min-h-[600px] overflow-hidden group" id="lusso-home-hero">
     <div class="absolute inset-0 overflow-hidden">
-      <?php foreach ($hero_slide_paths as $si => $slidePath): ?>
-        <?php $slideUrl = lusso_media_src($slidePath); ?>
-      <div class="hero-bg-slide absolute inset-0 bg-cover bg-center transition-opacity duration-[1200ms] ease-in-out group-hover:scale-105 <?= $si === 0 ? 'opacity-100 z-[1]' : 'opacity-0 z-0' ?>"
-           data-slide-index="<?= (int)$si ?>"
-           data-alt="Hero background"
-           style="background-image: url('<?= e($slideUrl) ?>');">
-      </div>
-      <?php endforeach; ?>
+      <?php if ($hasHeroYoutube): ?>
+        <?php $heroPosterUrl = lusso_media_src($hero_slide_paths[0] ?? $hero_bg); ?>
+        <div class="absolute inset-0 bg-cover bg-center z-0" data-alt="Hero background" style="background-image: url('<?= e($heroPosterUrl) ?>');"></div>
+        <iframe
+          id="lusso-hero-youtube"
+          class="z-[1]"
+          src="https://www.youtube-nocookie.com/embed/<?= e($youtubeVideoId) ?>?autoplay=1&mute=1&controls=0&loop=1&playlist=<?= e($youtubeVideoId) ?>&modestbranding=1&rel=0&playsinline=1"
+          title="Hero video"
+          frameborder="0"
+          loading="eager"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="autoplay; encrypted-media; picture-in-picture"
+        ></iframe>
+      <?php else: ?>
+        <?php foreach ($hero_slide_paths as $si => $slidePath): ?>
+          <?php $slideUrl = lusso_media_src($slidePath); ?>
+        <div class="hero-bg-slide absolute inset-0 bg-cover bg-center transition-opacity duration-[1200ms] ease-in-out group-hover:scale-105 <?= $si === 0 ? 'opacity-100 z-[1]' : 'opacity-0 z-0' ?>"
+             data-slide-index="<?= (int)$si ?>"
+             data-alt="Hero background"
+             style="background-image: url('<?= e($slideUrl) ?>');">
+        </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </div>
     <div class="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-black/75 z-[5] pointer-events-none"></div>
 
@@ -341,7 +378,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
     }
   })();
   </script>
-  <?php if (count($hero_slide_paths) > 1): ?>
+  <?php if (!$hasHeroYoutube && count($hero_slide_paths) > 1): ?>
   <script>
   (function () {
     var root = document.getElementById('lusso-home-hero');
@@ -368,7 +405,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
 <?php endif; ?>
 
 <!-- Asymmetrical Editorial Section: The Lusso Standard -->
-<section class="relative z-10 w-full <?= $hasBookingBridge ? 'pt-8 md:pt-12 pb-24 md:pb-32' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
+<section class="relative z-10 w-full <?= $hasBookingBridge ? 'pt-8 md:pt-12 pb-24 md:pb-[69px]' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
   <div class="absolute inset-0 opacity-[0.04] pointer-events-none" style="background-image: radial-gradient(#363636 1px, transparent 1px); background-size: 32px 32px;"></div>
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
     <div class="flex flex-col lg:flex-row items-stretch lg:items-start gap-12 lg:gap-0 mb-32 relative">

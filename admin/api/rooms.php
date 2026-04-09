@@ -88,6 +88,40 @@ try {
                 jsonResponse(['success' => false, 'message' => 'Invalid JSON'], 400);
             }
 
+            if (!empty($data['normalize_display_order'])) {
+                $pdo->beginTransaction();
+                $rows = $pdo->query("SELECT id, display_order FROM rooms ORDER BY (display_order = 0) ASC, display_order ASC, id ASC")->fetchAll(PDO::FETCH_ASSOC);
+                $used = [];
+                $nextFree = 1;
+                $changed = 0;
+                $updates = $pdo->prepare("UPDATE rooms SET display_order = ? WHERE id = ?");
+
+                foreach ($rows as $row) {
+                    $id = (int)($row['id'] ?? 0);
+                    $cur = (int)($row['display_order'] ?? 0);
+                    if ($id < 1) continue;
+
+                    if ($cur > 0 && empty($used[$cur])) {
+                        $used[$cur] = true;
+                        continue;
+                    }
+
+                    while (isset($used[$nextFree])) {
+                        $nextFree++;
+                        if ($nextFree > 1000000) break;
+                    }
+                    $assigned = $nextFree;
+                    $used[$assigned] = true;
+                    $nextFree++;
+
+                    $updates->execute([$assigned, $id]);
+                    $changed++;
+                }
+
+                $pdo->commit();
+                jsonResponse(['success' => true, 'message' => "Normalized display order for {$changed} room(s).", 'changed' => $changed]);
+            }
+
             if (!empty($data['duplicate_from_id'])) {
                 $srcId = (int)$data['duplicate_from_id'];
                 if ($srcId < 1) {

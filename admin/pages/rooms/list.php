@@ -16,7 +16,10 @@ try {
 <div class="card">
   <div class="card-header card-header--split">
     <h2>Rooms</h2>
-    <a class="btn btn-primary" href="<?= ADMIN_URL ?>pages/rooms/add.php"><i class="fas fa-plus"></i> Add room</a>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button type="button" class="btn btn-outline" id="normalizeOrderBtn">Normalize order</button>
+      <a class="btn btn-primary" href="<?= ADMIN_URL ?>pages/rooms/add.php"><i class="fas fa-plus"></i> Add room</a>
+    </div>
   </div>
 
   <div class="table-wrapper">
@@ -61,6 +64,23 @@ try {
 </div>
 
 <script>
+document.getElementById('normalizeOrderBtn')?.addEventListener('click', function () {
+  if (!confirm('Normalize room order numbers? This will automatically fix duplicates and zeros by assigning the next available numbers.')) return;
+  var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+  fetch('<?= ADMIN_URL ?>api/rooms.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+    body: JSON.stringify({ normalize_display_order: 1 })
+  }).then(function (r) { return r.json(); }).then(function (data) {
+    if (data.success) {
+      showToast(data.message || 'Normalized', 'success');
+      window.location.reload();
+    } else {
+      showToast(data.message || 'Normalize failed', 'error');
+    }
+  }).catch(function () { showToast('Normalize failed', 'error'); });
+});
+
 document.querySelectorAll('.js-duplicate-room').forEach(function (btn) {
   btn.addEventListener('click', function () {
     var id = this.getAttribute('data-id');

@@ -100,7 +100,7 @@ $rooms = getRooms(['is_active' => 1]);
           </div>
         </div>
 
-        <div class="w-full lg:w-2/5 flex flex-col justify-center min-w-0 <?= $reverse ? 'lg:items-end lg:text-right' : '' ?>">
+        <div class="w-full lg:w-2/5 flex flex-col justify-center min-w-0 items-start text-left <?= $reverse ? 'lg:items-end lg:text-right' : '' ?>">
           <span class="text-primary text-xs font-bold tracking-[0.2em] uppercase mb-3">Starting at <?= e($currency) ?><?= e($price) ?></span>
           <h2 class="text-4xl md:text-5xl font-light text-text-main mb-6"><?= e($title) ?></h2>
           <p class="text-text-muted text-base leading-relaxed mb-8"><?= e($desc) ?></p>

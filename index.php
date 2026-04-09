@@ -428,9 +428,9 @@ $featuredRooms = getFeaturedRoomsForHome(5);
           <div class="absolute inset-0 bg-cover bg-center bg-no-repeat hover:scale-105 transition-transform duration-700" data-alt="Editorial"
                style="background-image: url('<?= e($hp_main_img) ?>');"></div>
         </div>
-        <div class="relative lg:absolute w-full max-w-[280px] aspect-[4/5] mx-auto -mt-24 sm:-mt-28 lg:mt-0 lg:max-w-none lg:w-48 lg:h-64 lg:aspect-auto lg:mx-0 left-auto lg:left-[-40px] bottom-auto lg:bottom-[-40px] rounded-lg overflow-hidden shadow-xl z-20 border-4 border-white"
+        <div class="relative lg:absolute w-full max-w-[280px] aspect-[4/5] min-h-[187px] mx-auto -mt-16 sm:-mt-28 lg:mt-0 lg:max-w-none lg:w-48 lg:h-64 lg:aspect-auto lg:mx-0 left-auto lg:left-[-40px] bottom-auto lg:bottom-[-40px] rounded-lg overflow-hidden shadow-xl z-20 border-4 border-white"
              data-lusso-inview="up-slow" style="--lusso-duration: 2200ms; --lusso-delay: 80ms;">
-          <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('<?= e($hp_secondary_img) ?>');"></div>
+          <div class="absolute inset-0 bg-cover bg-center bg-no-repeat m-0 p-0" style="background-image: url('<?= e($hp_secondary_img) ?>');"></div>
         </div>
       </div>
     </div>
@@ -446,12 +446,12 @@ $featuredRooms = getFeaturedRoomsForHome(5);
           <p class="text-xs text-text-muted uppercase tracking-wider mt-1"><?= e($arch_badge_sub) ?></p>
         </div>
       </div>
-      <div class="w-full lg:w-5/12 z-20 min-w-0">
+      <div class="w-full lg:w-5/12 z-20 min-w-0 p-0 mt-[-83px] mb-[-83px]">
         <h3 class="font-serif text-3xl md:text-4xl text-text-main mb-4"><?= e($arch_title) ?></h3>
         <p class="text-text-muted text-lg leading-relaxed mb-6">
           <?= e($arch_body) ?>
         </p>
-        <ul class="space-y-3 mb-8">
+        <ul class="space-y-3 mb-[52px]">
           <li class="flex items-center gap-3 text-text-main">
             <span class="material-symbols-outlined text-primary">check_circle</span>
             <span><?= e($arch_li1) ?></span>

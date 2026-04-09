@@ -150,7 +150,7 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
   </div>
 </section>
 
-<section class="py-24 bg-white dark:bg-surface-dark relative overflow-hidden">
+<section class="py-[37px] bg-white dark:bg-surface-dark relative overflow-hidden">
   <div class="absolute top-0 right-0 w-1/3 h-full bg-primary/5 -skew-x-12 z-0"></div>
   <div class="container mx-auto px-6 lg:px-12 relative z-10">
     <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">

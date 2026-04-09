@@ -23,6 +23,7 @@ try {
     <table class="table">
       <thead>
         <tr>
+          <th style="width:90px;">Order</th>
           <th>Title</th>
           <th>Slug</th>
           <th>Price</th>
@@ -33,10 +34,11 @@ try {
       </thead>
       <tbody>
       <?php if (empty($rooms)): ?>
-        <tr><td colspan="6" style="color:var(--text-muted);">No rooms yet.</td></tr>
+        <tr><td colspan="7" style="color:var(--text-muted);">No rooms yet.</td></tr>
       <?php else: ?>
         <?php foreach ($rooms as $r): ?>
           <tr>
+            <td><strong><?= (int)$r['display_order'] ?></strong></td>
             <td><?= sanitize(html_entity_decode((string)$r['title'], ENT_QUOTES, 'UTF-8')) ?></td>
             <td><?= sanitize($r['slug']) ?></td>
             <td><?= sanitize($r['price']) ?></td>

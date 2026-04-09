@@ -405,7 +405,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
 <?php endif; ?>
 
 <!-- Asymmetrical Editorial Section: The Lusso Standard -->
-<section class="relative z-10 w-full <?= $hasBookingBridge ? 'pt-8 md:pt-12 pb-24 md:pb-[46px]' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
+<section class="relative z-10 w-full <?= $hasBookingBridge ? 'pt-8 md:pt-12 pb-[28px] md:pb-[46px]' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
   <div class="absolute inset-0 opacity-[0.04] pointer-events-none" style="background-image: radial-gradient(#363636 1px, transparent 1px); background-size: 32px 32px;"></div>
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
     <div class="flex flex-col lg:flex-row items-stretch lg:items-start gap-12 lg:gap-0 mb-32 relative">
@@ -468,7 +468,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
 
 <?php if ($showAmenityGridSection): ?>
 <!-- Amenities highlight: three cards, dark band (#282828) -->
-<section class="py-16 md:py-[26px] border-t border-white/5" style="background-color:#282828;">
+<section class="py-[23px] md:py-[26px] border-t border-white/5" style="background-color:#282828;">
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
     <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16">
       <?php if ($amenity_grid_kicker !== ''): ?>
@@ -645,7 +645,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
 </script>
 
 <!-- Culinary Excellence Section -->
-<section class="py-24 bg-background-light">
+<section class="py-[34px] bg-background-light">
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
     <div class="bg-white rounded-2xl overflow-hidden shadow-elevation flex flex-col lg:flex-row items-stretch">
       <div class="w-full lg:w-1/2 relative min-h-[260px] md:min-h-[400px]">

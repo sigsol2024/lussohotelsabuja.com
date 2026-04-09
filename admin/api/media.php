@@ -101,7 +101,9 @@ try {
 
         case 'GET':
             $page = max(1, intval($_GET['page'] ?? 1));
-            $perPage = 20;
+            $perPage = intval($_GET['per_page'] ?? 20);
+            if ($perPage < 1) $perPage = 20;
+            if ($perPage > 60) $perPage = 60;
             $offset = ($page - 1) * $perPage;
 
             $search = sanitize($_GET['search'] ?? '');

@@ -10,6 +10,9 @@ let mediaModalState = {
   allowMultiple: false,
   currentPage: 1,
   currentSearch: '',
+  totalPages: 1,
+  totalItems: 0,
+  isLoading: false,
   /** Current library page items (for shift-range selection). */
   currentGridItems: [],
   /** Anchor row index for Shift+click range (grid index on current page). */
@@ -61,6 +64,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const insertBtn = document.getElementById('insertMediaBtn');
   if (insertBtn) insertBtn.addEventListener('click', insertSelectedMedia);
 
+  const loadMoreBtn = document.getElementById('mediaLoadMoreBtn');
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', function () {
+      if (mediaModalState.isLoading) return;
+      if (mediaModalState.currentPage >= mediaModalState.totalPages) return;
+      mediaModalState.currentPage += 1;
+      loadMediaLibrary({ append: true });
+    });
+  }
+
   const gridContainer = document.getElementById('mediaGridContainer');
   if (gridContainer) {
     gridContainer.addEventListener('click', function (e) {
@@ -109,6 +122,10 @@ function openMediaModal(targetInputId, targetPreviewId, allowMultiple = null) {
   mediaModalState.currentGridItems = [];
   mediaModalState.shiftAnchorIndex = null;
   mediaModalState.allowMultiple = allowMultiple === null ? shouldAllowMultipleSelection(targetInputId) : allowMultiple;
+  mediaModalState.currentPage = 1;
+  mediaModalState.totalPages = 1;
+  mediaModalState.totalItems = 0;
+  mediaModalState.isLoading = false;
 
   const modal = document.getElementById('mediaLibraryModal');
   if (!modal) return;
@@ -117,7 +134,7 @@ function openMediaModal(targetInputId, targetPreviewId, allowMultiple = null) {
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   switchMediaTab('library');
-  loadMediaLibrary();
+  loadMediaLibrary({ append: false });
   updateInsertButton();
 }
 
@@ -147,7 +164,7 @@ function switchMediaTab(tabName) {
   if (tabName === 'library') {
     const el = document.getElementById('mediaLibraryTab');
     if (el) { el.classList.add('active'); el.style.display = 'block'; }
-    loadMediaLibrary();
+    loadMediaLibrary({ append: false });
   }
   if (tabName === 'upload') {
     const el = document.getElementById('mediaUploadTab');
@@ -155,24 +172,72 @@ function switchMediaTab(tabName) {
   }
 }
 
-function loadMediaLibrary() {
+function setLoadMoreUi() {
+  const wrap = document.getElementById('mediaLoadMoreWrap');
+  const btn = document.getElementById('mediaLoadMoreBtn');
+  const status = document.getElementById('mediaLoadMoreStatus');
+  if (!wrap || !btn || !status) return;
+
+  const hasMore = mediaModalState.currentPage < mediaModalState.totalPages;
+  wrap.style.display = (mediaModalState.totalItems > 0) ? 'block' : 'none';
+  btn.style.display = hasMore ? 'inline-block' : 'none';
+  btn.disabled = !!mediaModalState.isLoading;
+  btn.textContent = mediaModalState.isLoading ? 'Loading…' : 'Load more';
+  status.textContent = mediaModalState.totalItems
+    ? ('Showing ' + String(mediaModalState.currentGridItems.length) + ' of ' + String(mediaModalState.totalItems))
+    : '';
+}
+
+function loadMediaLibrary(opts) {
+  opts = opts || {};
+  const append = !!opts.append;
   const gridContainer = document.getElementById('mediaGridContainer');
   if (!gridContainer) return;
-  gridContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;"><p>Loading media...</p></div>';
+
+  if (!append) {
+    mediaModalState.currentPage = 1;
+    mediaModalState.currentGridItems = [];
+    mediaModalState.shiftAnchorIndex = null;
+    gridContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;"><p>Loading media...</p></div>';
+  }
 
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
   const params = new URLSearchParams({ page: mediaModalState.currentPage, per_page: 20 });
   if (mediaModalState.currentSearch) params.append('search', mediaModalState.currentSearch);
 
   const adminUrl = normalizeAdminBase();
+  mediaModalState.isLoading = true;
+  setLoadMoreUi();
   fetch(adminUrl + 'api/media.php?' + params.toString(), { method: 'GET', headers: { 'X-CSRF-Token': csrfToken }, credentials: 'include' })
     .then(r => r.json())
     .then(data => {
-      if (data.success && data.media) renderMediaGrid(data.media);
-      else gridContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;"><p>No media files found.</p></div>';
+      mediaModalState.isLoading = false;
+      if (data && data.pagination) {
+        mediaModalState.totalPages = parseInt(data.pagination.pages || 1, 10) || 1;
+        mediaModalState.totalItems = parseInt(data.pagination.total || 0, 10) || 0;
+      } else {
+        mediaModalState.totalPages = 1;
+        mediaModalState.totalItems = 0;
+      }
+
+      if (data.success && Array.isArray(data.media)) {
+        const merged = append ? (mediaModalState.currentGridItems.concat(data.media)) : data.media;
+        renderMediaGrid(merged);
+      } else if (!append) {
+        gridContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;"><p>No media files found.</p></div>';
+        mediaModalState.currentGridItems = [];
+        setLoadMoreUi();
+      } else {
+        setLoadMoreUi();
+      }
     })
     .catch(() => {
-      gridContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #d63638;"><p>Error loading media.</p></div>';
+      mediaModalState.isLoading = false;
+      if (!append) {
+        gridContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #d63638;"><p>Error loading media.</p></div>';
+        mediaModalState.currentGridItems = [];
+      }
+      setLoadMoreUi();
     });
 }
 
@@ -182,6 +247,7 @@ function renderMediaGrid(mediaItems) {
   mediaModalState.currentGridItems = Array.isArray(mediaItems) ? mediaItems : [];
   if (!mediaItems || mediaItems.length === 0) {
     gridContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;"><p>No media files found.</p></div>';
+    setLoadMoreUi();
     return;
   }
 
@@ -207,6 +273,7 @@ function renderMediaGrid(mediaItems) {
   });
   gridContainer.innerHTML = html;
   updateInsertButton();
+  setLoadMoreUi();
 }
 
 /**

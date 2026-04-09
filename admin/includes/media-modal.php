@@ -19,6 +19,10 @@
         </div>
         <p id="mediaMultiSelectHint" class="form-help" style="display:none;margin:0 0 12px 0;font-size:13px;color:var(--text-muted);">Click an image to select it. <strong>Ctrl</strong> or <strong>⌘</strong>+click to add or remove. <strong>Shift</strong>+click to select a range.</p>
         <div id="mediaGridContainer"></div>
+        <div id="mediaLoadMoreWrap" style="display:none; margin-top:14px; text-align:center;">
+          <button type="button" class="btn btn-outline btn-sm" id="mediaLoadMoreBtn">Load more</button>
+          <div id="mediaLoadMoreStatus" class="text-muted" style="margin-top:8px;font-size:12px;"></div>
+        </div>
       </div>
       <div id="mediaUploadTab" class="media-tab-content" style="display:none;">
         <form id="mediaUploadForm" method="post" action="#" enctype="multipart/form-data" novalidate>

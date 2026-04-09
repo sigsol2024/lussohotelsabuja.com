@@ -228,6 +228,7 @@ $pageSections = [
     ['dining', 'cta_title', 'text', 'Secure Your Table at the Center of Abuja'],
     ['dining', 'cta_body', 'text', 'We recommend booking at least 48 hours in advance for weekend dinner service.'],
     ['dining', 'cta_btn1', 'text', 'Make a Reservation'],
+    ['dining', 'cta_btn1_href', 'text', '#'],
     ['dining', 'cta_btn2', 'text', 'Private Dining'],
     ['dining', 'sticky_kicker', 'text', 'Book Now'],
     ['dining', 'sticky_subtitle', 'text', 'Limited Availability'],

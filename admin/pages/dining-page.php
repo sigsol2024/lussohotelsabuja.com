@@ -175,7 +175,15 @@ $masonryRaw = trim($sections['masonry_json'] ?? '') !== '' ? $sections['masonry_
       <textarea id="cta_body" name="cta_body" rows="2"><?= sanitize($sections['cta_body'] ?? '') ?></textarea>
     </div>
     <div class="form-row">
-      <div class="form-group"><label for="cta_btn1">Button 1</label><input type="text" id="cta_btn1" name="cta_btn1" value="<?= sanitize($sections['cta_btn1'] ?? 'Make a Reservation') ?>"></div>
+      <div class="form-group">
+        <label for="cta_btn1">Button 1</label>
+        <input type="text" id="cta_btn1" name="cta_btn1" value="<?= sanitize($sections['cta_btn1'] ?? 'Make a Reservation') ?>">
+      </div>
+      <div class="form-group">
+        <label for="cta_btn1_href">URL</label>
+        <input type="text" id="cta_btn1_href" name="cta_btn1_href" value="<?= sanitize($sections['cta_btn1_href'] ?? '#') ?>">
+        <p class="form-help">Use a full URL (https://...) or a site path like /contact.</p>
+      </div>
     </div>
   </div></div>
 

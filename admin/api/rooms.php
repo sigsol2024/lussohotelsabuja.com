@@ -8,6 +8,45 @@ header('Content-Type: application/json');
 
 $method = $_SERVER['REQUEST_METHOD'];
 
+/**
+ * Ensure display_order is unique across rooms.
+ * If requested order is taken (or invalid), pick the smallest available positive integer.
+ */
+function lussoResolveUniqueDisplayOrder(PDO $pdo, $requestedOrder, $excludeId = null) {
+    $req = (int)$requestedOrder;
+    if ($req < 1) {
+        $req = 0;
+    }
+
+    $params = [];
+    $where = "display_order > 0";
+    if ($excludeId !== null) {
+        $where .= " AND id <> ?";
+        $params[] = (int)$excludeId;
+    }
+
+    $stmt = $pdo->prepare("SELECT display_order FROM rooms WHERE {$where}");
+    $stmt->execute($params);
+    $used = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_COLUMN, 0) as $v) {
+        $n = (int)$v;
+        if ($n > 0) $used[$n] = true;
+    }
+
+    if ($req > 0 && empty($used[$req])) {
+        return $req;
+    }
+
+    $candidate = 1;
+    while (isset($used[$candidate])) {
+        $candidate++;
+        if ($candidate > 1000000) { // sanity cap
+            break;
+        }
+    }
+    return $candidate;
+}
+
 try {
     switch ($method) {
         case 'GET':
@@ -34,7 +73,7 @@ try {
                 jsonResponse(['success' => false, 'message' => 'Room not found'], 404);
             }
 
-            $stmt = $pdo->query("SELECT id,title,slug,price,is_active,is_featured,display_order,created_at FROM rooms ORDER BY display_order ASC, created_at DESC");
+            $stmt = $pdo->query("SELECT id,title,slug,price,is_active,is_featured,display_order,created_at FROM rooms ORDER BY (display_order = 0) ASC, display_order ASC, id ASC");
             jsonResponse(['success' => true, 'rooms' => $stmt->fetchAll()]);
             break;
 
@@ -89,15 +128,16 @@ try {
                 $src['slug'] = $candidate;
                 $src['is_active'] = 0;
                 $src['is_featured'] = 0;
-                $maxOrder = (int)$pdo->query('SELECT COALESCE(MAX(display_order), 0) FROM rooms')->fetchColumn();
-                $src['display_order'] = $maxOrder + 1;
+                $pdo->beginTransaction();
+                $src['display_order'] = lussoResolveUniqueDisplayOrder($pdo, 0, null);
                 $cols = array_keys($src);
                 $placeholders = implode(',', array_fill(0, count($cols), '?'));
                 $sql = 'INSERT INTO rooms (`' . implode('`,`', $cols) . '`) VALUES (' . $placeholders . ')';
                 $ins = $pdo->prepare($sql);
                 $ins->execute(array_values($src));
                 $newId = (int)$pdo->lastInsertId();
-                jsonResponse(['success' => true, 'message' => 'Duplicated as draft (title & slug end with -copy). Edit and set Active to publish.', 'room_id' => $newId]);
+                $pdo->commit();
+                jsonResponse(['success' => true, 'message' => 'Duplicated as draft (title & slug end with -copy). Edit and set Active to publish.', 'room_id' => $newId, 'display_order' => (int)$src['display_order']]);
             }
 
             $title = trim((string)($data['title'] ?? ''));
@@ -131,7 +171,7 @@ try {
             $bookUrl = trim((string)($data['book_url'] ?? ''));
             $isActive = isset($data['is_active']) ? (int)$data['is_active'] : 1;
             $isFeatured = isset($data['is_featured']) ? (int)$data['is_featured'] : 0;
-            $displayOrder = (int)($data['display_order'] ?? 0);
+            $requestedDisplayOrder = (int)($data['display_order'] ?? 0);
 
             $checkStmt = $pdo->prepare("SELECT id FROM rooms WHERE slug = ?");
             $checkStmt->execute([$slug]);
@@ -139,11 +179,17 @@ try {
                 $slug = $slug . '-' . time();
             }
 
+            $pdo->beginTransaction();
+            $displayOrder = lussoResolveUniqueDisplayOrder($pdo, $requestedDisplayOrder, null);
             $stmt = $pdo->prepare("INSERT INTO rooms (title,slug,price,room_type,short_description,description,main_image,gallery_images,features,amenities,included_items,good_to_know,urgency_message,size,max_guests,location,book_url,is_active,is_featured,display_order)
                                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $stmt->execute([$title, $slug, $price, $roomType, $short, $desc, $mainImage, $galleryImages, $features, $amenities, $includedItems, $goodToKnowJson, $urgencyMessage, $size, $maxGuests, $location, $bookUrl, $isActive, $isFeatured, $displayOrder]);
             $newId = (int)$pdo->lastInsertId();
-            jsonResponse(['success' => true, 'message' => 'Room created', 'room_id' => $newId]);
+            $pdo->commit();
+            $msg = ($displayOrder !== $requestedDisplayOrder && $requestedDisplayOrder > 0)
+                ? ("Room created (display order adjusted to {$displayOrder})")
+                : 'Room created';
+            jsonResponse(['success' => true, 'message' => $msg, 'room_id' => $newId, 'display_order' => $displayOrder]);
             break;
 
         case 'PUT':
@@ -195,11 +241,17 @@ try {
             $bookUrl = trim((string)($data['book_url'] ?? ''));
             $isActive = isset($data['is_active']) ? (int)$data['is_active'] : 1;
             $isFeatured = isset($data['is_featured']) ? (int)$data['is_featured'] : 0;
-            $displayOrder = (int)($data['display_order'] ?? 0);
+            $requestedDisplayOrder = (int)($data['display_order'] ?? 0);
 
+            $pdo->beginTransaction();
+            $displayOrder = lussoResolveUniqueDisplayOrder($pdo, $requestedDisplayOrder, $id);
             $stmt = $pdo->prepare("UPDATE rooms SET title=?, slug=?, price=?, room_type=?, short_description=?, description=?, main_image=?, gallery_images=?, features=?, amenities=?, included_items=?, good_to_know=?, urgency_message=?, size=?, max_guests=?, location=?, book_url=?, is_active=?, is_featured=?, display_order=? WHERE id=?");
             $stmt->execute([$title, $slug, $price, $roomType, $short, $desc, $mainImage, $galleryImages, $features, $amenities, $includedItems, $goodToKnowJson, $urgencyMessage, $size, $maxGuests, $location, $bookUrl, $isActive, $isFeatured, $displayOrder, $id]);
-            jsonResponse(['success' => true, 'message' => 'Room updated']);
+            $pdo->commit();
+            $msg = ($displayOrder !== $requestedDisplayOrder && $requestedDisplayOrder > 0)
+                ? ("Room updated (display order adjusted to {$displayOrder})")
+                : 'Room updated';
+            jsonResponse(['success' => true, 'message' => $msg, 'display_order' => $displayOrder]);
             break;
 
         case 'DELETE':

@@ -113,7 +113,9 @@ function getRooms($filters = []) {
     $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
     
     try {
-        $stmt = $pdo->prepare("SELECT * FROM rooms {$whereClause} ORDER BY display_order ASC, price ASC LIMIT ?");
+        // Sort by display_order (non-zero first), then stable by id.
+        // This avoids "most recently created/edited" looking order when many rooms share display_order=0.
+        $stmt = $pdo->prepare("SELECT * FROM rooms {$whereClause} ORDER BY (display_order = 0) ASC, display_order ASC, id ASC LIMIT ?");
         $params[] = $limit;
         $stmt->execute($params);
         $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);

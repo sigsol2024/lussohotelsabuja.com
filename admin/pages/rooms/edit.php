@@ -585,7 +585,11 @@ document.getElementById('roomForm').addEventListener('submit', function(e){
     body: JSON.stringify(payload)
   }).then(r => r.json()).then(data => {
     if (data.success) {
-      showToast('Saved', 'success');
+      if (data.display_order !== undefined && data.display_order !== null) {
+        const orderEl = document.getElementById('display_order');
+        if (orderEl) orderEl.value = String(data.display_order);
+      }
+      showToast(data.message || 'Saved', 'success');
       if (!isEdit && data.room_id) {
         setTimeout(function () {
           window.location.href = '<?= ADMIN_URL ?>pages/rooms/edit.php?id=' + encodeURIComponent(data.room_id);

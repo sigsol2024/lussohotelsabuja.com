@@ -7,7 +7,7 @@ requireLogin();
 require_once __DIR__ . '/../../includes/header.php';
 
 try {
-    $rooms = $pdo->query("SELECT id,title,slug,price,is_active,is_featured,display_order,created_at FROM rooms ORDER BY display_order ASC, created_at DESC")->fetchAll();
+    $rooms = $pdo->query("SELECT id,title,slug,price,is_active,is_featured,display_order,created_at FROM rooms ORDER BY (display_order = 0) ASC, display_order ASC, id ASC")->fetchAll();
 } catch (PDOException $e) {
     $rooms = [];
 }

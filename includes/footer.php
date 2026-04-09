@@ -28,6 +28,42 @@ if (!is_array($socialMediaList)) {
     $socialMediaList = [];
 }
 
+/**
+ * Social platform helpers (admin saves {platform,url}; legacy may have {icon,url}).
+ */
+function lusso_social_platform_from_url($url) {
+    $u = strtolower((string)$url);
+    if (strpos($u, 'instagram.com') !== false) return 'instagram';
+    if (strpos($u, 'tiktok.com') !== false) return 'tiktok';
+    if (strpos($u, 'twitter.com') !== false || strpos($u, 'x.com') !== false) return 'x';
+    if (strpos($u, 'facebook.com') !== false || strpos($u, 'fb.com') !== false) return 'facebook';
+    return '';
+}
+function lusso_social_normalize_platform($p) {
+    $v = strtolower(trim((string)$p));
+    if ($v === 'twitter' || $v === 'x-twitter') return 'x';
+    if ($v === 'ig') return 'instagram';
+    return $v;
+}
+function lusso_social_svg($platform) {
+    $p = lusso_social_normalize_platform($platform);
+    $cls = 'w-6 h-6';
+    if ($p === 'facebook') {
+        return '<svg class="'.$cls.'" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.08 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.915 3.777-3.915 1.094 0 2.238.196 2.238.196v2.476h-1.26c-1.242 0-1.63.776-1.63 1.57v1.888h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.08 22 12.06z"/></svg>';
+    }
+    if ($p === 'instagram') {
+        return '<svg class="'.$cls.'" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3z"/><path d="M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/><path d="M17.5 6.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>';
+    }
+    if ($p === 'tiktok') {
+        // Simple TikTok note mark (monochrome, works with currentColor)
+        return '<svg class="'.$cls.'" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M14 3v10.2a3.8 3.8 0 1 1-2.4-3.55V6.1c0-.6.5-1.1 1.1-1.1H14z"/><path d="M14 3c.9 2.6 2.8 4.3 5 4.6v2.3c-2-.1-3.8-.9-5-2.1V3z"/></svg>';
+    }
+    if ($p === 'x') {
+        return '<svg class="'.$cls.'" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.8-6.6L6 22H3l7.3-8.4L1 2h6.4l4.3 6L18.9 2zm-1.1 18h1.7L7.3 3.9H5.5L17.8 20z"/></svg>';
+    }
+    return '';
+}
+
 $hotelPolicySlug = 'hotel-policy';
 $privacyPolicySlug = 'privacy-policy';
 $termsSlug = 'terms-and-conditions';
@@ -50,12 +86,21 @@ $termsSlug = 'terms-and-conditions';
         <?php if (!empty($socialMediaList)): ?>
         <div class="flex gap-4">
           <?php foreach ($socialMediaList as $social): ?>
-            <?php if (!empty($social['icon']) && !empty($social['url'])): ?>
+            <?php
+              $url = (string)($social['url'] ?? '');
+              $platform = (string)($social['platform'] ?? '');
+              if ($platform === '') {
+                  $platform = lusso_social_platform_from_url($url);
+              }
+              $platform = lusso_social_normalize_platform($platform);
+              $svg = $platform !== '' ? lusso_social_svg($platform) : '';
+            ?>
+            <?php if ($url !== '' && $svg !== ''): ?>
           <a class="text-background-light/55 hover:text-champagne transition-colors"
-             href="<?= htmlspecialchars((string)$social['url'], ENT_QUOTES, 'UTF-8') ?>"
+             href="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>"
              target="_blank" rel="noopener noreferrer"
-             aria-label="Social link">
-            <span class="material-symbols-outlined"><?= htmlspecialchars((string)$social['icon'], ENT_QUOTES, 'UTF-8') ?></span>
+             aria-label="<?= htmlspecialchars(ucfirst($platform), ENT_QUOTES, 'UTF-8') ?>">
+            <?= $svg ?>
           </a>
             <?php endif; ?>
           <?php endforeach; ?>

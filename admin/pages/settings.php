@@ -306,6 +306,29 @@ $csrfToken = generateCSRFToken();
 // Social Media Management
 let socialMediaList = [];
 
+const SOCIAL_PLATFORMS = [
+    { value: 'facebook', label: 'Facebook' },
+    { value: 'instagram', label: 'Instagram' },
+    { value: 'tiktok', label: 'TikTok' },
+    { value: 'x', label: 'X (formerly Twitter)' }
+];
+
+function inferPlatformFromUrl(url) {
+    const u = String(url || '').toLowerCase();
+    if (u.includes('instagram.com')) return 'instagram';
+    if (u.includes('tiktok.com')) return 'tiktok';
+    if (u.includes('twitter.com') || u.includes('x.com')) return 'x';
+    if (u.includes('facebook.com') || u.includes('fb.com')) return 'facebook';
+    return 'facebook';
+}
+
+function normalizePlatform(p) {
+    const v = String(p || '').toLowerCase().trim();
+    if (v === 'twitter' || v === 'x-twitter') return 'x';
+    if (v === 'ig') return 'instagram';
+    return v || 'facebook';
+}
+
 // Load social media from hidden input
 function loadSocialMedia() {
     const jsonInput = document.getElementById('social_media_json');
@@ -315,6 +338,18 @@ function loadSocialMedia() {
         console.error('Error parsing social media JSON:', e);
         socialMediaList = [];
     }
+
+    // Backwards compatibility: older entries may be { icon, url }.
+    // Convert to { platform, url } by inferring from URL.
+    if (!Array.isArray(socialMediaList)) socialMediaList = [];
+    socialMediaList = socialMediaList.map((item) => {
+        const url = (item && typeof item === 'object') ? (item.url || '') : '';
+        const platform = (item && typeof item === 'object') ? (item.platform || '') : '';
+        return {
+            platform: normalizePlatform(platform || inferPlatformFromUrl(url)),
+            url: String(url || '')
+        };
+    });
     renderSocialMedia();
 }
 
@@ -329,6 +364,12 @@ function renderSocialMedia() {
         socialMediaList.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'social-item';
+
+            const optionsHtml = SOCIAL_PLATFORMS.map((p) => {
+                const selected = normalizePlatform(item.platform) === p.value ? 'selected' : '';
+                return `<option value="${p.value}" ${selected}>${p.label}</option>`;
+            }).join('');
+
             div.innerHTML = `
                 <div class="social-item__head">
                     <strong>Social link #${index + 1}</strong>
@@ -337,11 +378,11 @@ function renderSocialMedia() {
                     </button>
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label>Icon name (Material Symbols)</label>
-                    <input type="text" value="${(item.icon || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" 
-                           onchange="updateSocialMedia(${index}, 'icon', this.value)" 
-                           placeholder="e.g. public, photo_camera">
-                    <p class="form-help">Material Symbols icon name for the footer</p>
+                    <label>Platform</label>
+                    <select onchange="updateSocialMedia(${index}, 'platform', this.value)">
+                        ${optionsHtml}
+                    </select>
+                    <p class="form-help">Select the platform — the correct icon will be shown in the footer automatically.</p>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>URL</label>
@@ -362,7 +403,7 @@ function renderSocialMedia() {
 // Add new social media
 function addSocialMedia() {
     socialMediaList.push({
-        icon: 'public',
+        platform: 'facebook',
         url: ''
     });
     renderSocialMedia();
@@ -379,7 +420,11 @@ function removeSocialMedia(index) {
 // Update social media item
 function updateSocialMedia(index, field, value) {
     if (socialMediaList[index]) {
-        socialMediaList[index][field] = value;
+        if (field === 'platform') {
+            socialMediaList[index][field] = normalizePlatform(value);
+        } else {
+            socialMediaList[index][field] = value;
+        }
         document.getElementById('social_media_json').value = JSON.stringify(socialMediaList);
     }
 }
@@ -393,7 +438,15 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('settingsForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    // Ensure social media JSON is up to date
+    // Ensure social media JSON is up to date & normalized
+    const dedup = new Map();
+    (socialMediaList || []).forEach((item) => {
+        const platform = normalizePlatform(item?.platform);
+        const url = String(item?.url || '').trim();
+        if (!url) return;
+        dedup.set(platform, { platform, url });
+    });
+    socialMediaList = Array.from(dedup.values());
     document.getElementById('social_media_json').value = JSON.stringify(socialMediaList);
     
     const formData = new FormData(this);

@@ -83,11 +83,47 @@ $rooms = getRooms(['is_active' => 1]);
         $features = array_values(array_unique(array_values(array_filter(array_map(static function ($s) {
           return is_string($s) ? trim($s) : '';
         }, $features), static fn ($x) => $x !== ''))));
+
+        $includedItemsRaw = $room['included_items'] ?? [];
+        $includedItems = [];
+        if (is_array($includedItemsRaw)) {
+          foreach ($includedItemsRaw as $it) {
+            if (is_string($it) && trim($it) !== '') $includedItems[] = trim($it);
+            if (is_array($it) && !empty($it['title'])) $includedItems[] = (string)$it['title'];
+          }
+        }
+        $includedItems = array_values(array_unique(array_values(array_filter(array_map(static function ($s) {
+          return is_string($s) ? trim($s) : '';
+        }, $includedItems), static fn ($x) => $x !== ''))));
+
+        $amenitiesRaw = $room['amenities'] ?? [];
+        $amenityTitles = [];
+        if (is_array($amenitiesRaw)) {
+          foreach ($amenitiesRaw as $am) {
+            if (is_string($am) && trim($am) !== '') $amenityTitles[] = trim($am);
+            if (is_array($am) && !empty($am['title'])) $amenityTitles[] = (string)$am['title'];
+          }
+        }
+        $amenityTitles = array_values(array_unique(array_values(array_filter(array_map(static function ($s) {
+          return is_string($s) ? trim($s) : '';
+        }, $amenityTitles), static fn ($x) => $x !== ''))));
+
         foreach ($features as $f) {
           $lf = strtolower($f);
           if (!$bed && (str_contains($lf, 'bed') || str_contains($lf, 'king'))) $bed = $f;
           if (!$view && str_contains($lf, 'view')) $view = $f;
           if (!$size && (str_contains($lf, 'sqm') || str_contains($lf, 'sqft') || str_contains($lf, 'm²'))) $size = $f;
+        }
+
+        // Prefer editor-provided labels (amenities / included items) over hardcoded defaults.
+        if (!$view) {
+          foreach ($includedItems as $it) {
+            if (str_contains(strtolower($it), 'view')) { $view = $it; break; }
+          }
+        }
+        foreach (array_merge($amenityTitles, $includedItems, $features) as $cand) {
+          $lc = strtolower((string)$cand);
+          if (str_contains($lc, 'wifi') || str_contains($lc, 'wi-fi')) { $wifi = (string)$cand; break; }
         }
         ?>
 
@@ -105,7 +141,7 @@ $rooms = getRooms(['is_active' => 1]);
           <h2 class="text-4xl md:text-5xl font-light text-text-main mb-6"><?= e($title) ?></h2>
           <p class="text-text-muted text-base leading-relaxed mb-8"><?= e($desc) ?></p>
 
-          <div class="grid grid-cols-2 gap-4 mb-8 opacity-60 group-hover:opacity-100 transition-opacity duration-300 <?= $reverse ? 'w-full lg:w-auto' : '' ?>" <?= $reverse ? 'dir="rtl"' : '' ?>>
+          <div class="grid grid-cols-2 gap-4 mb-8 opacity-60 group-hover:opacity-100 transition-opacity duration-300 <?= $reverse ? 'w-full lg:w-auto' : '' ?>">
             <div class="flex items-center gap-3 <?= $reverse ? 'lg:flex-row-reverse' : '' ?>">
               <span class="material-symbols-outlined text-primary">square_foot</span>
               <span class="text-sm font-medium uppercase tracking-wider text-text-main"><?= e($size ?: '—') ?></span>
@@ -125,10 +161,27 @@ $rooms = getRooms(['is_active' => 1]);
           </div>
 
           <?php if (!empty($features)): ?>
-          <div class="flex flex-wrap gap-2 mb-8 <?= $reverse ? 'justify-end' : '' ?>">
-            <?php foreach (array_slice($features, 0, 6) as $chip): ?>
+          <div class="flex flex-wrap gap-2 mb-8 <?= $reverse ? 'lg:justify-end' : '' ?>">
+            <?php
+            $norm = static function ($s) {
+              $s = strtolower(trim((string)$s));
+              $s = preg_replace('/\s+/', ' ', $s);
+              return $s;
+            };
+            $bedNorm = $norm($bed);
+            $wifiNorm = $norm($wifi);
+            $viewNorm = $norm($view);
+            $chipCount = 0;
+            foreach ($features as $chip) {
+              if ($chipCount >= 6) break;
+              $chipNorm = $norm($chip);
+              if ($bedNorm !== '' && $chipNorm === $bedNorm) continue;
+              if ($wifiNorm !== '' && $chipNorm === $wifiNorm) continue;
+              if ($viewNorm !== '' && $chipNorm === $viewNorm) continue;
+              $chipCount++;
+              ?>
               <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-primary/20 text-text-main bg-white/60"><?= e($chip) ?></span>
-            <?php endforeach; ?>
+            <?php } ?>
           </div>
           <?php endif; ?>
 

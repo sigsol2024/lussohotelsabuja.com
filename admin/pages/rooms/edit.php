@@ -187,19 +187,32 @@ $roomPublicUrlBase = rtrim((string)(defined('SITE_URL') ? SITE_URL : ''), '/');
       <div class="form-row">
         <div class="form-group">
           <label>Main image</label>
-          <button type="button" class="btn btn-outline" onclick="openMediaModal('main_image','main_image_preview')">Select Image</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <button type="button" class="btn btn-outline" onclick="openMediaModal('main_image','main_image_preview')">Select Image</button>
+            <button type="button" class="btn btn-outline btn-sm" id="mainImageRemoveBtn" style="display:none;">Remove</button>
+          </div>
           <input type="hidden" id="main_image" name="main_image" value="<?= sanitize($room['main_image']) ?>">
           <div id="main_image_preview" class="image-preview" style="<?= !empty($room['main_image']) ? 'display:block;' : 'display:none;' ?>">
-            <?php if (!empty($room['main_image'])): ?><img src="<?= SITE_URL . ltrim($room['main_image'], '/') ?>" style="max-width:300px;max-height:200px;"><?php endif; ?>
+            <?php if (!empty($room['main_image'])): ?>
+              <div class="lusso-media-thumb" style="position:relative; display:inline-block; margin-top:10px;">
+                <img src="<?= SITE_URL . ltrim($room['main_image'], '/') ?>" style="max-width:300px;max-height:200px;border-radius:6px;display:block;object-fit:cover;">
+              </div>
+            <?php endif; ?>
           </div>
         </div>
         <div class="form-group">
           <label>Gallery images</label>
-          <button type="button" class="btn btn-outline" onclick="openMediaModal('gallery_images','gallery_images_preview', true)">Select Images</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <button type="button" class="btn btn-outline" onclick="openMediaModal('gallery_images','gallery_images_preview', true)">Select Images</button>
+            <button type="button" class="btn btn-outline btn-sm" id="galleryClearBtn" style="display:none;">Clear all</button>
+          </div>
           <input type="hidden" id="gallery_images" name="gallery_images" value="<?= htmlspecialchars(json_encode($room['gallery_images']), ENT_QUOTES, 'UTF-8') ?>">
           <div id="gallery_images_preview" class="image-preview" style="<?= !empty($room['gallery_images']) ? 'display:block;' : 'display:none;' ?>">
-            <?php foreach (($room['gallery_images'] ?? []) as $img): ?>
-              <img src="<?= SITE_URL . ltrim($img, '/') ?>" style="max-width:120px;max-height:120px;display:inline-block;margin:5px;object-fit:cover;">
+            <?php foreach (($room['gallery_images'] ?? []) as $i => $img): ?>
+              <div class="lusso-media-thumb" data-i="<?= (int)$i ?>" style="position:relative; display:inline-block; margin:6px;">
+                <img src="<?= SITE_URL . ltrim($img, '/') ?>" style="width:120px;height:120px;display:block;border-radius:8px;object-fit:cover;border:1px solid rgba(0,0,0,0.08);">
+                <button type="button" class="btn btn-outline btn-sm js-room-gallery-remove" data-i="<?= (int)$i ?>" style="position:absolute; top:6px; right:6px; padding:4px 6px; line-height:1;">×</button>
+              </div>
             <?php endforeach; ?>
           </div>
         </div>
@@ -448,27 +461,139 @@ window.insertSelectedMediaOverride = function() {
   if (!selected.length) return false;
   const target = mediaModalState.targetInputId;
 
+  function lussoSetMainImage(path) {
+    const p = String(path || '').trim();
+    const input = document.getElementById('main_image');
+    const preview = document.getElementById('main_image_preview');
+    const removeBtn = document.getElementById('mainImageRemoveBtn');
+    if (input) input.value = p;
+    if (preview) {
+      if (!p) {
+        preview.style.display = 'none';
+        preview.innerHTML = '';
+      } else {
+        preview.style.display = 'block';
+        preview.innerHTML =
+          '<div class="lusso-media-thumb" style="position:relative; display:inline-block; margin-top:10px;">' +
+            '<img src="<?= SITE_URL ?>' + p.replace(/^\/+/, '') + '" style="max-width:300px;max-height:200px;border-radius:6px;display:block;object-fit:cover;">' +
+          '</div>';
+      }
+    }
+    if (removeBtn) removeBtn.style.display = p ? 'inline-flex' : 'none';
+  }
+
+  function lussoGetGalleryPaths() {
+    try {
+      const raw = document.getElementById('gallery_images')?.value || '[]';
+      const v = JSON.parse(raw);
+      if (!Array.isArray(v)) return [];
+      return v.map(s => String(s || '').trim()).filter(Boolean);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function lussoSetGalleryPaths(paths) {
+    const clean = (paths || []).map(s => String(s || '').trim()).filter(Boolean);
+    const input = document.getElementById('gallery_images');
+    const preview = document.getElementById('gallery_images_preview');
+    const clearBtn = document.getElementById('galleryClearBtn');
+    if (input) input.value = JSON.stringify(clean);
+    if (preview) {
+      if (!clean.length) {
+        preview.style.display = 'none';
+        preview.innerHTML = '';
+      } else {
+        preview.style.display = 'block';
+        preview.innerHTML = clean.map((p, i) =>
+          '<div class="lusso-media-thumb" data-i="' + i + '" style="position:relative; display:inline-block; margin:6px;">' +
+            '<img src="<?= SITE_URL ?>' + p.replace(/^\/+/, '') + '" style="width:120px;height:120px;display:block;border-radius:8px;object-fit:cover;border:1px solid rgba(0,0,0,0.08);">' +
+            '<button type="button" class="btn btn-outline btn-sm js-room-gallery-remove" data-i="' + i + '" style="position:absolute; top:6px; right:6px; padding:4px 6px; line-height:1;">×</button>' +
+          '</div>'
+        ).join('');
+      }
+    }
+    if (clearBtn) clearBtn.style.display = clean.length ? 'inline-flex' : 'none';
+  }
+
   if (target === 'main_image') {
     const first = selected[0];
-    document.getElementById('main_image').value = first.path;
-    const preview = document.getElementById('main_image_preview');
-    preview.style.display = 'block';
-    preview.innerHTML = '<img src=\"<?= SITE_URL ?>' + first.path.replace(/^\/+/,'') + '\" style=\"max-width:300px;max-height:200px;\">';
+    lussoSetMainImage(first.path);
     closeMediaModal();
     return true;
   }
 
   if (target === 'gallery_images') {
     const paths = selected.map(s => s.path);
-    document.getElementById('gallery_images').value = JSON.stringify(paths);
-    const preview = document.getElementById('gallery_images_preview');
-    preview.style.display = 'block';
-    preview.innerHTML = paths.map(p => '<img src=\"<?= SITE_URL ?>' + p.replace(/^\/+/,'') + '\" style=\"max-width:120px;max-height:120px;display:inline-block;margin:5px;object-fit:cover;\">').join('');
+    lussoSetGalleryPaths(paths);
     closeMediaModal();
     return true;
   }
   return false;
 };
+
+// Init remove/clear buttons on load
+document.addEventListener('DOMContentLoaded', function () {
+  // Main image remove
+  const mainRemoveBtn = document.getElementById('mainImageRemoveBtn');
+  if (mainRemoveBtn) {
+    const hasMain = !!(document.getElementById('main_image')?.value || '').trim();
+    mainRemoveBtn.style.display = hasMain ? 'inline-flex' : 'none';
+    mainRemoveBtn.addEventListener('click', function () {
+      document.getElementById('main_image').value = '';
+      const p = document.getElementById('main_image_preview');
+      if (p) { p.style.display = 'none'; p.innerHTML = ''; }
+      mainRemoveBtn.style.display = 'none';
+    });
+  }
+
+  // Gallery clear all
+  const clearBtn = document.getElementById('galleryClearBtn');
+  if (clearBtn) {
+    const cur = (function () { try { return JSON.parse(document.getElementById('gallery_images')?.value || '[]'); } catch (e) { return []; } })();
+    clearBtn.style.display = (Array.isArray(cur) && cur.length) ? 'inline-flex' : 'none';
+    clearBtn.addEventListener('click', function () {
+      document.getElementById('gallery_images').value = '[]';
+      const p = document.getElementById('gallery_images_preview');
+      if (p) { p.style.display = 'none'; p.innerHTML = ''; }
+      clearBtn.style.display = 'none';
+    });
+  }
+
+  // Gallery remove one (event delegation)
+  const galPrev = document.getElementById('gallery_images_preview');
+  if (galPrev) {
+    galPrev.addEventListener('click', function (e) {
+      const btn = e.target.closest('.js-room-gallery-remove');
+      if (!btn) return;
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-i') || '0', 10);
+      let cur = [];
+      try { cur = JSON.parse(document.getElementById('gallery_images')?.value || '[]'); } catch (err) { cur = []; }
+      if (!Array.isArray(cur)) cur = [];
+      cur.splice(idx, 1);
+      document.getElementById('gallery_images').value = JSON.stringify(cur);
+      // Re-render by simulating selection override helper
+      const preview = document.getElementById('gallery_images_preview');
+      const clearBtn = document.getElementById('galleryClearBtn');
+      if (!cur.length) {
+        if (preview) { preview.style.display = 'none'; preview.innerHTML = ''; }
+        if (clearBtn) clearBtn.style.display = 'none';
+        return;
+      }
+      if (preview) {
+        preview.style.display = 'block';
+        preview.innerHTML = cur.map((p, i) =>
+          '<div class="lusso-media-thumb" data-i="' + i + '" style="position:relative; display:inline-block; margin:6px;">' +
+            '<img src="<?= SITE_URL ?>' + String(p || '').replace(/^\/+/, '') + '" style="width:120px;height:120px;display:block;border-radius:8px;object-fit:cover;border:1px solid rgba(0,0,0,0.08);">' +
+            '<button type="button" class="btn btn-outline btn-sm js-room-gallery-remove" data-i="' + i + '" style="position:absolute; top:6px; right:6px; padding:4px 6px; line-height:1;">×</button>' +
+          '</div>'
+        ).join('');
+      }
+      if (clearBtn) clearBtn.style.display = 'inline-flex';
+    });
+  }
+});
 
 document.getElementById('roomForm').addEventListener('submit', function(e){
   e.preventDefault();

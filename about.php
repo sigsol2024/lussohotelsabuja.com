@@ -23,8 +23,11 @@ $values_card_body = getPageSection('about', 'values_card_body', 'From the gentle
 $values_card_link = getPageSection('about', 'values_card_link', 'Read about our wellness');
 $values_card_link_href = getPageSection('about', 'values_card_link_href', '/amenities');
 
-$timeline = json_decode(getPageSection('about', 'timeline_json', ''), true);
-if (!is_array($timeline) || count($timeline) === 0) {
+$timelineRaw = (string)getPageSection('about', 'timeline_json', '');
+$timeline = json_decode($timelineRaw, true);
+// Only fall back to defaults when the section is missing/invalid.
+// If admin intentionally saves an empty list ([]), keep it empty on the public page.
+if (trim($timelineRaw) === '' || !is_array($timeline)) {
     $timeline = $cmsDefaults['about_timeline'];
 }
 
@@ -34,9 +37,31 @@ $journey_subtitle = getPageSection('about', 'journey_subtitle', 'Tracing the mil
 $team_kicker = getPageSection('about', 'team_kicker', 'Leadership');
 $team_heading = getPageSection('about', 'team_heading', 'The Curators');
 $team_intro = getPageSection('about', 'team_intro', 'Meet the visionaries dedicated to crafting your perfect stay.');
-$team = json_decode(getPageSection('about', 'team_json', ''), true);
-if (!is_array($team) || count($team) === 0) {
+$teamRaw = (string)getPageSection('about', 'team_json', '');
+$team = json_decode($teamRaw, true);
+// Only fall back to defaults when the section is missing/invalid.
+// If admin intentionally saves an empty list ([]), keep it empty on the public page.
+if (trim($teamRaw) === '' || !is_array($team)) {
     $team = $cmsDefaults['about_team'];
+}
+
+// Normalize team_json to an images-only gallery array.
+// Supports:
+// - New format: ["path1","path2",...]
+// - Legacy format: [{image:"..."}, ...]
+$teamImages = [];
+if (is_array($team) && isset($team[0]) && is_string($team[0])) {
+    $teamImages = array_values(array_filter(array_map(static function ($src) {
+        $src = is_string($src) ? trim($src) : '';
+        return $src !== '' ? $src : null;
+    }, $team)));
+} elseif (is_array($team)) {
+    $teamImages = array_values(array_filter(array_map(static function ($row) {
+        if (!is_array($row)) return null;
+        $src = (string)($row['image'] ?? ($row['src'] ?? ''));
+        $src = trim($src);
+        return $src !== '' ? $src : null;
+    }, $team)));
 }
 
 $parallax_bg = getPageSection('about', 'parallax_bg', 'https://lh3.googleusercontent.com/aida-public/AB6AXuD3CpM9PF0quzu5ENNbyfrW4zTzCEMO_H7AEdFnIbDMIhurw-MN5oG3CYu33yyX74nXm8XqyQ5rWuDUK1LqHo3YeVaAe44npBDrPxoJGJWPJcCt3loAI3ZdpZJTxEJxAGbs_PGZ1BEhCN76N2fSJuaomMfPIYYOx3btJ8FOZQRmrtxs0FQOI0OZJPPLI5WoBwzJ_pl1gq96qrcFCdOdsgIzrVnxyfqS_Zk71pTDD1FaNXjggESLZ5KhoJfqv-Q2WqqyBwV2KxvS-n8');
@@ -175,6 +200,7 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
   </div>
 </section>
 
+<?php if (!empty($teamImages)): ?>
 <section class="py-24 lg:py-32 bg-background-light dark:bg-background-dark">
   <div class="container mx-auto px-6 lg:px-12">
     <div class="flex flex-col items-center text-center mb-16">
@@ -182,28 +208,22 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
       <h2 class="text-4xl font-light text-text-main dark:text-white"><?= e($team_heading) ?></h2>
       <p class="text-gray-500 dark:text-gray-400 mt-4 max-w-2xl font-light"><?= e($team_intro) ?></p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <?php foreach ($team as $member):
-        $img = (string)($member['image'] ?? '');
-        $imgUrl = $img;
-        if ($img !== '' && strpos($img, 'http') !== 0) {
-            $imgUrl = (defined('SITE_URL') ? SITE_URL : '') . ltrim($img, '/');
-        }
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      <?php foreach ($teamImages as $src):
+        $url = lusso_media_src((string)$src);
         ?>
-      <div class="group cursor-pointer">
-        <div class="aspect-[3/4] w-full overflow-hidden rounded-lg mb-6 relative">
-          <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-500 z-10"></div>
-          <div class="absolute inset-0 bg-cover bg-top bg-no-repeat transition-transform duration-700 group-hover:scale-105" style="background-image:url('<?= e($imgUrl) ?>');"></div>
-        </div>
-        <div class="flex flex-col">
-          <h3 class="text-xl font-bold text-text-main dark:text-white group-hover:text-primary transition-colors"><?= e((string)($member['name'] ?? '')) ?></h3>
-          <p class="text-sm text-gray-500 uppercase tracking-wider mt-1"><?= e((string)($member['role'] ?? '')) ?></p>
+      <div class="group">
+        <div class="aspect-square w-full overflow-hidden rounded-lg relative border border-black/[0.06] bg-gray-100">
+          <img src="<?= e($url) ?>" alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" decoding="async">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         </div>
       </div>
       <?php endforeach; ?>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <section class="w-full h-[400px] md:h-[600px] relative bg-fixed bg-center bg-cover" style='background-image: url("<?= e($parallax_bg) ?>");'>
   <div class="absolute inset-0 bg-black/30 flex items-center justify-center">

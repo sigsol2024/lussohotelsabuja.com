@@ -97,7 +97,7 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
     </div>
   </div></div>
 
-  <div class="card"><div class="card-header"><h2>Timeline & team</h2></div><div style="padding:20px;">
+  <div class="card"><div class="card-header"><h2>Timeline & gallery</h2></div><div style="padding:20px;">
     <p class="form-help" style="margin-top:0;">Visual editor. Items are saved as JSON behind the scenes.</p>
 
     <!-- Hidden fields saved to page_sections -->
@@ -122,11 +122,15 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
     </div>
 
     <div class="card card--nested" style="margin-top: 16px;">
-      <div class="card-header"><h3>Team</h3></div>
+      <div class="card-header"><h3>Gallery</h3></div>
       <div class="card-body card-body--stack">
-        <p class="form-help">Each member: <code>name</code>, <code>role</code>, <code>image</code> (URL or media path).</p>
-        <div id="teamEditor"></div>
-        <button type="button" class="btn btn-outline btn-sm" id="teamAddBtn">Add team member</button>
+        <p class="form-help" style="margin-top:0;">Simple picker. Select multiple images at once, remove individual images, or clear all (saved as JSON array of image paths).</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <button type="button" class="btn btn-outline btn-sm" id="aboutGalleryPickBtn"><i class="fas fa-images"></i> Select images</button>
+          <button type="button" class="btn btn-outline btn-sm" id="aboutGalleryClearBtn">Clear all</button>
+          <span class="text-muted" id="aboutGalleryCount" style="font-size: 12px;"></span>
+        </div>
+        <div id="aboutGalleryPreview" class="image-preview" style="display:block; margin-top:12px;"></div>
 
         <details style="margin-top:14px;">
           <summary style="cursor:pointer; color: var(--text-muted);">Advanced JSON (optional)</summary>
@@ -182,11 +186,30 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
 (function () {
   var map = { hero_bg: 'hero_bg_preview', story_image: 'story_image_preview', values_image: 'values_image_preview', parallax_bg: 'parallax_bg_preview' };
   window.insertSelectedMediaOverride = function () {
-    var s = mediaModalState.selectedMedia;
-    if (!s) return false;
-    var pid = map[mediaModalState.targetInputId];
+    var tid = mediaModalState.targetInputId || '';
+    var allowMultiple = !!mediaModalState.allowMultiple;
+    var selected = allowMultiple ? (mediaModalState.selectedMediaMultiple || []) : (mediaModalState.selectedMedia ? [mediaModalState.selectedMedia] : []);
+    if (!selected || selected.length === 0) return false;
+
+    // About gallery multi-pick (saved into #team_json)
+    if (tid === 'team_json_pick') {
+      var paths = selected.map(function (s) { return s && s.path ? String(s.path) : ''; }).filter(Boolean);
+      if (window.aboutGallerySetPaths && typeof window.aboutGallerySetPaths === 'function') {
+        window.aboutGallerySetPaths(paths);
+      } else {
+        var hidden = document.getElementById('team_json');
+        if (hidden) hidden.value = JSON.stringify(paths);
+      }
+      closeMediaModal();
+      if (typeof showToast === 'function') showToast(paths.length + ' images selected', 'success');
+      return true;
+    }
+
+    // Single-image fields
+    var pid = map[tid];
     if (!pid) return false;
-    document.getElementById(mediaModalState.targetInputId).value = s.path;
+    var s = selected[0];
+    document.getElementById(tid).value = s.path;
     var p = document.getElementById(pid);
     p.style.display = 'block';
     p.innerHTML = '<img src="<?= SITE_URL ?>' + s.path.replace(/^\/+/, '') + '" style="max-width:500px;">';
@@ -211,7 +234,7 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
     });
   }
 
-  function normalizeTeamImageUrl(val) {
+  function normalizeImgUrl(val) {
     var v = String(val || '').trim();
     if (!v) return '';
     if (v.indexOf('http') === 0) return v;
@@ -231,29 +254,12 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
     return out;
   }
 
-  function getTeamItemsFromDom() {
-    var out = [];
-    document.querySelectorAll('#teamEditor .js-team-item').forEach(function (row) {
-      var name = (row.querySelector('.js-team-name')?.value || '').trim();
-      var role = (row.querySelector('.js-team-role')?.value || '').trim();
-      var image = (row.querySelector('.js-team-image')?.value || '').trim();
-      if (!name && !role && !image) return;
-      out.push({ name: name, role: role, image: image });
-    });
-    return out;
-  }
-
   function syncHiddenJson() {
     var tl = getTimelineItemsFromDom();
-    var tm = getTeamItemsFromDom();
     var tlEl = document.getElementById('timeline_json');
-    var tmEl = document.getElementById('team_json');
     if (tlEl) tlEl.value = JSON.stringify(tl);
-    if (tmEl) tmEl.value = JSON.stringify(tm);
     var tlAdv = document.getElementById('timeline_json_advanced');
-    var tmAdv = document.getElementById('team_json_advanced');
     if (tlAdv) tlAdv.value = JSON.stringify(tl, null, 2);
-    if (tmAdv) tmAdv.value = JSON.stringify(tm, null, 2);
   }
 
   function renderTimeline(items) {
@@ -302,71 +308,51 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
     });
   }
 
-  function renderTeam(items) {
-    var host = document.getElementById('teamEditor');
+  function aboutGalleryGetPaths() {
+    var raw = document.getElementById('team_json')?.value || '[]';
+    var v = safeParseJson(raw, []);
+    if (Array.isArray(v) && v.length && typeof v[0] === 'object' && v[0] && (v[0].image || v[0].src)) {
+      return v.map(function (o) { return (o && (o.image || o.src)) ? String(o.image || o.src).trim() : ''; }).filter(Boolean);
+    }
+    if (Array.isArray(v)) return v.map(function (p) { return String(p || '').trim(); }).filter(Boolean);
+    return [];
+  }
+
+  function aboutGalleryRenderPreview() {
+    var paths = aboutGalleryGetPaths();
+    var host = document.getElementById('aboutGalleryPreview');
+    var count = document.getElementById('aboutGalleryCount');
+    if (count) count.textContent = paths.length ? (paths.length + ' images selected') : 'No images selected yet.';
     if (!host) return;
-    host.innerHTML = '';
-    (items || []).forEach(function (it, idx) {
-      var name = (it && it.name) || '';
-      var role = (it && it.role) || '';
-      var image = (it && it.image) || '';
-      var inputId = 'team_image_' + idx;
-      var prevId = 'team_image_' + idx + '_preview';
-      var imgUrl = normalizeTeamImageUrl(image);
-
-      var wrap = document.createElement('div');
-      wrap.className = 'card js-team-item';
-      wrap.style.cssText = 'margin-bottom: 12px; padding: 12px;';
-      wrap.innerHTML =
-        '<div class="form-row" style="align-items:flex-end; gap: 10px;">' +
-          '<div class="form-group" style="flex: 1; margin-bottom:0;">' +
-            '<label>Name</label>' +
-            '<input type="text" class="form-control js-team-name" value="' + escHtml(name) + '" placeholder="Full name">' +
-          '</div>' +
-          '<div class="form-group" style="flex: 1; margin-bottom:0;">' +
-            '<label>Role</label>' +
-            '<input type="text" class="form-control js-team-role" value="' + escHtml(role) + '" placeholder="Title / position">' +
-          '</div>' +
-          '<button type="button" class="btn btn-outline btn-sm js-team-remove">Remove</button>' +
-        '</div>' +
-        '<div class="form-group" style="margin-top:10px;">' +
-          '<label>Image</label>' +
-          '<div style="display:flex; gap: 10px; align-items:center; flex-wrap:wrap;">' +
-            '<button type="button" class="btn btn-outline js-team-pick">Select from media</button>' +
-            '<input type="text" id="' + escHtml(inputId) + '" class="form-control js-team-image" value="' + escHtml(image) + '" placeholder="/assets/uploads/… or https://…">' +
-          '</div>' +
-          '<div id="' + escHtml(prevId) + '" class="image-preview" style="' + (imgUrl ? 'display:block;margin-top:10px;' : 'display:none;margin-top:10px;') + '">' +
-            (imgUrl ? ('<img src="' + escHtml(imgUrl) + '" style="max-width:260px;max-height:180px;border-radius:6px;">') : '') +
-          '</div>' +
+    if (!paths.length) {
+      host.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; padding: 8px 0;">No images selected.</div>';
+      return;
+    }
+    host.innerHTML = paths.map(function (p, i) {
+      var u = normalizeImgUrl(p);
+      return '' +
+        '<div style="display:inline-block; position:relative; margin:6px;">' +
+          '<img src="' + escHtml(u) + '" style="width:140px;height:105px;object-fit:cover;border-radius:8px;display:block;border:1px solid rgba(0,0,0,0.08);">' +
+          '<button type="button" data-i="' + i + '" class="btn btn-outline btn-sm js-remove-one" style="position:absolute; top:6px; right:6px; padding:4px 6px; line-height:1;">×</button>' +
         '</div>';
-
-      wrap.querySelector('.js-team-pick').addEventListener('click', function () {
-        openMediaModal(inputId, prevId, false);
+    }).join('');
+    host.querySelectorAll('.js-remove-one').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(btn.getAttribute('data-i') || '0', 10);
+        var cur = aboutGalleryGetPaths();
+        cur.splice(idx, 1);
+        window.aboutGallerySetPaths(cur);
       });
-      wrap.querySelector('.js-team-remove').addEventListener('click', function () {
-        wrap.remove();
-        syncHiddenJson();
-      });
-      wrap.addEventListener('input', function () {
-        // Update preview if someone pastes a URL/path.
-        var v = (wrap.querySelector('.js-team-image')?.value || '').trim();
-        var p = document.getElementById(prevId);
-        if (p) {
-          var u = normalizeTeamImageUrl(v);
-          if (!u) {
-            p.style.display = 'none';
-            p.innerHTML = '';
-          } else {
-            p.style.display = 'block';
-            p.innerHTML = '<img src="' + escHtml(u) + '" style="max-width:260px;max-height:180px;border-radius:6px;">';
-          }
-        }
-        syncHiddenJson();
-      });
-      wrap.addEventListener('change', function () { syncHiddenJson(); });
-      host.appendChild(wrap);
     });
   }
+
+  window.aboutGallerySetPaths = function (paths) {
+    var hidden = document.getElementById('team_json');
+    if (hidden) hidden.value = JSON.stringify(paths || []);
+    var adv = document.getElementById('team_json_advanced');
+    if (adv) adv.value = JSON.stringify(paths || [], null, 2);
+    aboutGalleryRenderPreview();
+  };
 
   document.addEventListener('DOMContentLoaded', function () {
     var tlRaw = document.getElementById('timeline_json')?.value || '[]';
@@ -378,11 +364,16 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
 
     // If empty, start with one blank item so the UI doesn't look broken.
     if (tl.length === 0) tl = [{ year: '', kind: 'dot', title: '', body: '' }];
-    if (tm.length === 0) tm = [{ name: '', role: '', image: '' }];
 
     renderTimeline(tl);
-    renderTeam(tm);
     syncHiddenJson();
+
+    // Normalize legacy objects to paths (gallery format)
+    if (tm.length && typeof tm[0] === 'object' && tm[0] && (tm[0].image || tm[0].src)) {
+      tm = tm.map(function (o) { return (o && (o.image || o.src)) ? String(o.image || o.src).trim() : ''; }).filter(Boolean);
+    }
+    if (tm.length && typeof tm[0] !== 'string') tm = [];
+    window.aboutGallerySetPaths(tm);
 
     var tlAdd = document.getElementById('timelineAddBtn');
     if (tlAdd) tlAdd.addEventListener('click', function () {
@@ -392,12 +383,13 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
       syncHiddenJson();
     });
 
-    var tmAdd = document.getElementById('teamAddBtn');
-    if (tmAdd) tmAdd.addEventListener('click', function () {
-      var cur = getTeamItemsFromDom();
-      cur.push({ name: '', role: '', image: '' });
-      renderTeam(cur);
-      syncHiddenJson();
+    var pickBtn = document.getElementById('aboutGalleryPickBtn');
+    var clearBtn = document.getElementById('aboutGalleryClearBtn');
+    if (pickBtn) pickBtn.addEventListener('click', function () {
+      openMediaModal('team_json_pick', 'aboutGalleryPreview', true);
+    });
+    if (clearBtn) clearBtn.addEventListener('click', function () {
+      window.aboutGallerySetPaths([]);
     });
 
     var tlApply = document.getElementById('timelineApplyJsonBtn');
@@ -418,12 +410,17 @@ $teamRaw = trim($sections['team_json'] ?? '') !== '' ? $sections['team_json'] : 
       var t = document.getElementById('team_json_advanced')?.value || '';
       var v = safeParseJson(t, null);
       if (!Array.isArray(v)) {
-        showToast('Team JSON must be an array', 'error');
+        showToast('Gallery JSON must be an array', 'error');
         return;
       }
-      renderTeam(v);
-      syncHiddenJson();
-      showToast('Team applied', 'success');
+      // Accept either ["path",...] or legacy [{image:""},...]
+      if (v.length && typeof v[0] === 'object' && v[0] && (v[0].image || v[0].src)) {
+        v = v.map(function (o) { return (o && (o.image || o.src)) ? String(o.image || o.src).trim() : ''; }).filter(Boolean);
+      } else {
+        v = v.map(function (p) { return String(p || '').trim(); }).filter(Boolean);
+      }
+      window.aboutGallerySetPaths(v);
+      showToast('Gallery applied', 'success');
     });
   });
 })();

@@ -103,7 +103,7 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
   </div>
 </section>
 
-<section class="py-24 lg:py-32 relative bg-background-light dark:bg-background-dark">
+<section class="py-[26px] relative bg-background-light dark:bg-background-dark">
   <div class="container mx-auto px-6 lg:px-12">
     <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-12 lg:gap-24">
       <div class="w-full lg:w-1/2 flex flex-col gap-8 min-w-0">
@@ -231,7 +231,7 @@ $cta_btn2_href = getPageSection('about', 'cta_btn2_href', '/contact');
   </div>
 </section>
 
-<section class="py-20 lg:py-28 bg-surface-ink text-white">
+<section class="py-10 bg-surface-ink text-white">
   <div class="container mx-auto px-6 lg:px-12 text-center">
     <div class="max-w-3xl mx-auto flex flex-col items-center gap-8">
       <span class="material-symbols-outlined text-champagne text-5xl">diamond</span>

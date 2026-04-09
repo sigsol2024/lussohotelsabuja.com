@@ -108,7 +108,7 @@ $cta_btn1_href = trim((string)$cta_btn1_href) !== '' ? $cta_btn1_href : '#';
 </section>
 
 <!-- Editorial Intro Section -->
-<section class="relative py-24 md:py-32 px-6 md:px-16 max-w-[1440px] mx-auto">
+<section class="relative py-[25px] px-6 md:px-16 max-w-[1440px] mx-auto">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-stretch lg:items-center">
     <div class="hidden lg:flex col-span-1 justify-center h-full">
       <span class="text-vertical text-xs tracking-[0.3em] uppercase text-text-main/40 font-bold border-l border-text-main/10 py-12 pl-4 h-full">
@@ -192,7 +192,7 @@ $cta_btn1_href = trim((string)$cta_btn1_href) !== '' ? $cta_btn1_href : '#';
 </section>
 
 <!-- Menu Highlight Section -->
-<section id="diningMenu" class="py-24 md:py-32 px-6 md:px-16 bg-white dark:bg-surface-dark transition-colors relative">
+<section id="diningMenu" class="py-[84px] px-6 md:px-16 bg-white dark:bg-surface-dark transition-colors relative">
   <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
     <div class="size-24 rounded-full border border-primary/30 flex items-center justify-center bg-white dark:bg-surface-dark">
       <span class="material-symbols-outlined text-primary text-3xl">restaurant_menu</span>
@@ -232,7 +232,7 @@ $cta_btn1_href = trim((string)$cta_btn1_href) !== '' ? $cta_btn1_href : '#';
 </section>
 
 <!-- CTA / Reservation Section -->
-<section id="diningReservation" class="py-24 px-6 md:px-16 flex justify-center items-center bg-sand-darker/30 dark:bg-black/20">
+<section id="diningReservation" class="py-[25px] px-6 md:px-16 flex justify-center items-center bg-sand-darker/30 dark:bg-black/20">
   <div class="relative w-full max-w-[1200px] overflow-hidden rounded-2xl bg-surface-ink text-white">
     <div class="absolute inset-0 opacity-40 mix-blend-overlay bg-cover bg-center" style="background-image: url('<?= e($cta_bg) ?>');"></div>
     <div class="relative z-10 px-6 py-20 md:py-24 md:px-20 text-center flex flex-col items-center gap-8">

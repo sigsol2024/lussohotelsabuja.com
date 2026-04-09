@@ -191,12 +191,12 @@ $featuredRooms = getFeaturedRoomsForHome(5);
     #booking-lusso #booking-form > div,
     #booking-lusso #booking-blueorange #booking-form > div {
       width: auto !important; min-width: 140px !important;
-      flex: 1 1 160px !important; margin: 0 !important;
+      flex: 1 1 160px !important; margin: 0 !important; padding: 0 !important;
     }
     #booking-form > div,
     #booking-blueorange #booking-form > div {
       width: auto !important; min-width: 140px !important;
-      flex: 1 1 160px !important; margin: 0 !important;
+      flex: 1 1 160px !important; margin: 0 !important; padding: 0 !important;
     }
     #booking-lusso #booking-form label,
     #booking-lusso #booking-blueorange #booking-form label {
@@ -405,7 +405,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
 <?php endif; ?>
 
 <!-- Asymmetrical Editorial Section: The Lusso Standard -->
-<section class="relative z-10 w-full <?= $hasBookingBridge ? 'pt-8 md:pt-12 pb-24 md:pb-[69px]' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
+<section class="relative z-10 w-full <?= $hasBookingBridge ? 'pt-8 md:pt-12 pb-24 md:pb-[46px]' : 'py-24 md:py-32' ?> overflow-x-hidden lg:overflow-visible bg-background-light">
   <div class="absolute inset-0 opacity-[0.04] pointer-events-none" style="background-image: radial-gradient(#363636 1px, transparent 1px); background-size: 32px 32px;"></div>
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
     <div class="flex flex-col lg:flex-row items-stretch lg:items-start gap-12 lg:gap-0 mb-32 relative">
@@ -468,7 +468,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
 
 <?php if ($showAmenityGridSection): ?>
 <!-- Amenities highlight: three cards, dark band (#282828) -->
-<section class="py-16 md:py-24 border-t border-white/5" style="background-color:#282828;">
+<section class="py-16 md:py-[26px] border-t border-white/5" style="background-color:#282828;">
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
     <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16">
       <?php if ($amenity_grid_kicker !== ''): ?>
@@ -522,7 +522,7 @@ $featuredRooms = getFeaturedRoomsForHome(5);
 <?php endif; ?>
 
 <!-- Featured rooms (CMS: mark rooms Featured in admin) -->
-<section class="py-24 bg-white relative">
+<section class="py-[33px] bg-white relative">
   <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
     <?php
       $roomsForSlider = is_array($featuredRooms) ? array_slice($featuredRooms, 0, 5) : [];

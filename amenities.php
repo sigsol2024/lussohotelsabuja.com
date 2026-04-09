@@ -93,7 +93,7 @@ function amenities_body_class($layout) {
     $galleryJsonAttr = htmlspecialchars(json_encode($gallery, JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
     $layout = (string)($sec['layout'] ?? 'bottom');
     $inner = amenities_inner_wrap_class($layout);
-    $zPad = ($layout === 'top') ? 'p-8 md:p-20 pt-32 md:pt-40' : 'p-8 md:p-20';
+    $zPad = ($layout === 'top') ? 'p-8 md:p-20 pt-32 md:pt-40 md:pb-[85px]' : 'p-8 md:p-20 md:pb-[85px]';
     ?>
   <section class="amenity-section relative w-full h-screen min-h-[700px] flex group overflow-hidden">
     <div class="absolute inset-0 z-0 transition-transform duration-1000 group-hover:scale-105 bg-cover bg-center bg-no-repeat"
@@ -118,7 +118,7 @@ function amenities_body_class($layout) {
           $btnIcon = ($layout === 'center') ? 'arrow_outward' : (($layout === 'top') ? 'water_drop' : 'arrow_forward');
           $btnBaseClass = ($layout === 'center')
             ? 'inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded font-bold hover:bg-white/20 transition-all duration-300'
-            : 'mt-4 inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded hover:bg-white/20 transition-all duration-300 group/btn';
+            : 'mt-[-3px] inline-flex w-fit items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white rounded hover:bg-white/20 transition-all duration-300 group/btn';
         ?>
         <button class="<?= e($btnBaseClass) ?> js-amenity-gallery-btn"
                 type="button"

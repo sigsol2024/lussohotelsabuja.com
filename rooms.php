@@ -52,7 +52,7 @@ $rooms = getRooms(['is_active' => 1]);
 
 <!-- Listings -->
 <main class="relative z-10 bg-background-light dark:bg-background-dark bg-subtle-pattern pb-32">
-  <div class="max-w-[1280px] mx-auto px-6 lg:px-12 py-24 flex flex-col gap-32 lg:gap-48">
+  <div class="max-w-[1280px] mx-auto px-6 lg:px-12 py-[25px] flex flex-col gap-16 lg:gap-24">
     <?php if (empty($rooms)): ?>
       <div class="text-center text-text-muted">No rooms available yet.</div>
     <?php else: ?>

@@ -89,6 +89,10 @@ if (function_exists('getSiteSetting') && function_exists('lusso_media_src') && f
 
   /* Hero: light stroke / outline on accent words (not a box border) */
   .lusso-hero-accent-text {
+    /* Use the site's modern display font for the accent phrase */
+    font-family: "Plus Jakarta Sans", "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.015em;
     -webkit-text-stroke: 1.25px rgba(255, 255, 255, 0.9);
     paint-order: stroke fill;
     text-shadow:

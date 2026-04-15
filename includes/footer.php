@@ -188,6 +188,9 @@ $termsSlug = 'terms-and-conditions';
 </footer>
 
 <?php
+// Live chat widget (Smartsupp) — site-wide on public pages
+@include_once __DIR__ . '/livechat.php';
+
 // Optional: site-wide injected footer scripts
 if (function_exists('getSiteSetting')) {
     $footerScripts = getSiteSetting('footer_scripts', '');

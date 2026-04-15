@@ -253,6 +253,20 @@ $csrfToken = generateCSRFToken();
             <input type="hidden" id="social_media_json" name="social_media_json" value="<?= htmlspecialchars($settings['social_media_json'] ?? '[]', ENT_QUOTES, 'UTF-8') ?>">
         </div>
     </div>
+
+    <!-- Live Chat -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Live chat</h2>
+        </div>
+        <div class="card-body card-body--stack">
+            <div class="form-group">
+                <label for="smartsupp_key">Smartsupp key</label>
+                <input type="text" id="smartsupp_key" name="smartsupp_key" value="<?= sanitize($settings['smartsupp_key'] ?? '') ?>" placeholder="Your Smartsupp key">
+                <p class="form-help">If set, Smartsupp will load on every public page. You can change this later when your client account is ready.</p>
+            </div>
+        </div>
+    </div>
     
     <!-- Google Maps Settings -->
     <div class="card">

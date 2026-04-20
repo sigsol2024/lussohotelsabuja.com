@@ -70,9 +70,9 @@ $termsSlug = 'terms-and-conditions';
 ?>
 
 <!-- Footer -->
-<footer class="bg-primary text-background-light pt-[15px] pb-[15px]">
+<footer class="bg-primary text-background-light pt-[33px] pb-[33px] px-0 -my-[8px]">
   <div class="max-w-[1280px] mx-auto px-6 lg:px-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16 mb-16">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16 mb-16 py-[9px]">
       <!-- Brand (logo + socials) -->
       <div class="min-w-0<?= empty($socialMediaList) ? ' h-[254px]' : '' ?>">
         <div class="lusso-brand-logo lusso-brand-logo--footer flex items-center justify-center md:justify-start mb-8 md:mb-10 min-h-[5rem] md:min-h-[7.5rem] py-2 md:py-3">
